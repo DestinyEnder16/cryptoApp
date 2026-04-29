@@ -1,5 +1,6 @@
 import { Text, TextInput, useWindowDimensions, View } from 'react-native';
 import { Colors } from '../constants/styles';
+import AltLoginView from './AltLoginView';
 import Btn from './Btn';
 import { AuthStyles } from './SignInView';
 
@@ -7,7 +8,7 @@ function SignUpView() {
   const { width } = useWindowDimensions();
   return (
     <View style={[AuthStyles.container, { width }]}>
-      <Text style={AuthStyles.heading}>Sign in</Text>
+      <Text style={AuthStyles.heading}>Sign Up</Text>
       {/* sign-in form fields go here */}
 
       <View style={AuthStyles.formContainer}>
@@ -33,8 +34,10 @@ function SignUpView() {
       </View>
 
       <View style={{ marginTop: 40 }}>
-        <Btn text="Sign In" action={() => console.log('hey')} />
+        <Btn text="Sign Up" action={() => console.log('hey')} />
       </View>
+
+      <AltLoginView showFingerPrintOption={false} />
     </View>
   );
 }

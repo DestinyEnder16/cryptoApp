@@ -4,7 +4,11 @@ import { FaceBookIcon, Fingerprint, GoogleIcon } from '../constants/images';
 import { Colors } from '../constants/styles';
 import ActionBtn from './ActionBtn';
 
-function AltLoginView() {
+interface ViewProps {
+  showFingerPrintOption?: boolean;
+}
+
+function AltLoginView({ showFingerPrintOption = true }: ViewProps) {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Or login with</Text>
@@ -24,17 +28,19 @@ function AltLoginView() {
         />
       </View>
 
-      <View
-        style={{
-          alignSelf: 'center',
-          alignItems: 'center',
-          gap: 10,
-          marginTop: 50,
-        }}
-      >
-        <Fingerprint />
-        <Text style={styles.txt}>Use fingerprint instead?</Text>
-      </View>
+      {showFingerPrintOption && (
+        <View
+          style={{
+            alignSelf: 'center',
+            alignItems: 'center',
+            gap: 10,
+            marginTop: 50,
+          }}
+        >
+          <Fingerprint />
+          <Text style={styles.txt}>Use fingerprint instead?</Text>
+        </View>
+      )}
     </View>
   );
 }

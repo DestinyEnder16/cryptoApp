@@ -48,10 +48,10 @@ const styles = StyleSheet.create({
   tabs: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 5,
     borderRadius: 12,
     backgroundColor: '#161C22',
-    padding: 3,
+    paddingHorizontal: 5,
+    paddingVertical: 5,
   },
   tab: {
     width: '50%',

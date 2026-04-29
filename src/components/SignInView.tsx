@@ -25,7 +25,7 @@ function SignInView() {
           >
             <Text style={AuthStyles.label}>Email</Text>
             <Pressable>
-              <Text style={{ color: Colors.green }}>Sign In with mobile</Text>
+              <Text style={{ color: Colors.green }}>Sign in with mobile</Text>
             </Pressable>
           </View>
 

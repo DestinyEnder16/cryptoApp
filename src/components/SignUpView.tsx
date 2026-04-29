@@ -1,3 +1,4 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { Text, TextInput, useWindowDimensions, View } from 'react-native';
 import { Colors } from '../constants/styles';
 import AltLoginView from './AltLoginView';
@@ -7,38 +8,42 @@ import { AuthStyles } from './SignInView';
 function SignUpView() {
   const { width } = useWindowDimensions();
   return (
-    <View style={[AuthStyles.container, { width }]}>
-      <Text style={AuthStyles.heading}>Sign Up</Text>
-      {/* sign-in form fields go here */}
+    <LinearGradient
+      colors={[Colors.primaryBackgroundColor, Colors.secondaryBackgroundColor]}
+    >
+      <View style={[AuthStyles.container, { width }]}>
+        <Text style={AuthStyles.heading}>Sign Up</Text>
+        {/* sign-in form fields go here */}
 
-      <View style={AuthStyles.formContainer}>
-        <View style={AuthStyles.field}>
-          <Text style={AuthStyles.label}>Email</Text>
-          <TextInput
-            placeholder="Enter your email"
-            placeholderTextColor={Colors.ash}
-            style={AuthStyles.inputField}
-            keyboardType="email-address"
-          />
+        <View style={AuthStyles.formContainer}>
+          <View style={AuthStyles.field}>
+            <Text style={AuthStyles.label}>Email</Text>
+            <TextInput
+              placeholder="Please enter your email"
+              placeholderTextColor={Colors.ash}
+              style={AuthStyles.inputField}
+              keyboardType="email-address"
+            />
+          </View>
+
+          <View style={AuthStyles.field}>
+            <Text style={AuthStyles.label}>Password</Text>
+            <TextInput
+              placeholder="Enter your password"
+              placeholderTextColor={Colors.ash}
+              style={AuthStyles.inputField}
+              keyboardType="email-address"
+            />
+          </View>
         </View>
 
-        <View style={AuthStyles.field}>
-          <Text style={AuthStyles.label}>Password</Text>
-          <TextInput
-            placeholder="Enter your password"
-            placeholderTextColor={Colors.ash}
-            style={AuthStyles.inputField}
-            keyboardType="email-address"
-          />
+        <View style={{ marginTop: 40 }}>
+          <Btn text="Sign Up" action={() => console.log('hey')} />
         </View>
-      </View>
 
-      <View style={{ marginTop: 40 }}>
-        <Btn text="Sign Up" action={() => console.log('hey')} />
+        <AltLoginView showFingerPrintOption={false} />
       </View>
-
-      <AltLoginView showFingerPrintOption={false} />
-    </View>
+    </LinearGradient>
   );
 }
 

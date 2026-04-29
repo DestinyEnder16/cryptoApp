@@ -1,12 +1,12 @@
 import {
   Image,
+  ImageBackground,
   StyleSheet,
   Text,
   useWindowDimensions,
   View,
 } from 'react-native';
 import { Fonts } from '../constants/fonts';
-import { Colors } from '../constants/styles';
 
 type OnboardingViewProps = {
   heading: string;
@@ -28,18 +28,22 @@ IMPORTANT
   */
 
   return (
-    <View style={[styles.container, { width }]}>
-      <Image source={img} style={styles.image} resizeMode="contain" />
-      <Text style={styles.heading}>{heading}</Text>
-      <Text style={styles.info}>{info}</Text>
-    </View>
+    <ImageBackground
+      source={require('@/assets/images/onboarding-bg.png')}
+      resizeMode="cover"
+    >
+      <View style={[styles.container, { width }]}>
+        <Image source={img} style={styles.image} resizeMode="contain" />
+        <Text style={styles.heading}>{heading}</Text>
+        <Text style={styles.info}>{info}</Text>
+      </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.primaryBackgroundColor,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 16,

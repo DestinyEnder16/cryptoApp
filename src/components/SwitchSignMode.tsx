@@ -1,5 +1,6 @@
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Fonts } from '../constants/fonts';
 import { BackBtn } from '../constants/images';
 import { Colors } from '../constants/styles';
@@ -10,8 +11,10 @@ interface SwitchProps {
 }
 
 export default function SwitchSignMode({ view, setView }: SwitchProps) {
+  const inset = useSafeAreaInsets();
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: inset.top }]}>
       <Pressable onPress={() => router.back()}>
         <BackBtn />
       </Pressable>
@@ -41,7 +44,6 @@ export default function SwitchSignMode({ view, setView }: SwitchProps) {
 const styles = StyleSheet.create({
   container: {
     gap: 20,
-    marginTop: 50,
     marginHorizontal: 15,
   },
 

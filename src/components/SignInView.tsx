@@ -1,3 +1,5 @@
+import { LinearGradient } from 'expo-linear-gradient';
+import { useState } from 'react';
 import {
   Pressable,
   StyleSheet,
@@ -11,53 +13,87 @@ import { Colors } from '../constants/styles';
 import AltLoginView from './AltLoginView';
 import Btn from './Btn';
 
+type Mode = 'email' | 'mobile';
+
+type AuthMethodComponentProps = {
+  label: string;
+  instruction: string;
+  to: Mode;
+};
+
 function SignInView() {
   const { width } = useWindowDimensions();
-  return (
-    <View style={[AuthStyles.container, { width }]}>
-      <Text style={AuthStyles.heading}>Sign in</Text>
-      {/* sign-in form fields go here */}
+  const [mode, setMode] = useState<Mode>('email');
 
-      <View style={AuthStyles.formContainer}>
-        <View style={AuthStyles.field}>
-          <View
-            style={{ flexDirection: 'row', justifyContent: 'space-between' }}
-          >
-            <Text style={AuthStyles.label}>Email</Text>
-            <Pressable>
-              <Text style={{ color: Colors.green }}>Sign in with mobile</Text>
-            </Pressable>
+  function AuthMethod({ label, instruction, to }: AuthMethodComponentProps) {
+    return (
+      <>
+        <Text style={AuthStyles.label}>{label}</Text>
+        <Pressable onPress={() => setMode(to)}>
+          <Text style={{ color: Colors.green }}>{instruction}</Text>
+        </Pressable>
+      </>
+    );
+  }
+
+  return (
+    <LinearGradient
+      colors={[Colors.primaryBackgroundColor, Colors.secondaryBackgroundColor]}
+    >
+      <View style={[AuthStyles.container, { width }]}>
+        <Text style={AuthStyles.heading}>Sign in</Text>
+        {/* sign-in form fields go here */}
+
+        <View style={AuthStyles.formContainer}>
+          <View style={AuthStyles.field}>
+            <View
+              style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+            >
+              {mode === 'email' ? (
+                <AuthMethod
+                  label="Email"
+                  instruction="Sign in with mobile"
+                  to="mobile"
+                />
+              ) : (
+                <AuthMethod
+                  label="Mobile Number"
+                  instruction="Sign in with email"
+                  to="email"
+                />
+              )}
+            </View>
+
+            <TextInput
+              placeholder={`Enter your ${mode}`}
+              placeholderTextColor={Colors.ash}
+              style={AuthStyles.inputField}
+              keyboardType="email-address"
+            />
           </View>
 
-          <TextInput
-            placeholder="Enter your email"
-            placeholderTextColor={Colors.ash}
-            style={AuthStyles.inputField}
-            keyboardType="email-address"
-          />
+          <View style={AuthStyles.field}>
+            <Text style={AuthStyles.label}>Password</Text>
+
+            <TextInput
+              placeholder="Enter your password"
+              placeholderTextColor={Colors.ash}
+              style={AuthStyles.inputField}
+              keyboardType="email-address"
+            />
+            <Text style={{ color: Colors.green, fontFamily: Fonts.regular }}>
+              Forgot password?
+            </Text>
+          </View>
         </View>
 
-        <View style={AuthStyles.field}>
-          <Text style={AuthStyles.label}>Password</Text>
-
-          <TextInput
-            placeholder="Enter your password"
-            placeholderTextColor={Colors.ash}
-            style={AuthStyles.inputField}
-            keyboardType="email-address"
-          />
-          <Text style={{ color: Colors.green, fontFamily: Fonts.regular }}>
-            Forgot password?
-          </Text>
+        <View style={{ marginTop: 40 }}>
+          <Btn text="Sign In" action={() => console.log('hey')} />
         </View>
-      </View>
 
-      <View style={{ marginTop: 40 }}>
-        <Btn text="Sign In" action={() => console.log('hey')} />
+        <AltLoginView />
       </View>
-
-      <AltLoginView />
-    </View>
+    </LinearGradient>
   );
 }
 

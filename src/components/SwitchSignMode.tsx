@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Fonts } from '../constants/fonts';
 import { BackBtn } from '../constants/images';
@@ -11,7 +12,7 @@ interface SwitchProps {
 export default function SwitchSignMode({ view, setView }: SwitchProps) {
   return (
     <View style={styles.container}>
-      <Pressable>
+      <Pressable onPress={() => router.back()}>
         <BackBtn />
       </Pressable>
 

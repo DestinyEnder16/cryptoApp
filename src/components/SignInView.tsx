@@ -1,4 +1,5 @@
 import {
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
@@ -7,6 +8,7 @@ import {
 } from 'react-native';
 import { Fonts } from '../constants/fonts';
 import { Colors } from '../constants/styles';
+import AltLoginView from './AltLoginView';
 import Btn from './Btn';
 
 function SignInView() {
@@ -18,7 +20,15 @@ function SignInView() {
 
       <View style={AuthStyles.formContainer}>
         <View style={AuthStyles.field}>
-          <Text style={AuthStyles.label}>Email</Text>
+          <View
+            style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+          >
+            <Text style={AuthStyles.label}>Email</Text>
+            <Pressable>
+              <Text style={{ color: Colors.green }}>Sign In with mobile</Text>
+            </Pressable>
+          </View>
+
           <TextInput
             placeholder="Enter your email"
             placeholderTextColor={Colors.ash}
@@ -45,6 +55,8 @@ function SignInView() {
       <View style={{ marginTop: 40 }}>
         <Btn text="Sign In" action={() => console.log('hey')} />
       </View>
+
+      <AltLoginView />
     </View>
   );
 }

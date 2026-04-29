@@ -14,7 +14,7 @@ export default function SwitchSignMode({ view, setView }: SwitchProps) {
   const inset = useSafeAreaInsets();
 
   return (
-    <View style={[styles.container, { paddingTop: inset.top }]}>
+    <View style={[styles.container, { paddingTop: inset.top + 10 }]}>
       <Pressable onPress={() => router.back()}>
         <BackBtn />
       </Pressable>

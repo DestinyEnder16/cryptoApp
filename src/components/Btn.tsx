@@ -10,7 +10,7 @@ interface BtnProps {
 
 export default function Btn({ text, action }: BtnProps) {
   return (
-    <Pressable onPress={() => action} style={btnStyles.container}>
+    <Pressable onPress={action} style={btnStyles.container}>
       <Text style={btnStyles.text}>{text}</Text>
     </Pressable>
   );

@@ -3,7 +3,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import {
-  Pressable,
   StyleSheet,
   Text,
   TextInput,
@@ -14,14 +13,10 @@ import * as yup from 'yup';
 import { Fonts } from '../constants/fonts';
 import { Colors } from '../constants/styles';
 import AltLoginView from './AltLoginView';
+import AuthMethod from './AuthMethod';
 import Btn from './Btn';
-type Mode = 'email' | 'mobile';
 
-type AuthMethodComponentProps = {
-  label: string;
-  instruction: string;
-  to: Mode;
-};
+type Mode = 'email' | 'mobile';
 
 function SignInView() {
   const { width } = useWindowDimensions();
@@ -68,20 +63,10 @@ function SignInView() {
     reset();
   };
 
-  function AuthMethod({ label, instruction, to }: AuthMethodComponentProps) {
-    return (
-      <>
-        <Text style={AuthStyles.label}>{label}</Text>
-        <Pressable onPress={() => setMode(to)}>
-          <Text style={{ color: Colors.green }}>{instruction}</Text>
-        </Pressable>
-      </>
-    );
-  }
-
   return (
     <LinearGradient
       colors={[Colors.primaryBackgroundColor, Colors.secondaryBackgroundColor]}
+      style={{ flex: 1 }}
     >
       <View style={[AuthStyles.container, { width }]}>
         <Text style={AuthStyles.heading}>Sign in</Text>
@@ -96,13 +81,13 @@ function SignInView() {
                 <AuthMethod
                   label="Email"
                   instruction="Sign in with mobile"
-                  to="mobile"
+                  onPress={() => setMode('mobile')}
                 />
               ) : (
                 <AuthMethod
                   label="Mobile Number"
                   instruction="Sign in with email"
-                  to="email"
+                  onPress={() => setMode('email')}
                 />
               )}
             </View>

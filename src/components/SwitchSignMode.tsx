@@ -2,7 +2,7 @@ import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Fonts } from '../constants/fonts';
-import { BackBtn } from '../constants/images';
+import { CancelBtn } from '../constants/images';
 import { Colors } from '../constants/styles';
 
 interface SwitchProps {
@@ -16,7 +16,7 @@ export default function SwitchSignMode({ view, setView }: SwitchProps) {
   return (
     <View style={[styles.container, { paddingTop: inset.top + 10 }]}>
       <Pressable onPress={() => router.back()}>
-        <BackBtn />
+        <CancelBtn />
       </Pressable>
 
       <View style={styles.tabs}>

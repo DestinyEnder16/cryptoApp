@@ -1,15 +1,19 @@
 import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
 import { Text, TextInput, useWindowDimensions, View } from 'react-native';
 import { Colors } from '../constants/styles';
 import AltLoginView from './AltLoginView';
+import AuthMethod from './AuthMethod';
 import Btn from './Btn';
 import { AuthStyles } from './SignInView';
 
 function SignUpView() {
   const { width } = useWindowDimensions();
+
   return (
     <LinearGradient
       colors={[Colors.primaryBackgroundColor, Colors.secondaryBackgroundColor]}
+      style={{ flex: 1 }}
     >
       <View style={[AuthStyles.container, { width }]}>
         <Text style={AuthStyles.heading}>Sign Up</Text>
@@ -17,7 +21,15 @@ function SignUpView() {
 
         <View style={AuthStyles.formContainer}>
           <View style={AuthStyles.field}>
-            <Text style={AuthStyles.label}>Email</Text>
+            <View
+              style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+            >
+              <AuthMethod
+                label="Email"
+                instruction="Register with mobile"
+                onPress={() => router.navigate('/register')}
+              />
+            </View>
             <TextInput
               placeholder="Please enter your email"
               placeholderTextColor={Colors.ash}

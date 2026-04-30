@@ -29,7 +29,7 @@ export default function Index() {
   const onNext = () => {
     if (isLast) {
       // navigate into the app, e.g. router.replace('/home')
-      router.navigate('/(auth)');
+      router.navigate('/(auth)/auth');
       return;
     }
     listRef.current?.scrollToIndex({ index: index + 1, animated: true });

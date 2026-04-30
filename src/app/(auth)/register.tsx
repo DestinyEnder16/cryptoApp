@@ -3,11 +3,36 @@ import Btn from '@/src/components/Btn';
 import { AuthStyles } from '@/src/components/SignInView';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
+import { registerMobileSchema } from '@/src/schemas/basicFormSchema';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Controller, useForm } from 'react-hook-form';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import * as yup from 'yup';
 
 export default function RegisterScreen() {
   const insets = useSafeAreaInsets();
+
+  // IMPORTANT: Creating the form handler
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    mode: 'onBlur',
+    defaultValues: {
+      mobile: '',
+    },
+    resolver: yupResolver(registerMobileSchema),
+    // NOTE: Schema is imported
+  });
+
+  const onSubmit = (data: yup.InferType<typeof registerMobileSchema>) => {
+    console.log(data);
+    reset();
+  };
+
   return (
     <View style={[styles.container, { paddingTop: insets.top + 10 }]}>
       <BackHeader txt="Sign Up" marginBottom={30} />
@@ -24,17 +49,31 @@ export default function RegisterScreen() {
       <View style={AuthStyles.formContainer}>
         <View style={AuthStyles.field}>
           <Text style={AuthStyles.label}>Mobile Number</Text>
-          <TextInput
-            placeholder="Enter your mobile"
-            style={AuthStyles.inputField}
-            placeholderTextColor={Colors.ash}
-            inputMode="email"
+
+          <Controller
+            control={control}
+            name="mobile"
+            render={({ field: { onBlur, onChange, value } }) => (
+              <TextInput
+                placeholder="Enter your mobile"
+                style={AuthStyles.inputField}
+                placeholderTextColor={Colors.ash}
+                inputMode="email"
+                value={value}
+                onBlur={onBlur}
+                onChangeText={onChange}
+              />
+            )}
           />
+
+          {errors['mobile'] && (
+            <Text style={AuthStyles.errorMsg}>{errors['mobile'].message}</Text>
+          )}
         </View>
       </View>
 
       <View style={{ marginTop: 60 }}>
-        <Btn text="Send OTP" action={() => console.log('hey')} />
+        <Btn text="Send OTP" action={handleSubmit(onSubmit)} />
       </View>
     </View>
   );

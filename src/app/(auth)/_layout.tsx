@@ -17,6 +17,7 @@ export default function RootLayout() {
         <Stack.Screen name="auth" />
         <Stack.Screen name="register" />
         <Stack.Screen name="verification" />
+        <Stack.Screen name="success" />
       </Stack>
     </AuthModeProvider>
   );

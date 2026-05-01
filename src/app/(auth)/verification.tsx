@@ -5,6 +5,7 @@ import { AuthStyles } from '@/src/components/SignInView';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
 import { useAppSelector } from '@/src/store/hooks';
+import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -50,7 +51,7 @@ export default function Verification() {
       <View style={{ marginTop: 60 }}>
         <Btn
           text="Continue"
-          action={() => otp.length === 4 && console.log('hey')}
+          action={() => otp.length === 4 && router.navigate('/success')}
         />
       </View>
     </View>

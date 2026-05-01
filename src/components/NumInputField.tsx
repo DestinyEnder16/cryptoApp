@@ -18,6 +18,7 @@ export default function NumInputField({ num, marginTop, onFill }: InputProps) {
         focusColor={Colors.green}
         focusStickBlinkingDuration={1000}
         onFilled={(text) => onFill(text)}
+        onTextChange={(text) => onFill(text)}
         theme={{
           pinCodeContainerStyle: styles.inputField,
           placeholderTextStyle: { color: Colors.textMuted },

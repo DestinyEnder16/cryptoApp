@@ -1,5 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import {
@@ -61,6 +62,7 @@ function SignInView() {
   const onSubmit = (data: yup.InferType<typeof schema>) => {
     console.log(data);
     reset();
+    router.navigate('/verification');
   };
 
   return (

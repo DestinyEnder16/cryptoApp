@@ -33,6 +33,7 @@ function SignUpView() {
   const onSubmit = (data: yup.InferType<typeof signUpSchema>) => {
     console.log(data);
     reset();
+    router.navigate('/verification');
   };
 
   return (

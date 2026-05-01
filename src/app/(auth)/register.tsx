@@ -5,6 +5,7 @@ import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
 import { registerMobileSchema } from '@/src/schemas/basicFormSchema';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { router } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -31,6 +32,7 @@ export default function RegisterScreen() {
   const onSubmit = (data: yup.InferType<typeof registerMobileSchema>) => {
     console.log(data);
     reset();
+    router.navigate('/verification');
   };
 
   return (

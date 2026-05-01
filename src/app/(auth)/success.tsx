@@ -1,6 +1,7 @@
 import Btn from '@/src/components/Btn';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
+import { router } from 'expo-router';
 import { Image, ImageBackground, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -22,7 +23,7 @@ export default function SuccessScreen() {
           Your account has been successfully created!
         </Text>
 
-        <Btn text="Get started" action={() => console.log('hey')} />
+        <Btn text="Get started" action={() => router.navigate('/(tabs)')} />
       </View>
     </ImageBackground>
   );

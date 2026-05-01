@@ -6,6 +6,8 @@ import { Text, TextInput, useWindowDimensions, View } from 'react-native';
 import * as yup from 'yup';
 import { Colors } from '../constants/styles';
 import { signUpSchema } from '../schemas/basicFormSchema';
+import { useAppDispatch } from '../store/hooks';
+import { addUserEmail, addUserPassword } from '../store/slices/userSlice';
 import AltLoginView from './AltLoginView';
 import AuthMethod from './AuthMethod';
 import Btn from './Btn';
@@ -13,6 +15,7 @@ import { AuthStyles } from './SignInView';
 
 function SignUpView() {
   const { width } = useWindowDimensions();
+  const dispatch = useAppDispatch();
 
   // IMPORTANT: Creating the form handler
   const {
@@ -31,7 +34,8 @@ function SignUpView() {
   });
 
   const onSubmit = (data: yup.InferType<typeof signUpSchema>) => {
-    console.log(data);
+    dispatch(addUserEmail(data.email));
+    dispatch(addUserPassword(data.password));
     reset();
     router.navigate('/verification');
   };

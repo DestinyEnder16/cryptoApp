@@ -13,6 +13,12 @@ import {
 import * as yup from 'yup';
 import { Fonts } from '../constants/fonts';
 import { Colors } from '../constants/styles';
+import { useAppDispatch } from '../store/hooks';
+import {
+  addUserEmail,
+  addUserMobile,
+  addUserPassword,
+} from '../store/slices/userSlice';
 import AltLoginView from './AltLoginView';
 import AuthMethod from './AuthMethod';
 import Btn from './Btn';
@@ -22,6 +28,7 @@ type Mode = 'email' | 'mobile';
 function SignInView() {
   const { width } = useWindowDimensions();
   const [mode, setMode] = useState<Mode>('email');
+  const dispatch = useAppDispatch();
 
   const schema = yup.object({
     email:
@@ -60,7 +67,12 @@ function SignInView() {
     resolver: yupResolver(schema),
   });
   const onSubmit = (data: yup.InferType<typeof schema>) => {
-    console.log(data);
+    if (mode === 'email' && data.email) {
+      dispatch(addUserEmail(data.email));
+    } else if (mode === 'mobile' && data.mobile) {
+      dispatch(addUserMobile(data.mobile));
+    }
+    if (data.password) dispatch(addUserPassword(data.password));
     reset();
     router.navigate('/verification');
   };

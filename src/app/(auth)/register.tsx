@@ -4,6 +4,8 @@ import { AuthStyles } from '@/src/components/SignInView';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
 import { registerMobileSchema } from '@/src/schemas/basicFormSchema';
+import { useAppDispatch } from '@/src/store/hooks';
+import { addUserMobile } from '@/src/store/slices/userSlice';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { router } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
@@ -13,6 +15,7 @@ import * as yup from 'yup';
 
 export default function RegisterScreen() {
   const insets = useSafeAreaInsets();
+  const dispatch = useAppDispatch();
 
   // IMPORTANT: Creating the form handler
   const {
@@ -30,7 +33,7 @@ export default function RegisterScreen() {
   });
 
   const onSubmit = (data: yup.InferType<typeof registerMobileSchema>) => {
-    console.log(data);
+    dispatch(addUserMobile(data.mobile));
     reset();
     router.navigate('/verification');
   };

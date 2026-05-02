@@ -37,7 +37,7 @@ function SignUpView() {
     dispatch(addUserEmail(data.email));
     dispatch(addUserPassword(data.password));
     reset();
-    router.navigate('/verification');
+    router.navigate('/success');
   };
 
   return (

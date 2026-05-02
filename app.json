@@ -33,6 +33,12 @@
         {
           "backgroundColor": "#1B232A"
         }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow tMinus1 to access your camera"
+        }
       ]
     ],
     "experiments": {

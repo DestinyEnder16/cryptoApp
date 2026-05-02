@@ -7,6 +7,7 @@ interface ActionBtnProps {
   text: string;
   icon?: ReactNode;
   style?: StyleProp<ViewStyle>;
+  action?: () => void;
 }
 
 export default function ActionBtn({
@@ -14,6 +15,7 @@ export default function ActionBtn({
   text,
   icon: Icon,
   style,
+  action,
 }: ActionBtnProps) {
   return (
     <Pressable
@@ -23,12 +25,13 @@ export default function ActionBtn({
           borderRadius: 16,
           flexDirection: 'row',
           alignItems: 'center',
-          paddingVertical: 10,
+          paddingVertical: 15,
           justifyContent: 'center',
           gap: 10,
         },
         style,
       ]}
+      onPress={action}
     >
       {Icon}
       <Text

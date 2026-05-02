@@ -15,7 +15,11 @@ export default function TabLayout() {
     <>
       <Tabs
         screenOptions={{
-          tabBarActiveTintColor: '#C1C7CD',
+          tabBarActiveTintColor: Colors.green,
+          tabBarLabelStyle: {
+            color: Colors.textMuted,
+          },
+          tabBarInactiveTintColor: Colors.ash,
           headerShown: false,
           animation: 'shift',
           tabBarStyle: {
@@ -45,7 +49,7 @@ export default function TabLayout() {
             title: 'Home',
             tabBarIcon: ({ color }) => (
               // <FontAwesome size={28} name="home" color={color} />
-              <HomeIcon />
+              <HomeIcon color={color} />
             ),
           }}
         />
@@ -55,7 +59,7 @@ export default function TabLayout() {
             title: 'Markets',
             tabBarIcon: ({ color }) => (
               // <FontAwesome size={28} name="cog" color={color} />
-              <MarketIcon />
+              <MarketIcon color={color} />
             ),
           }}
         />
@@ -65,7 +69,7 @@ export default function TabLayout() {
             title: 'Trades',
             tabBarIcon: ({ color }) => (
               // <FontAwesome size={28} name="cog" color={color} />
-              <TradeIcon />
+              <TradeIcon color={color} />
             ),
           }}
         />
@@ -75,7 +79,7 @@ export default function TabLayout() {
             title: 'Activity',
             tabBarIcon: ({ color }) => (
               // <FontAwesome size={28} name="cog" color={color} />
-              <ActivityIcon />
+              <ActivityIcon color={color} />
             ),
           }}
         />
@@ -85,7 +89,7 @@ export default function TabLayout() {
             title: 'Wallets',
             tabBarIcon: ({ color }) => (
               // <FontAwesome size={28} name="cog" color={color} />
-              <WalletIcon />
+              <WalletIcon color={color} />
             ),
           }}
         />

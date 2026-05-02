@@ -74,7 +74,7 @@ function SignInView() {
     }
     if (data.password) dispatch(addUserPassword(data.password));
     reset();
-    router.navigate('/verification');
+    router.navigate('/(tabs)');
   };
 
   return (

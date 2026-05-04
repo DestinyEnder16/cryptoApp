@@ -1,8 +1,13 @@
 import { Fonts } from '@/src/constants/fonts';
 import { AwaitingCamera, CameraIcon, QrcodeIcon } from '@/src/constants/images';
 import { Colors } from '@/src/constants/styles';
-import { CameraType, CameraView, useCameraPermissions } from 'expo-camera';
-import { useState } from 'react';
+import {
+  BarcodeScanningResult,
+  CameraType,
+  CameraView,
+  useCameraPermissions,
+} from 'expo-camera';
+import { useRef, useState } from 'react';
 import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import ActionBtn from './ActionBtn';
 
@@ -10,11 +15,26 @@ type Mode = 'show' | 'scan';
 
 type ComponentProps = {
   onPress: React.Dispatch<React.SetStateAction<Mode>>;
+  onResult?: (data: string, reset: () => void) => void;
 };
 
-export default function ScanQrCode({ onPress }: ComponentProps) {
+export default function ScanQrCode({ onPress, onResult }: ComponentProps) {
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
+  const [scanned, setScanned] = useState(false);
+  const lockRef = useRef(false);
+
+  const reset = () => {
+    lockRef.current = false;
+    setScanned(false);
+  };
+
+  const onBarcodeScanned = ({ data }: BarcodeScanningResult) => {
+    if (lockRef.current) return;
+    lockRef.current = true;
+    setScanned(true);
+    onResult?.(data, reset);
+  };
 
   const onRequestCamera = async () => {
     if (permission?.canAskAgain === false) {
@@ -59,7 +79,7 @@ export default function ScanQrCode({ onPress }: ComponentProps) {
           <CameraView
             facing={facing}
             style={styles.camera}
-            onBarcodeScanned={() => console.log('scanned')}
+            onBarcodeScanned={scanned ? undefined : onBarcodeScanned}
             barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
           />
         )}

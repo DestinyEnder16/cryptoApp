@@ -3,7 +3,7 @@ import ScreenHeader from '@/src/components/ScreenHeader';
 import ShowQrCode from '@/src/components/ShowQrCode';
 import { Colors } from '@/src/constants/styles';
 import { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type Mode = 'show' | 'scan';
@@ -13,12 +13,18 @@ export default function Wallets() {
 
   const [mode, setMode] = useState<Mode>('scan');
 
+  const handleScanResult = (data: string, reset: () => void) => {
+    Alert.alert('QR Code scanned', data, [
+      { text: 'OK', onPress: reset },
+    ]);
+  };
+
   return (
     <View style={[styles.container, { paddingTop: insets.top + 10 }]}>
       <ScreenHeader variant="market" />
 
       {mode === 'scan' ? (
-        <ScanQrCode onPress={setMode} />
+        <ScanQrCode onPress={setMode} onResult={handleScanResult} />
       ) : (
         <ShowQrCode action={setMode} />
       )}

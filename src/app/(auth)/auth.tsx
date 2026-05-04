@@ -1,8 +1,8 @@
-import SignInView from '@/src/components/SignInView';
-import SignUpView from '@/src/components/SignUpView';
-import SwitchSignMode from '@/src/components/SwitchSignMode';
-import { Colors } from '@/src/constants/styles';
-import { useRef, useState } from 'react';
+import SignInView from "@/src/components/SignInView";
+import SignUpView from "@/src/components/SignUpView";
+import SwitchSignMode from "@/src/components/SwitchSignMode";
+import { Colors } from "@/src/constants/styles";
+import { useRef, useState } from "react";
 import {
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -10,7 +10,7 @@ import {
   StyleSheet,
   useWindowDimensions,
   View,
-} from 'react-native';
+} from "react-native";
 
 export default function AuthIndex() {
   const { width } = useWindowDimensions();
@@ -36,8 +36,9 @@ export default function AuthIndex() {
         pagingEnabled
         showsHorizontalScrollIndicator={false}
         onMomentumScrollEnd={onMomentumScrollEnd}
-        decelerationRate={'fast'}
+        decelerationRate={"fast"}
       >
+        {/*PROBLEM: Handle animations -make smoother */}
         <SignInView />
         <SignUpView />
       </ScrollView>

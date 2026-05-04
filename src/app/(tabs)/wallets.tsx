@@ -17,7 +17,11 @@ export default function Wallets() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <ScreenHeader variant="market" />
 
-      {mode === 'scan' ? <ScanQrCode onPress={setMode} /> : <ShowQrCode />}
+      {mode === 'scan' ? (
+        <ScanQrCode onPress={setMode} />
+      ) : (
+        <ShowQrCode action={setMode} />
+      )}
     </View>
   );
 }

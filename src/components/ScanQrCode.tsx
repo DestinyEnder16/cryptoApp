@@ -4,8 +4,10 @@ import { Colors } from '@/src/constants/styles';
 import { StyleSheet, Text, View } from 'react-native';
 import ActionBtn from './ActionBtn';
 
+type Mode = 'show' | 'scan';
+
 type ComponentProps = {
-  onPress: React.Dispatch<React.SetStateAction<any>>;
+  onPress: React.Dispatch<React.SetStateAction<Mode>>;
 };
 
 export default function ScanQrCode({ onPress }: ComponentProps) {

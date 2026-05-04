@@ -1,11 +1,25 @@
+import * as Clipboard from 'expo-clipboard';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import { Fonts } from '../constants/fonts';
-import { ClipboardIcon } from '../constants/images';
+import { CameraIcon, ClipboardIcon } from '../constants/images';
 import { Colors } from '../constants/styles';
+import ActionBtn from './ActionBtn';
 import CurrencyHeader from './CurrencyHeader';
 
-export default function ShowQrCode() {
+type Mode = 'show' | 'scan';
+
+type ComponentProps = {
+  action: React.Dispatch<React.SetStateAction<Mode>>;
+};
+
+export default function ShowQrCode({ action }: ComponentProps) {
+  const address = 'n2e5dirgMNYdQskfiP5zj39VYemXareK4C';
+
+  const copyToClipboard = async () => {
+    await Clipboard.setStringAsync(address);
+  };
+
   return (
     <View style={styles.container}>
       <CurrencyHeader amount={400000} baseCurrency="usd" />
@@ -23,18 +37,18 @@ export default function ShowQrCode() {
         <QRCode value="https://www.google.com" size={250} />
       </View>
 
-      <View style={{ flex: 1, width: '100%', paddingHorizontal: 20 }}>
+      <View style={{ width: '100%', paddingHorizontal: 20, gap: 20 }}>
         <View style={styles.addressBlock}>
           <Text style={styles.info}>ADDRESS</Text>
 
           <View style={styles.inputRow}>
             <TextInput
               style={styles.txtInput}
-              value="n2e5dirgMNYdQskfiP5zj39VYemXareK4C"
+              value={address}
               editable={false}
             />
 
-            <Pressable style={styles.copyBtn}>
+            <Pressable style={styles.copyBtn} onPress={copyToClipboard}>
               <ClipboardIcon />
             </Pressable>
           </View>
@@ -44,6 +58,13 @@ export default function ShowQrCode() {
           Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
           dolore
         </Text>
+
+        <ActionBtn
+          text="Scan QR code"
+          action={() => action('scan')}
+          styles={{ backgroundColor: 'transparent', txtColor: Colors.green }}
+          icon={<CameraIcon />}
+        />
       </View>
     </View>
   );
@@ -68,7 +89,6 @@ const styles = StyleSheet.create({
   addressBlock: {
     marginTop: 25,
     width: '100%',
-    marginBottom: 30,
   },
   inputRow: {
     flexDirection: 'row',
@@ -97,5 +117,6 @@ const styles = StyleSheet.create({
     color: Colors.ash,
     fontFamily: Fonts.regular,
     textAlign: 'center',
+    lineHeight: 24,
   },
 });

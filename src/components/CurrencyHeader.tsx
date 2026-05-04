@@ -19,10 +19,10 @@ export default function CurrencyHeader({
 
   return (
     <LinearGradient
-      colors={[Colors.green, Colors.primaryBackgroundColor]}
+      colors={['#5ed5a716', Colors.primaryBackgroundColor]}
       start={{ x: 0.5, y: 1 }}
       end={{ x: 0.5, y: 0 }}
-      locations={[0, 0.12]}
+      locations={[0, 0.4]}
       style={{ width: '100%', overflow: 'hidden' }}
     >
       <View style={styles.container}>

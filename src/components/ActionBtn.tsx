@@ -28,6 +28,11 @@ export default function ActionBtn({
           paddingVertical: 15,
           justifyContent: 'center',
           gap: 10,
+          borderWidth: 1,
+          borderColor:
+            styles.backgroundColor !== 'transparent'
+              ? styles.backgroundColor
+              : styles.txtColor,
         },
         style,
       ]}

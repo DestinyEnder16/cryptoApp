@@ -1,4 +1,5 @@
 import ActivityIcon from '@/assets/images/activity-icon.svg';
+import AwaitingCamera from '@/assets/images/awaiting_camera.svg';
 import BackBtn from '@/assets/images/back-btn.svg';
 import CameraIcon from '@/assets/images/camera.svg';
 import CancelBtn from '@/assets/images/cancel-btn.svg';
@@ -20,6 +21,7 @@ import WalletIcon from '@/assets/images/wallet.svg';
 
 export {
   ActivityIcon,
+  AwaitingCamera,
   BackBtn,
   CameraIcon,
   CancelBtn,

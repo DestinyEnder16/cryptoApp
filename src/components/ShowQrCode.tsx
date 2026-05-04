@@ -22,7 +22,7 @@ export default function ShowQrCode({ action }: ComponentProps) {
 
   return (
     <View style={styles.container}>
-      <CurrencyHeader amount={400000} baseCurrency="usd" />
+      <CurrencyHeader amount={40000} baseCurrency="usd" />
 
       <Text style={styles.heading}>My QR Code</Text>
 

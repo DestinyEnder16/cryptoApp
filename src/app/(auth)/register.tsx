@@ -63,7 +63,7 @@ export default function RegisterScreen() {
                 placeholder="Enter your mobile"
                 style={AuthStyles.inputField}
                 placeholderTextColor={Colors.ash}
-                inputMode="email"
+                inputMode="numeric"
                 value={value}
                 onBlur={onBlur}
                 onChangeText={onChange}

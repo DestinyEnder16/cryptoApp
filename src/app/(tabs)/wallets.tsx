@@ -14,7 +14,7 @@ export default function Wallets() {
   const [mode, setMode] = useState<Mode>('scan');
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={[styles.container, { paddingTop: insets.top + 10 }]}>
       <ScreenHeader variant="market" />
 
       {mode === 'scan' ? (

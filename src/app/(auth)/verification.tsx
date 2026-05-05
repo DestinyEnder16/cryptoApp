@@ -7,6 +7,7 @@ import { Colors } from '@/src/constants/styles';
 import {
   useOtpMutation,
   useOtpVerificationMutation,
+  useSignupMutation,
 } from '@/src/store/api/Api';
 import { useAppSelector } from '@/src/store/hooks';
 import * as Notifications from 'expo-notifications';
@@ -34,6 +35,8 @@ export default function Verification() {
   const insets = useSafeAreaInsets();
   const mobile = useAppSelector((state) => state.user.mobile);
   const email = useAppSelector((state) => state.user.email);
+  const name = useAppSelector((state) => state.user.name);
+  const password = useAppSelector((state) => state.user.password);
 
   const [timer, setTimer] = useState(30);
   const [otp, setOtp] = useState('');
@@ -42,6 +45,8 @@ export default function Verification() {
     verifyOtp,
     { error: verificationError, isLoading: pendingVerification },
   ] = useOtpVerificationMutation();
+  const [signup, { error: signUpError, isLoading: signingUp }] =
+    useSignupMutation();
 
   useEffect(() => {
     (async () => {
@@ -73,9 +78,17 @@ export default function Verification() {
   async function verify() {
     try {
       const result = await verifyOtp({ email, code: otp }).unwrap();
-      if (result.verified) router.navigate('/success');
+      if (!result.verified) return;
+
+      await signup({
+        email,
+        fullName: name,
+        password,
+        phone: mobile,
+      }).unwrap();
+
+      router.navigate('/success');
     } catch (e) {
-      // wrong code, expired, network, etc.
       console.log(e);
     }
   }
@@ -91,32 +104,46 @@ export default function Verification() {
         <Text style={styles.info}>{mobile}</Text>
       </View>
 
-      <View style={{ alignItems: 'center', gap: 20 }}>
-        {isLoading || pendingVerification ? (
-          <ActivityIndicator />
-        ) : (
-          <NumInputField num={6} marginTop={50} onFill={setOtp} />
-        )}
-
-        {verificationError && (
-          <Text style={AuthStyles.errorMsg}>Invalid or expired code</Text>
-        )}
-
-        <View style={{ alignItems: 'center', gap: 5 }}>
-          {timer > 0 ? (
-            <Text style={styles.desc}>Resend Code ({timer})</Text>
+      {signUpError ? (
+        <Text
+          style={[AuthStyles.errorMsg, { textAlign: 'center', marginTop: 15 }]}
+        >
+          A user with this email already exists.
+        </Text>
+      ) : (
+        <View style={{ alignItems: 'center', gap: 20 }}>
+          {isLoading || pendingVerification || signingUp ? (
+            <ActivityIndicator />
           ) : (
-            <Pressable onPress={() => setTimer(30)}>
-              <Text style={styles.info}>Resend Code</Text>
-            </Pressable>
+            <NumInputField num={6} marginTop={50} onFill={setOtp} />
           )}
-          <Text style={styles.info}>Resend Link</Text>
-        </View>
-      </View>
 
-      <View style={{ marginTop: 60 }}>
-        <Btn text="Continue" action={() => otp.length === 6 && verify()} />
-      </View>
+          {verificationError && (
+            <Text style={AuthStyles.errorMsg}>Invalid or expired code</Text>
+          )}
+
+          <View style={{ alignItems: 'center', gap: 5 }}>
+            {timer > 0 ? (
+              <Text style={styles.desc}>Resend Code ({timer})</Text>
+            ) : (
+              <Pressable onPress={() => setTimer(30)}>
+                <Text style={styles.info}>Resend Code</Text>
+              </Pressable>
+            )}
+            <Text style={styles.info}>Resend Link</Text>
+          </View>
+        </View>
+      )}
+
+      {signUpError ? (
+        <View style={{ marginTop: 60 }}>
+          <Btn text="Log In" action={() => router.replace('/(auth)/auth')} />
+        </View>
+      ) : (
+        <View style={{ marginTop: 60 }}>
+          <Btn text="Continue" action={() => otp.length === 6 && verify()} />
+        </View>
+      )}
     </View>
   );
 }

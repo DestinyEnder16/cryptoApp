@@ -13,7 +13,9 @@ import {
 import * as yup from 'yup';
 import { Fonts } from '../constants/fonts';
 import { Colors } from '../constants/styles';
+import { useLoginMutation } from '../store/api/Api';
 import { useAppDispatch } from '../store/hooks';
+import { setAuth } from '../store/slices/authSlice';
 import {
   addUserEmail,
   addUserMobile,
@@ -29,6 +31,7 @@ function SignInView() {
   const { width } = useWindowDimensions();
   const [mode, setMode] = useState<Mode>('email');
   const dispatch = useAppDispatch();
+  const [login, { isLoading, error, data }] = useLoginMutation();
 
   const schema = yup.object({
     email:
@@ -66,15 +69,27 @@ function SignInView() {
     },
     resolver: yupResolver(schema),
   });
-  const onSubmit = (data: yup.InferType<typeof schema>) => {
+  const onSubmit = async (data: yup.InferType<typeof schema>) => {
     if (mode === 'email' && data.email) {
       dispatch(addUserEmail(data.email));
     } else if (mode === 'mobile' && data.mobile) {
       dispatch(addUserMobile(data.mobile));
     }
     if (data.password) dispatch(addUserPassword(data.password));
-    reset();
-    router.navigate('/(tabs)');
+
+    try {
+      const result = await login({
+        email: data.email!,
+        password: data.password,
+      }).unwrap();
+
+      dispatch(setAuth(result));
+      reset();
+
+      router.navigate('/(tabs)');
+    } catch (error) {
+      console.log('error', error);
+    }
   };
 
   return (
@@ -113,13 +128,17 @@ function SignInView() {
                 <TextInput
                   placeholder={`Enter your ${mode}`}
                   placeholderTextColor={Colors.ash}
-                  style={AuthStyles.inputField}
+                  style={[
+                    AuthStyles.inputField,
+                    isLoading && { color: Colors.ash },
+                  ]}
                   keyboardType={
                     mode === 'email' ? 'email-address' : 'phone-pad'
                   }
                   onChangeText={onChange}
                   onBlur={onBlur}
                   value={value}
+                  editable={!isLoading}
                 />
               )}
             />
@@ -139,17 +158,27 @@ function SignInView() {
                 <TextInput
                   placeholder="Enter your password"
                   placeholderTextColor={Colors.ash}
-                  style={AuthStyles.inputField}
+                  style={[
+                    AuthStyles.inputField,
+                    isLoading && { color: Colors.ash },
+                  ]}
                   onChangeText={onChange}
                   onBlur={onBlur}
                   value={value}
                   secureTextEntry
+                  editable={!isLoading}
                 />
               )}
             />
 
             {errors.password && (
               <Text style={AuthStyles.errorMsg}>{errors.password.message}</Text>
+            )}
+
+            {error && (
+              <Text style={AuthStyles.errorMsg}>
+                Email or password is incorrect
+              </Text>
             )}
 
             <Text style={{ color: Colors.green, fontFamily: Fonts.regular }}>

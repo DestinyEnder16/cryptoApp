@@ -9,7 +9,6 @@ import { signUpSchema } from '../schemas/basicFormSchema';
 import { useAppDispatch } from '../store/hooks';
 import { addUserEmail, addUserPassword } from '../store/slices/userSlice';
 import AltLoginView from './AltLoginView';
-import AuthMethod from './AuthMethod';
 import Btn from './Btn';
 import { AuthStyles } from './SignInView';
 
@@ -28,6 +27,7 @@ function SignUpView() {
     defaultValues: {
       email: '',
       password: '',
+      name: '',
     },
     resolver: yupResolver(signUpSchema),
     // NOTE: Schema is imported
@@ -37,7 +37,7 @@ function SignUpView() {
     dispatch(addUserEmail(data.email));
     dispatch(addUserPassword(data.password));
     reset();
-    router.navigate('/success');
+    router.navigate('/register');
   };
 
   return (
@@ -51,15 +51,27 @@ function SignUpView() {
 
         <View style={AuthStyles.formContainer}>
           <View style={AuthStyles.field}>
-            <View
-              style={{ flexDirection: 'row', justifyContent: 'space-between' }}
-            >
-              <AuthMethod
-                label="Email"
-                instruction="Register with mobile"
-                onPress={() => router.navigate('/register')}
-              />
-            </View>
+            <Text style={AuthStyles.label}>Full Name</Text>
+
+            <Controller
+              name="name"
+              control={control}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  placeholder="Please enter your name"
+                  placeholderTextColor={Colors.ash}
+                  style={AuthStyles.inputField}
+                  keyboardType="default"
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  value={value}
+                />
+              )}
+            />
+          </View>
+
+          <View style={AuthStyles.field}>
+            <Text style={AuthStyles.label}>Email address</Text>
 
             {/* IMPORTANT: Linking the input to the RHF */}
             <Controller

@@ -17,9 +17,12 @@ const mobileRule = yup
   .required('Enter a mobile number')
   .matches(/^\+?\d{7,15}$/, 'Enter a valid mobile number');
 
+const nameRule = yup.string().required('Enter a name').min(3);
+
 export const signUpSchema = yup.object({
   email: emailRule,
   password: passwordRule,
+  name: nameRule,
 });
 
 export const registerMobileSchema = yup.object({

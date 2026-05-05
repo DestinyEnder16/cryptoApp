@@ -4,7 +4,10 @@ import NumInputField from '@/src/components/NumInputField';
 import { AuthStyles } from '@/src/components/SignInView';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
-import { useOtpMutation } from '@/src/store/api/Api';
+import {
+  useOtpMutation,
+  useOtpVerificationMutation,
+} from '@/src/store/api/Api';
 import { useAppSelector } from '@/src/store/hooks';
 import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
@@ -20,7 +23,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-    shouldPlaySound: false,
+    shouldPlaySound: true,
     shouldSetBadge: false,
     shouldShowBanner: true,
     shouldShowList: true,
@@ -34,7 +37,11 @@ export default function Verification() {
 
   const [timer, setTimer] = useState(30);
   const [otp, setOtp] = useState('');
-  const [getOtp, { error, isLoading, data }] = useOtpMutation();
+  const [getOtp, { error, isLoading }] = useOtpMutation();
+  const [
+    verifyOtp,
+    { error: verificationError, isLoading: pendingVerification },
+  ] = useOtpVerificationMutation();
 
   useEffect(() => {
     (async () => {
@@ -63,6 +70,16 @@ export default function Verification() {
     return () => clearTimeout(id);
   }, [timer]);
 
+  async function verify() {
+    try {
+      const result = await verifyOtp({ email, code: otp }).unwrap();
+      if (result.verified) router.navigate('/success');
+    } catch (e) {
+      // wrong code, expired, network, etc.
+      console.log(e);
+    }
+  }
+
   return (
     <View style={[styles.container, { paddingTop: insets.top + 10 }]}>
       <BackHeader txt="Verification" marginBottom={40} />
@@ -75,10 +92,14 @@ export default function Verification() {
       </View>
 
       <View style={{ alignItems: 'center', gap: 20 }}>
-        {isLoading ? (
+        {isLoading || pendingVerification ? (
           <ActivityIndicator />
         ) : (
           <NumInputField num={6} marginTop={50} onFill={setOtp} />
+        )}
+
+        {verificationError && (
+          <Text style={AuthStyles.errorMsg}>Invalid or expired code</Text>
         )}
 
         <View style={{ alignItems: 'center', gap: 5 }}>
@@ -94,10 +115,7 @@ export default function Verification() {
       </View>
 
       <View style={{ marginTop: 60 }}>
-        <Btn
-          text="Continue"
-          action={() => otp.length === 4 && router.navigate('/success')}
-        />
+        <Btn text="Continue" action={() => otp.length === 6 && verify()} />
       </View>
     </View>
   );

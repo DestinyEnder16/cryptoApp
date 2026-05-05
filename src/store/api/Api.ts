@@ -1,15 +1,16 @@
 import type {
+  AuthOtp,
   AuthPayload,
   AuthResponse,
   LoginRequest,
+  OtpRequest,
   OtpResponse,
+  OtpVerificationPayload,
+  OtpVerificationRequest,
+  OtpVerificationResponse,
   RegisterRequest,
 } from '@/src/types/auth/types';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-
-interface OtpRequest {
-  email: string;
-}
 
 export const cryptoApi = createApi({
   reducerPath: 'cryptoApi',
@@ -33,7 +34,7 @@ export const cryptoApi = createApi({
       transformResponse: (response: AuthResponse) => response.data,
     }),
 
-    otp: build.mutation<OtpResponse['data'], OtpRequest>({
+    otp: build.mutation<AuthOtp, OtpRequest>({
       query: (body) => ({
         url: 'auth/otp/request',
         method: 'POST',
@@ -41,8 +42,24 @@ export const cryptoApi = createApi({
       }),
       transformResponse: (response: OtpResponse) => response.data,
     }),
+
+    otpVerification: build.mutation<
+      OtpVerificationPayload,
+      OtpVerificationRequest
+    >({
+      query: (body) => ({
+        url: 'auth/otp/verify',
+        method: 'POST',
+        body,
+      }),
+      transformResponse: (response: OtpVerificationResponse) => response.data,
+    }),
   }),
 });
 
-export const { useLoginMutation, useSignupMutation, useOtpMutation } =
-  cryptoApi;
+export const {
+  useLoginMutation,
+  useSignupMutation,
+  useOtpMutation,
+  useOtpVerificationMutation,
+} = cryptoApi;

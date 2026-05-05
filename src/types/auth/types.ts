@@ -39,6 +39,10 @@ export interface AuthResponse {
   data: AuthPayload;
 }
 
+export interface OtpRequest {
+  email: string;
+}
+
 export interface AuthOtp {
   message: string;
   demoCode: string;
@@ -47,4 +51,17 @@ export interface AuthOtp {
 
 export interface OtpResponse {
   data: AuthOtp;
+}
+
+export interface OtpVerificationRequest {
+  email: string;
+  code: string;
+}
+
+export interface OtpVerificationPayload {
+  verified: boolean;
+}
+
+export interface OtpVerificationResponse {
+  data: OtpVerificationPayload;
 }

@@ -27,7 +27,9 @@ export default function Wallets() {
         backgroundColor: Colors.primaryBackgroundColor,
       }}
     >
-      <ScreenHeader variant="market" />
+      <View style={{ paddingBottom: 10 }}>
+        <ScreenHeader variant="profile" />
+      </View>
       <ScrollView
         style={styles.container}
         contentContainerStyle={[

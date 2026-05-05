@@ -4,12 +4,14 @@ type UserState = {
   email: string;
   mobile: string;
   password: string;
+  name: string;
 };
 
 const initialState: UserState = {
   email: '',
   mobile: '',
   password: '',
+  name: '',
 };
 
 const userSlice = createSlice({
@@ -25,9 +27,12 @@ const userSlice = createSlice({
     addUserMobile(state, action) {
       state.mobile = action.payload;
     },
+    addUserName(state, action) {
+      state.name = action.payload;
+    },
   },
 });
 
-export const { addUserEmail, addUserMobile, addUserPassword } =
+export const { addUserEmail, addUserMobile, addUserPassword, addUserName } =
   userSlice.actions;
 export default userSlice.reducer;

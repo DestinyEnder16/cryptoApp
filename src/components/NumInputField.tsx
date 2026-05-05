@@ -13,7 +13,7 @@ export default function NumInputField({ num, marginTop, onFill }: InputProps) {
   return (
     <View style={[styles.container, { marginTop }]}>
       <OtpInput
-        placeholder="****"
+        placeholder={'*'.repeat(num)}
         numberOfDigits={num}
         focusColor={Colors.green}
         focusStickBlinkingDuration={1000}
@@ -40,8 +40,8 @@ const styles = StyleSheet.create({
   },
   inputField: {
     borderRadius: 12,
-    width: 60,
-    height: 54,
+    width: 50,
+    height: 45,
     backgroundColor: '#161C22',
     borderWidth: 0,
   },

@@ -7,7 +7,11 @@ import * as yup from 'yup';
 import { Colors } from '../constants/styles';
 import { signUpSchema } from '../schemas/basicFormSchema';
 import { useAppDispatch } from '../store/hooks';
-import { addUserEmail, addUserPassword } from '../store/slices/userSlice';
+import {
+  addUserEmail,
+  addUserName,
+  addUserPassword,
+} from '../store/slices/userSlice';
 import AltLoginView from './AltLoginView';
 import Btn from './Btn';
 import { AuthStyles } from './SignInView';
@@ -36,6 +40,7 @@ function SignUpView() {
   const onSubmit = (data: yup.InferType<typeof signUpSchema>) => {
     dispatch(addUserEmail(data.email));
     dispatch(addUserPassword(data.password));
+    dispatch(addUserName(data.name));
     reset();
     router.navigate('/register');
   };
@@ -68,6 +73,10 @@ function SignUpView() {
                 />
               )}
             />
+
+            {errors['name'] && (
+              <Text style={AuthStyles.errorMsg}>{errors['name'].message}</Text>
+            )}
           </View>
 
           <View style={AuthStyles.field}>

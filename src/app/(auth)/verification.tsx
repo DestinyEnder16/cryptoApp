@@ -4,17 +4,47 @@ import NumInputField from '@/src/components/NumInputField';
 import { AuthStyles } from '@/src/components/SignInView';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
+import { useOtpMutation } from '@/src/store/api/Api';
 import { useAppSelector } from '@/src/store/hooks';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function Verification() {
   const insets = useSafeAreaInsets();
   const mobile = useAppSelector((state) => state.user.mobile);
+  const email = useAppSelector((state) => state.user.email);
+
   const [timer, setTimer] = useState(30);
   const [otp, setOtp] = useState('');
+  const [getOtp, { error, isLoading, data }] = useOtpMutation();
+
+  useEffect(
+    function () {
+      async function performOtpRequest() {
+        try {
+          const result = await getOtp({
+            email,
+          }).unwrap();
+
+          // NOTIFICATION HANDLING
+
+          console.log(result);
+        } catch (error) {
+          console.log('error', error);
+        }
+      }
+      performOtpRequest();
+    },
+    [getOtp, email]
+  );
 
   useEffect(() => {
     if (timer <= 0) return;
@@ -34,7 +64,11 @@ export default function Verification() {
       </View>
 
       <View style={{ alignItems: 'center', gap: 20 }}>
-        <NumInputField num={4} marginTop={50} onFill={setOtp} />
+        {isLoading ? (
+          <ActivityIndicator />
+        ) : (
+          <NumInputField num={6} marginTop={50} onFill={setOtp} />
+        )}
 
         <View style={{ alignItems: 'center', gap: 5 }}>
           {timer > 0 ? (

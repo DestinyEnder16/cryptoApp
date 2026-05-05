@@ -38,3 +38,13 @@ export interface AuthPayload {
 export interface AuthResponse {
   data: AuthPayload;
 }
+
+export interface AuthOtp {
+  message: string;
+  demoCode: string;
+  expiresInSeconds: number;
+}
+
+export interface OtpResponse {
+  data: AuthOtp;
+}

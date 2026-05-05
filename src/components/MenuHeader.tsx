@@ -5,6 +5,7 @@ import { Colors } from '@/src/constants/styles';
 import { useAppSelector } from '@/src/store/hooks';
 import * as Clipboard from 'expo-clipboard';
 import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 export default function MenuHeader() {
@@ -40,7 +41,10 @@ export default function MenuHeader() {
           </View>
         </View>
 
-        <Pressable style={styles.editBtn}>
+        <Pressable
+          style={styles.editBtn}
+          onPress={() => router.navigate('/profile')}
+        >
           <Text style={{ fontFamily: Fonts.regular }}>Edit Profile</Text>
         </Pressable>
       </View>

@@ -7,6 +7,7 @@ import {
   CameraView,
   useCameraPermissions,
 } from 'expo-camera';
+import { router } from 'expo-router';
 import { useRef, useState } from 'react';
 import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import ActionBtn from './ActionBtn';
@@ -93,6 +94,7 @@ export default function ScanQrCode({ onPress, onResult }: ComponentProps) {
           action={() => onPress('show')}
         />
         <ActionBtn
+          action={() => router.navigate('/(tabs)')}
           text="Cancel"
           styles={{ backgroundColor: Colors.ash, txtColor: Colors.text }}
         />

@@ -23,7 +23,7 @@ export default function SuccessScreen() {
           Your account has been successfully created!
         </Text>
 
-        <Btn text="Get started" action={() => router.navigate('/(tabs)')} />
+        <Btn text="Get started" action={() => router.navigate('/home')} />
       </View>
     </ImageBackground>
   );

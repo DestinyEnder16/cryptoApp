@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { router } from 'expo-router';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { homeIcons } from '../constants/data';
 import { Fonts } from '../constants/fonts';
 import { Colors } from '../constants/styles';
@@ -7,10 +8,16 @@ export default function HomeIconsView() {
   return (
     <View style={styles.container}>
       {homeIcons.map(({ icon: Icon, text }) => (
-        <View key={text} style={styles.item}>
+        <Pressable
+          key={text}
+          style={styles.item}
+          onPress={() => {
+            text === 'More' && router.navigate('/home/menu');
+          }}
+        >
           <Icon />
           <Text style={styles.label}>{text}</Text>
-        </View>
+        </Pressable>
       ))}
     </View>
   );

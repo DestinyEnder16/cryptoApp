@@ -86,7 +86,7 @@ function SignInView() {
       dispatch(setAuth(result));
       reset();
 
-      router.navigate('/(tabs)');
+      router.navigate('/home');
     } catch (error) {
       console.log('error', error);
     }

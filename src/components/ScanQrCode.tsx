@@ -94,7 +94,7 @@ export default function ScanQrCode({ onPress, onResult }: ComponentProps) {
           action={() => onPress('show')}
         />
         <ActionBtn
-          action={() => router.navigate('/(tabs)')}
+          action={() => router.navigate('/home')}
           text="Cancel"
           styles={{ backgroundColor: Colors.ash, txtColor: Colors.text }}
         />

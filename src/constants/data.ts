@@ -6,6 +6,15 @@ import {
   HomeLaunchPad,
   HomeLiguidSwap,
   HomeMargin,
+  HomeMenuConvert,
+  HomeMenuCryptoLoans,
+  HomeMenuEth,
+  HomeMenuOrder,
+  HomeMenuPay,
+  HomeMenuPool,
+  HomeMenuSpot,
+  HomeMenuStaking,
+  HomeMenuTransfer,
   HomeMore,
   HomeReferal,
   HomeSavings,
@@ -18,9 +27,14 @@ interface CarouselItem {
   img: number;
 }
 
-interface HomeIconItem {
+export interface HomeIconItem {
   icon: React.FC<SvgProps>;
   text: string;
+}
+
+export interface HomeMenuSection {
+  title: string;
+  items: HomeIconItem[];
 }
 
 export const homeIcons: HomeIconItem[] = [
@@ -32,6 +46,40 @@ export const homeIcons: HomeIconItem[] = [
   { icon: HomeSavings, text: 'Savings' },
   { icon: HomeLiguidSwap, text: 'Liguid Swap' },
   { icon: HomeMore, text: 'More' },
+];
+
+export const homeMenu: HomeMenuSection[] = [
+  {
+    title: 'Common',
+    items: [
+      { icon: HomeMenuTransfer, text: 'Transfer' },
+      { icon: HomeDeposit, text: 'Deposit' },
+      { icon: HomeMenuOrder, text: 'Orders' },
+      { icon: HomeReferal, text: 'Referral' },
+    ],
+  },
+  {
+    title: 'Trade',
+    items: [
+      { icon: HomeMenuConvert, text: 'Convert' },
+      { icon: HomeMenuSpot, text: 'Spot' },
+      { icon: HomeMargin, text: 'Margin' },
+      { icon: HomeGridTrading, text: 'Grid Trading' },
+      { icon: HomeLiguidSwap, text: 'Liquid Swap' },
+    ],
+  },
+  {
+    title: 'Finance',
+    items: [
+      { icon: HomeSavings, text: 'Savings' },
+      { icon: HomeMenuStaking, text: 'Staking' },
+      { icon: HomeMenuPay, text: 'Pay' },
+      { icon: HomeMenuCryptoLoans, text: 'Crypto Loans' },
+      { icon: HomeMenuPool, text: 'Pool' },
+      { icon: HomeMenuEth, text: 'ETH 2.0' },
+      { icon: HomeLaunchPad, text: 'Launchpad' },
+    ],
+  },
 ];
 
 export const carouselData: CarouselItem[] = [

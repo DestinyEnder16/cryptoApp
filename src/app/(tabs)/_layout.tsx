@@ -14,6 +14,7 @@ export default function TabLayout() {
   return (
     <>
       <Tabs
+        backBehavior="history"
         screenOptions={{
           tabBarActiveTintColor: Colors.green,
           tabBarLabelStyle: {
@@ -24,7 +25,7 @@ export default function TabLayout() {
           animation: 'shift',
           tabBarStyle: {
             position: 'absolute',
-            bottom: insets.bottom,
+            bottom: insets.bottom + 10,
             height: 76,
             backgroundColor: Colors.primaryBackgroundColor,
             borderRadius: 32,
@@ -44,53 +45,38 @@ export default function TabLayout() {
         }}
       >
         <Tabs.Screen
-          name="index"
+          name="home"
           options={{
             title: 'Home',
-            tabBarIcon: ({ color }) => (
-              // <FontAwesome size={28} name="home" color={color} />
-              <HomeIcon color={color} />
-            ),
+            tabBarIcon: ({ color }) => <HomeIcon color={color} />,
           }}
         />
         <Tabs.Screen
           name="markets"
           options={{
             title: 'Markets',
-            tabBarIcon: ({ color }) => (
-              // <FontAwesome size={28} name="cog" color={color} />
-              <MarketIcon color={color} />
-            ),
+            tabBarIcon: ({ color }) => <MarketIcon color={color} />,
           }}
         />
         <Tabs.Screen
           name="trades"
           options={{
             title: 'Trades',
-            tabBarIcon: ({ color }) => (
-              // <FontAwesome size={28} name="cog" color={color} />
-              <TradeIcon color={color} />
-            ),
+            tabBarIcon: ({ color }) => <TradeIcon color={color} />,
           }}
         />
         <Tabs.Screen
           name="activity"
           options={{
             title: 'Activity',
-            tabBarIcon: ({ color }) => (
-              // <FontAwesome size={28} name="cog" color={color} />
-              <ActivityIcon color={color} />
-            ),
+            tabBarIcon: ({ color }) => <ActivityIcon color={color} />,
           }}
         />
         <Tabs.Screen
           name="wallets"
           options={{
             title: 'Wallets',
-            tabBarIcon: ({ color }) => (
-              // <FontAwesome size={28} name="cog" color={color} />
-              <WalletIcon color={color} />
-            ),
+            tabBarIcon: ({ color }) => <WalletIcon color={color} />,
           }}
         />
       </Tabs>

@@ -1,26 +1,26 @@
-import BackHeader from '@/src/components/BackHeader';
-import Btn from '@/src/components/Btn';
-import NumInputField from '@/src/components/NumInputField';
-import { AuthStyles } from '@/src/components/SignInView';
-import { Fonts } from '@/src/constants/fonts';
-import { Colors } from '@/src/constants/styles';
+import BackHeader from "@/src/components/BackHeader";
+import Btn from "@/src/components/Btn";
+import NumInputField from "@/src/components/NumInputField";
+import { AuthStyles } from "@/src/components/SignInView";
+import { Fonts } from "@/src/constants/fonts";
+import { Colors } from "@/src/constants/styles";
 import {
   useOtpMutation,
   useOtpVerificationMutation,
   useSignupMutation,
-} from '@/src/store/api/Api';
-import { useAppSelector } from '@/src/store/hooks';
-import * as Notifications from 'expo-notifications';
-import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
+} from "@/src/store/api/Api";
+import { useAppSelector } from "@/src/store/hooks";
+import * as Notifications from "expo-notifications";
+import { router } from "expo-router";
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Pressable,
   StyleSheet,
   Text,
   View,
-} from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -39,8 +39,9 @@ export default function Verification() {
   const password = useAppSelector((state) => state.user.password);
 
   const [timer, setTimer] = useState(30);
-  const [otp, setOtp] = useState('');
+  const [otp, setOtp] = useState("");
   const [getOtp, { error, isLoading }] = useOtpMutation();
+  const [retryNum, setRetryNum] = useState(0);
   const [
     verifyOtp,
     { error: verificationError, isLoading: pendingVerification },
@@ -48,26 +49,30 @@ export default function Verification() {
   const [signup, { error: signUpError, isLoading: signingUp }] =
     useSignupMutation();
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const result = await getOtp({ email }).unwrap();
+  useEffect(
+    function () {
+      async function verify() {
+        try {
+          const result = await getOtp({ email }).unwrap();
 
-        const { status } = await Notifications.requestPermissionsAsync();
-        if (status !== 'granted') return;
+          const { status } = await Notifications.requestPermissionsAsync();
+          if (status !== "granted") return;
 
-        await Notifications.scheduleNotificationAsync({
-          content: {
-            title: 'Your verification code',
-            body: `Your code is ${result.demoCode}`,
-          },
-          trigger: null,
-        });
-      } catch (e) {
-        console.log('otp error', e);
+          await Notifications.scheduleNotificationAsync({
+            content: {
+              title: "Your verification code",
+              body: `Your code is ${result.demoCode}`,
+            },
+            trigger: null,
+          });
+        } catch (e) {
+          console.log("otp error", e);
+        }
       }
-    })();
-  }, [getOtp, email]);
+      verify();
+    },
+    [getOtp, email, retryNum],
+  );
 
   useEffect(() => {
     if (timer <= 0) return;
@@ -87,7 +92,7 @@ export default function Verification() {
         phone: mobile,
       }).unwrap();
 
-      router.navigate('/success');
+      router.navigate("/success");
     } catch (e) {
       console.log(e);
     }
@@ -106,12 +111,12 @@ export default function Verification() {
 
       {signUpError ? (
         <Text
-          style={[AuthStyles.errorMsg, { textAlign: 'center', marginTop: 15 }]}
+          style={[AuthStyles.errorMsg, { textAlign: "center", marginTop: 15 }]}
         >
           A user with this email already exists.
         </Text>
       ) : (
-        <View style={{ alignItems: 'center', gap: 20 }}>
+        <View style={{ alignItems: "center", gap: 20 }}>
           {isLoading || pendingVerification || signingUp ? (
             <ActivityIndicator />
           ) : (
@@ -122,22 +127,33 @@ export default function Verification() {
             <Text style={AuthStyles.errorMsg}>Invalid or expired code</Text>
           )}
 
-          <View style={{ alignItems: 'center', gap: 5 }}>
+          <View style={{ alignItems: "center", gap: 5 }}>
             {timer > 0 ? (
               <Text style={styles.desc}>Resend Code ({timer})</Text>
             ) : (
-              <Pressable onPress={() => setTimer(30)}>
+              <Pressable
+                onPress={() => {
+                  setTimer(30);
+                  setRetryNum((n) => n + 1);
+                }}
+              >
                 <Text style={styles.info}>Resend Code</Text>
               </Pressable>
             )}
             <Text style={styles.info}>Resend Link</Text>
+
+            {error && (
+              <Text style={AuthStyles.errorMsg}>
+                Error getting the OTP - retry.
+              </Text>
+            )}
           </View>
         </View>
       )}
 
       {signUpError ? (
         <View style={{ marginTop: 60 }}>
-          <Btn text="Log In" action={() => router.replace('/(auth)/auth')} />
+          <Btn text="Log In" action={() => router.replace("/(auth)/auth")} />
         </View>
       ) : (
         <View style={{ marginTop: 60 }}>

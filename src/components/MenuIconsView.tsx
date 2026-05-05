@@ -1,13 +1,20 @@
-import { homeMenu } from '@/src/constants/data';
-import { Fonts } from '@/src/constants/fonts';
-import { Colors } from '@/src/constants/styles';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { homeMenu } from "@/src/constants/data";
+import { Fonts } from "@/src/constants/fonts";
+import { Colors } from "@/src/constants/styles";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { FlatList, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function MenuIconsView() {
+  const insets = useSafeAreaInsets();
+
+  // getting the tab bar height
+  const tabBarHeight = useBottomTabBarHeight();
   return (
     <FlatList
       data={homeMenu}
-      contentContainerStyle={{ gap: 50 }}
+      contentContainerStyle={{ gap: 50, paddingBottom: tabBarHeight + 50 }}
+      showsVerticalScrollIndicator={false}
       keyExtractor={(item) => item.title}
       renderItem={({ item }) => (
         <View style={styles.field}>
@@ -38,14 +45,14 @@ const styles = StyleSheet.create({
     color: Colors.text,
   },
   iconField: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     rowGap: 50,
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
   },
   item: {
-    width: '25%',
-    alignItems: 'center',
+    width: "25%",
+    alignItems: "center",
     gap: 8,
   },
   field: {

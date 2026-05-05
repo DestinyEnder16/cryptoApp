@@ -1,22 +1,22 @@
-import ScanQrCode from '@/src/components/ScanQrCode';
-import ScreenHeader from '@/src/components/ScreenHeader';
-import ShowQrCode from '@/src/components/ShowQrCode';
-import { Colors } from '@/src/constants/styles';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import { useState } from 'react';
-import { Alert, ScrollView, StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import ScanQrCode from "@/src/components/ScanQrCode";
+import ScreenHeader from "@/src/components/ScreenHeader";
+import ShowQrCode from "@/src/components/ShowQrCode";
+import { Colors } from "@/src/constants/styles";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { useState } from "react";
+import { Alert, ScrollView, StyleSheet, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-type Mode = 'show' | 'scan';
+type Mode = "show" | "scan";
 
 export default function Wallets() {
   const insets = useSafeAreaInsets();
   const tabBarHeight = useBottomTabBarHeight();
 
-  const [mode, setMode] = useState<Mode>('scan');
+  const [mode, setMode] = useState<Mode>("scan");
 
   const handleScanResult = (data: string, reset: () => void) => {
-    Alert.alert('QR Code scanned', data, [{ text: 'OK', onPress: reset }]);
+    Alert.alert("QR Code scanned", data, [{ text: "OK", onPress: reset }]);
   };
 
   return (
@@ -40,7 +40,7 @@ export default function Wallets() {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        {mode === 'scan' ? (
+        {mode === "scan" ? (
           <ScanQrCode onPress={setMode} onResult={handleScanResult} />
         ) : (
           <ShowQrCode action={setMode} />

@@ -6,6 +6,7 @@ import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
 import { useOtpMutation } from '@/src/store/api/Api';
 import { useAppSelector } from '@/src/store/hooks';
+import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
@@ -17,6 +18,15 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+});
+
 export default function Verification() {
   const insets = useSafeAreaInsets();
   const mobile = useAppSelector((state) => state.user.mobile);
@@ -26,25 +36,26 @@ export default function Verification() {
   const [otp, setOtp] = useState('');
   const [getOtp, { error, isLoading, data }] = useOtpMutation();
 
-  useEffect(
-    function () {
-      async function performOtpRequest() {
-        try {
-          const result = await getOtp({
-            email,
-          }).unwrap();
+  useEffect(() => {
+    (async () => {
+      try {
+        const result = await getOtp({ email }).unwrap();
 
-          // NOTIFICATION HANDLING
+        const { status } = await Notifications.requestPermissionsAsync();
+        if (status !== 'granted') return;
 
-          console.log(result);
-        } catch (error) {
-          console.log('error', error);
-        }
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: 'Your verification code',
+            body: `Your code is ${result.demoCode}`,
+          },
+          trigger: null,
+        });
+      } catch (e) {
+        console.log('otp error', e);
       }
-      performOtpRequest();
-    },
-    [getOtp, email]
-  );
+    })();
+  }, [getOtp, email]);
 
   useEffect(() => {
     if (timer <= 0) return;

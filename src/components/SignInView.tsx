@@ -31,7 +31,7 @@ function SignInView() {
   const { width } = useWindowDimensions();
   const [mode, setMode] = useState<Mode>('email');
   const dispatch = useAppDispatch();
-  const [login, { isLoading, error, data }] = useLoginMutation();
+  const [login, { isLoading, error }] = useLoginMutation();
 
   const schema = yup.object({
     email:
@@ -188,7 +188,11 @@ function SignInView() {
         </View>
 
         <View style={{ marginTop: 40 }}>
-          <Btn text="Sign In" action={handleSubmit(onSubmit)} />
+          <Btn
+            text="Sign In"
+            action={handleSubmit(onSubmit)}
+            disabled={isLoading}
+          />
         </View>
 
         <AltLoginView />

@@ -9,4 +9,5 @@ export const Colors = {
   dark: '#171D22',
   grey: '#A7AFB7',
   error: '#F87171',
+  red: '#DD4B4B',
 };

@@ -12,12 +12,14 @@ type ChartProps = {
 };
 
 export default function LineChartView({ chartData, isNegative }: ChartProps) {
+  const color = isNegative ? Colors.red : Colors.green;
+
   return (
     <LineChartProvider data={chartData}>
-      <LineChart width={90} height={50} yGutter={42}>
+      <LineChart width={100} height={55}>
         <LineChart.Path
-          color={isNegative ? Colors.error : Colors.green}
-          width={1.5}
+          color={color}
+          width={2}
           pathProps={{ isTransitionEnabled: false }}
         />
       </LineChart>

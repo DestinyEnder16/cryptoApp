@@ -1,5 +1,6 @@
 import { Image } from 'expo-image';
-import { StyleSheet, View } from 'react-native';
+import { router } from 'expo-router';
+import { Pressable, StyleSheet, View } from 'react-native';
 import {
   CurrencyIcon,
   CustomizationIcon,
@@ -16,12 +17,14 @@ interface HeaderProps {
 export default function ScreenHeader({ variant }: HeaderProps) {
   return (
     <View style={[styles.rowContainer, { paddingHorizontal: 20 }]}>
-      <Image
-        source={require('@/assets/images/avatar.png')}
-        // contentFit="cover"
-        style={{ height: 36, width: 36 }}
-        transition={1000}
-      />
+      <Pressable onPress={() => router.navigate('/profile')}>
+        <Image
+          source={require('@/assets/images/avatar.png')}
+          // contentFit="cover"
+          style={{ height: 36, width: 36 }}
+          transition={1000}
+        />
+      </Pressable>
 
       <View style={[styles.rowContainer, { gap: 30 }]}>
         {/* <Text>icon</Text> */}

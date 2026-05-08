@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { Fonts } from '../constants/fonts';
 import { BtcCoin } from '../constants/images';
 import { Colors } from '../constants/styles';
 import { useFetchAssetDetailsQuery } from '../store/api/Api';
+import AssetDetailSkeleton from './AssetDetailsSkeleton';
 import LineChartView from './LineChartView';
 
 interface AssetProps {
@@ -11,8 +11,10 @@ interface AssetProps {
 }
 
 export default function AssetPriceView({ coin }: AssetProps) {
-  const { isLoading, data } = useFetchAssetDetailsQuery(coin);
-  const [loadedOnce, setLoadedOnce] = useState(1);
+  const { isLoading, data } = useFetchAssetDetailsQuery(coin, {
+    // SOLUTION: This variable tells RTK Query how often the data is to be re-fetched
+    pollingInterval: 10000,
+  });
 
   const chartData = data?.chart.map((point) => ({
     timestamp: new Date(point.time).getTime(),
@@ -20,7 +22,7 @@ export default function AssetPriceView({ coin }: AssetProps) {
   }));
 
   return isLoading ? (
-    <ActivityIndicator />
+    <AssetDetailSkeleton />
   ) : (
     <View
       style={[
@@ -50,10 +52,7 @@ export default function AssetPriceView({ coin }: AssetProps) {
       <View style={{ alignItems: 'flex-end' }}>
         <Text style={styles.info}>{data?.priceUsd}</Text>
         <Text
-          style={[
-            styles.price,
-            data?.change24h! < 0 && { color: Colors.error },
-          ]}
+          style={[styles.price, data?.change24h! < 0 && { color: Colors.red }]}
         >
           {data?.change24h}%
         </Text>
@@ -69,5 +68,6 @@ const styles = StyleSheet.create({
   info: { color: Colors.text, fontFamily: Fonts.bold },
   price: {
     color: Colors.green,
+    fontFamily: Fonts.medium,
   },
 });

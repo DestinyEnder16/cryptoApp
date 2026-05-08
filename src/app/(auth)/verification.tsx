@@ -9,7 +9,8 @@ import {
   useOtpVerificationMutation,
   useSignupMutation,
 } from "@/src/store/api/Api";
-import { useAppSelector } from "@/src/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/src/store/hooks";
+import { setAuth } from "@/src/store/slices/authSlice";
 import * as Notifications from "expo-notifications";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
@@ -48,6 +49,7 @@ export default function Verification() {
   ] = useOtpVerificationMutation();
   const [signup, { error: signUpError, isLoading: signingUp }] =
     useSignupMutation();
+  const dispatch = useAppDispatch();
 
   useEffect(
     function () {
@@ -85,12 +87,13 @@ export default function Verification() {
       const result = await verifyOtp({ email, code: otp }).unwrap();
       if (!result.verified) return;
 
-      await signup({
+      const user = await signup({
         email,
         fullName: name,
         password,
         phone: mobile,
       }).unwrap();
+      dispatch(setAuth(user));
 
       router.navigate("/success");
     } catch (e) {

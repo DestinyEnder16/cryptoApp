@@ -12,6 +12,36 @@ import type {
 } from '@/src/types/auth/types';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
+type CheckAssets = {
+  id: string;
+  symbol: string;
+  name: string;
+  network: string;
+  priceUsd: number;
+  change24h: number;
+  isActive: boolean;
+  minBuyUsd: number;
+  minSellUsd: number;
+  iconUrl: string;
+};
+
+type CheckAssetsResponse = {
+  data: CheckAssets[];
+};
+
+type ChartPoint = {
+  time: string;
+  priceUsd: number;
+};
+
+type AssetDetails = CheckAssets & {
+  chart: ChartPoint[];
+};
+
+type AssetDetailsResponse = {
+  data: AssetDetails;
+};
+
 export const cryptoApi = createApi({
   reducerPath: 'cryptoApi',
   baseQuery: fetchBaseQuery({ baseUrl: process.env.EXPO_PUBLIC_API_URL }),
@@ -55,7 +85,16 @@ export const cryptoApi = createApi({
       transformResponse: (response: OtpVerificationResponse) => response.data,
     }),
 
-    // fetchMarket
+    fetchSupportedAssets: build.query<string[], void>({
+      query: () => '/market/assets',
+      transformResponse: (response: CheckAssetsResponse) =>
+        response.data.map((asset) => asset.symbol),
+    }),
+
+    fetchAssetDetails: build.query<AssetDetails, string>({
+      query: (arg) => `/market/assets/${arg}`,
+      transformResponse: (response: AssetDetailsResponse) => response.data,
+    }),
   }),
 });
 
@@ -64,4 +103,6 @@ export const {
   useSignupMutation,
   useOtpMutation,
   useOtpVerificationMutation,
+  useFetchSupportedAssetsQuery,
+  useFetchAssetDetailsQuery,
 } = cryptoApi;

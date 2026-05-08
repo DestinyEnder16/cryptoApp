@@ -1,20 +1,20 @@
-import { yupResolver } from '@hookform/resolvers/yup';
-import { LinearGradient } from 'expo-linear-gradient';
-import { router } from 'expo-router';
-import { Controller, useForm } from 'react-hook-form';
-import { Text, TextInput, useWindowDimensions, View } from 'react-native';
-import * as yup from 'yup';
-import { Colors } from '../constants/styles';
-import { signUpSchema } from '../schemas/basicFormSchema';
-import { useAppDispatch } from '../store/hooks';
+import { yupResolver } from "@hookform/resolvers/yup";
+import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router";
+import { Controller, useForm } from "react-hook-form";
+import { Text, TextInput, useWindowDimensions, View } from "react-native";
+import * as yup from "yup";
+import { Colors } from "../constants/styles";
+import { signUpSchema } from "../schemas/basicFormSchema";
+import { useAppDispatch } from "../store/hooks";
 import {
   addUserEmail,
   addUserName,
   addUserPassword,
-} from '../store/slices/userSlice';
-import AltLoginView from './AltLoginView';
-import Btn from './Btn';
-import { AuthStyles } from './SignInView';
+} from "../store/slices/userSlice";
+import AltLoginView from "./AltLoginView";
+import Btn from "./Btn";
+import { AuthStyles } from "./SignInView";
 
 function SignUpView() {
   const { width } = useWindowDimensions();
@@ -27,11 +27,11 @@ function SignUpView() {
     reset,
     formState: { errors },
   } = useForm({
-    mode: 'onBlur',
+    mode: "onBlur",
     defaultValues: {
-      email: '',
-      password: '',
-      name: '',
+      email: "",
+      password: "",
+      name: "",
     },
     resolver: yupResolver(signUpSchema),
     // NOTE: Schema is imported
@@ -42,7 +42,7 @@ function SignUpView() {
     dispatch(addUserPassword(data.password));
     dispatch(addUserName(data.name));
     reset();
-    router.navigate('/register');
+    router.navigate("/register");
   };
 
   return (
@@ -74,8 +74,8 @@ function SignUpView() {
               )}
             />
 
-            {errors['name'] && (
-              <Text style={AuthStyles.errorMsg}>{errors['name'].message}</Text>
+            {errors["name"] && (
+              <Text style={AuthStyles.errorMsg}>{errors["name"].message}</Text>
             )}
           </View>
 
@@ -100,8 +100,8 @@ function SignUpView() {
             />
 
             {/* IMPORTANT: Show the error message */}
-            {errors['email'] && (
-              <Text style={AuthStyles.errorMsg}>{errors['email'].message}</Text>
+            {errors["email"] && (
+              <Text style={AuthStyles.errorMsg}>{errors["email"].message}</Text>
             )}
           </View>
 
@@ -115,7 +115,7 @@ function SignUpView() {
                   placeholder="Enter your password"
                   placeholderTextColor={Colors.ash}
                   style={AuthStyles.inputField}
-                  keyboardType="email-address"
+                  keyboardType="visible-password"
                   onChangeText={onChange}
                   onBlur={onBlur}
                   value={value}
@@ -123,9 +123,9 @@ function SignUpView() {
               )}
             />
             {/* IMPORTANT: Show the error message */}
-            {errors['password'] && (
+            {errors["password"] && (
               <Text style={AuthStyles.errorMsg}>
-                {errors['password'].message}
+                {errors["password"].message}
               </Text>
             )}
           </View>

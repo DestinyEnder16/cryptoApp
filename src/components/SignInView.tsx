@@ -165,7 +165,6 @@ function SignInView() {
                   onChangeText={onChange}
                   onBlur={onBlur}
                   value={value}
-                  secureTextEntry
                   editable={!isLoading}
                 />
               )}

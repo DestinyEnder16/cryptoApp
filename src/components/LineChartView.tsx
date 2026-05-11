@@ -1,4 +1,5 @@
-import { LineChart, LineChartProvider } from 'react-native-wagmi-charts';
+import { View } from 'react-native';
+import { LineChart } from 'react-native-wagmi-charts';
 import { Colors } from '../constants/styles';
 
 type ChartData = {
@@ -11,18 +12,30 @@ type ChartProps = {
   isNegative: boolean;
 };
 
+const CHART_WIDTH = 130;
+const CHART_HEIGHT = 70;
+
 export default function LineChartView({ chartData, isNegative }: ChartProps) {
   const color = isNegative ? Colors.red : Colors.green;
 
   return (
-    <LineChartProvider data={chartData}>
-      <LineChart width={100} height={55}>
-        <LineChart.Path
-          color={color}
-          width={2}
-          pathProps={{ isTransitionEnabled: false }}
-        />
-      </LineChart>
-    </LineChartProvider>
+    <View
+      style={{
+        width: CHART_WIDTH,
+        height: CHART_HEIGHT,
+      }}
+    >
+      <LineChart.Provider data={chartData}>
+        <LineChart width={CHART_WIDTH} height={CHART_HEIGHT} yGutter={6}>
+          <LineChart.Path
+            color={color}
+            width={2.5}
+            pathProps={{ isTransitionEnabled: false }}
+          >
+            <LineChart.Gradient />
+          </LineChart.Path>
+        </LineChart>
+      </LineChart.Provider>
+    </View>
   );
 }

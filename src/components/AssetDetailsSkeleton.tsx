@@ -85,8 +85,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.grey,
   },
   chart: {
-    width: 80,
-    height: 30,
+    width: 130,
+    height: 70,
     borderRadius: 4,
     backgroundColor: Colors.grey,
   },

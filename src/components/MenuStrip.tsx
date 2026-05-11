@@ -4,8 +4,8 @@ import { MarketFilters } from '../app/(tabs)/markets';
 import { Colors } from '../constants/styles';
 
 interface StripProps {
-  activeField: string;
-  setActiveField: React.Dispatch<MarketFilters>;
+  activeField: number;
+  setActiveField: (id: number) => void;
 }
 
 export default function MenuStrip({ activeField, setActiveField }: StripProps) {
@@ -13,8 +13,12 @@ export default function MenuStrip({ activeField, setActiveField }: StripProps) {
   return (
     <View style={styles.row}>
       {filters.map((el, index) => (
-        <Pressable key={index} onPress={() => setActiveField(el)}>
-          <Text style={[styles.txt, activeField === el && styles.activeTxt]}>
+        <Pressable
+          key={index}
+          onPress={() => setActiveField(index)}
+          style={[styles.field, activeField === index && styles.activeField]}
+        >
+          <Text style={[styles.txt, activeField === index && styles.activeTxt]}>
             {el}
           </Text>
         </Pressable>
@@ -28,12 +32,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: Colors.secondaryBackgroundColor,
     justifyContent: 'space-between',
-    paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 12,
+    paddingVertical: 5,
+  },
+  field: {
+    paddingVertical: 15,
+    paddingHorizontal: 20,
   },
   txt: {
     color: Colors.textMuted,
+  },
+  activeField: {
+    backgroundColor: Colors.primaryBackgroundColor,
+
+    borderRadius: 12,
   },
   activeTxt: {
     color: Colors.text,

@@ -17,7 +17,7 @@ interface HeaderProps {
 export default function ScreenHeader({ variant }: HeaderProps) {
   return (
     <View style={[styles.rowContainer, { paddingHorizontal: 20 }]}>
-      <Pressable onPress={() => router.navigate('/profile')}>
+      <Pressable onPress={() => router.navigate('/settings')}>
         <Image
           source={require('@/assets/images/avatar.png')}
           // contentFit="cover"
@@ -32,7 +32,9 @@ export default function ScreenHeader({ variant }: HeaderProps) {
           <>
             <SearchIcon />
             <ScanIcon />
-            <NotifIcon />
+            <Pressable onPress={() => router.navigate('/home/notifications')}>
+              <NotifIcon />
+            </Pressable>
           </>
         ) : (
           <>
@@ -50,6 +52,6 @@ const styles = StyleSheet.create({
   rowContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-end',
+    alignItems: 'center',
   },
 });

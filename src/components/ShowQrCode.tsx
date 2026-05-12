@@ -1,23 +1,25 @@
-import * as Clipboard from 'expo-clipboard';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import QRCode from 'react-native-qrcode-svg';
-import { Fonts } from '../constants/fonts';
-import { CameraIcon, ClipboardIcon } from '../constants/images';
-import { Colors } from '../constants/styles';
-import ActionBtn from './ActionBtn';
-import CurrencyHeader from './CurrencyHeader';
+import * as Clipboard from "expo-clipboard";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import QRCode from "react-native-qrcode-svg";
+import { Fonts } from "../constants/fonts";
+import { CameraIcon, ClipboardIcon } from "../constants/images";
+import { Colors } from "../constants/styles";
+import ActionBtn from "./ActionBtn";
+import CurrencyHeader from "./CurrencyHeader";
+import { useAppSelector } from "../store/hooks";
 
-type Mode = 'show' | 'scan';
+type Mode = "show" | "scan";
 
 type ComponentProps = {
   action: React.Dispatch<React.SetStateAction<Mode>>;
 };
 
 export default function ShowQrCode({ action }: ComponentProps) {
-  const address = 'n2e5dirgMNYdQskfiP5zj39VYemXareK4C';
+  const user = useAppSelector((state) => state.auth.user);
+  const address = user?.id;
 
   const copyToClipboard = async () => {
-    await Clipboard.setStringAsync(address);
+    await Clipboard.setStringAsync(address!);
   };
 
   return (
@@ -29,7 +31,7 @@ export default function ShowQrCode({ action }: ComponentProps) {
       <View
         style={{
           backgroundColor: Colors.text,
-          alignItems: 'center',
+          alignItems: "center",
           padding: 30,
           borderRadius: 12,
         }}
@@ -37,7 +39,7 @@ export default function ShowQrCode({ action }: ComponentProps) {
         <QRCode value="https://www.google.com" size={250} />
       </View>
 
-      <View style={{ width: '100%', paddingHorizontal: 20, gap: 20 }}>
+      <View style={{ width: "100%", paddingHorizontal: 20, gap: 20 }}>
         <View style={styles.addressBlock}>
           <Text style={styles.info}>ADDRESS</Text>
 
@@ -61,8 +63,8 @@ export default function ShowQrCode({ action }: ComponentProps) {
 
         <ActionBtn
           text="Scan QR code"
-          action={() => action('scan')}
-          styles={{ backgroundColor: 'transparent', txtColor: Colors.green }}
+          action={() => action("scan")}
+          styles={{ backgroundColor: "transparent", txtColor: Colors.green }}
           icon={<CameraIcon />}
         />
       </View>
@@ -72,7 +74,7 @@ export default function ShowQrCode({ action }: ComponentProps) {
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   heading: {
     fontFamily: Fonts.bold,
@@ -83,16 +85,16 @@ const styles = StyleSheet.create({
   info: {
     color: Colors.grey,
     fontFamily: Fonts.regular,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 10,
   },
   addressBlock: {
     marginTop: 25,
-    width: '100%',
+    width: "100%",
   },
   inputRow: {
-    flexDirection: 'row',
-    alignItems: 'stretch',
+    flexDirection: "row",
+    alignItems: "stretch",
   },
   txtInput: {
     flex: 1,
@@ -105,10 +107,10 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 12,
   },
   copyBtn: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     height: 33,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     borderTopRightRadius: 12,
     borderBottomRightRadius: 12,
     paddingHorizontal: 12,
@@ -116,7 +118,7 @@ const styles = StyleSheet.create({
   txt: {
     color: Colors.ash,
     fontFamily: Fonts.regular,
-    textAlign: 'center',
+    textAlign: "center",
     lineHeight: 24,
   },
 });

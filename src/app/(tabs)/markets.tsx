@@ -1,11 +1,14 @@
-import MarketConvertView from '@/src/components/MarketConvertView';
-import MarketFiatView from '@/src/components/MarketFiatView';
-import MarketMarginView from '@/src/components/MarketMarginView';
-import MarketSpotView from '@/src/components/MarketSpotView';
-import MenuStrip from '@/src/components/MenuStrip';
-import ScreenHeader from '@/src/components/ScreenHeader';
-import { Colors } from '@/src/constants/styles';
-import { useEffect, useRef, useState } from 'react';
+import ActionBtn from "@/src/components/ActionBtn";
+import MarketConvertView from "@/src/components/MarketConvertView";
+import MarketFiatView from "@/src/components/MarketFiatView";
+import MarketMarginView from "@/src/components/MarketMarginView";
+import MarketSpotView from "@/src/components/MarketSpotView";
+import MenuStrip from "@/src/components/MenuStrip";
+import ScreenHeader from "@/src/components/ScreenHeader";
+import { AddBtn, FavoriteIcon } from "@/src/constants/images";
+import { Colors } from "@/src/constants/styles";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { useEffect, useRef, useState } from "react";
 import {
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -13,14 +16,15 @@ import {
   StyleSheet,
   useWindowDimensions,
   View,
-} from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-export type MarketFilters = 'Convert' | 'Fiat' | 'Spot' | 'Margin';
+export type MarketFilters = "Convert" | "Fiat" | "Spot" | "Margin";
 
 export default function Markets() {
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
+  const tabBarHeight = useBottomTabBarHeight();
   const scrollRef = useRef<ScrollView>(null);
   const [activeField, setActiveField] = useState(1);
 
@@ -39,7 +43,12 @@ export default function Markets() {
   }, [width]);
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top + 10 }]}>
+    <View
+      style={[
+        styles.container,
+        { paddingTop: insets.top + 10, paddingBottom: tabBarHeight + 20 },
+      ]}
+    >
       <ScreenHeader variant="profile" />
 
       <View style={styles.marketView}>
@@ -52,13 +61,29 @@ export default function Markets() {
           showsHorizontalScrollIndicator={false}
           pagingEnabled
           onMomentumScrollEnd={onMomentumScrollEnd}
-          decelerationRate={'fast'}
+          decelerationRate={"fast"}
         >
           <MarketConvertView />
           <MarketSpotView />
           <MarketMarginView />
           <MarketFiatView />
         </ScrollView>
+      </View>
+
+      <View style={styles.footer}>
+        <ActionBtn
+          text="Add Favorite"
+          icon={<AddBtn />}
+          styles={{
+            backgroundColor: Colors.secondaryBackgroundColor,
+            txtColor: Colors.grey,
+          }}
+          style={{
+            borderStyle: "dashed",
+            borderWidth: 1,
+            borderColor: Colors.textMuted,
+          }}
+        />
       </View>
     </View>
   );
@@ -72,5 +97,9 @@ const styles = StyleSheet.create({
   marketView: {
     flex: 1,
     marginTop: 30,
+  },
+  footer: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
   },
 });

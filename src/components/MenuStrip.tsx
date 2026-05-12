@@ -1,7 +1,7 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { MarketFilters } from '../app/(tabs)/markets';
-import { Colors } from '../constants/styles';
+import { MarketFilters } from "../app/(tabs)/markets";
+import { Colors } from "../constants/styles";
 
 interface StripProps {
   activeField: number;
@@ -9,7 +9,7 @@ interface StripProps {
 }
 
 export default function MenuStrip({ activeField, setActiveField }: StripProps) {
-  const filters: MarketFilters[] = ['Convert', 'Spot', 'Margin', 'Fiat'];
+  const filters: MarketFilters[] = ["Convert", "Spot", "Margin", "Fiat"];
   return (
     <View style={styles.row}>
       {filters.map((el, index) => (
@@ -29,12 +29,13 @@ export default function MenuStrip({ activeField, setActiveField }: StripProps) {
 
 const styles = StyleSheet.create({
   row: {
-    flexDirection: 'row',
+    flexDirection: "row",
     backgroundColor: Colors.secondaryBackgroundColor,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     paddingHorizontal: 30,
     borderRadius: 12,
     paddingVertical: 5,
+    marginHorizontal: 15,
   },
   field: {
     paddingVertical: 15,

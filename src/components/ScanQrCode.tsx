@@ -23,26 +23,35 @@ export default function ScanQrCode({ onPress, onResult }: ComponentProps) {
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
+  const [active, setActive] = useState(false);
   const lockRef = useRef(false);
 
   const reset = () => {
     lockRef.current = false;
     setScanned(false);
+    setActive(false);
   };
 
   const onBarcodeScanned = ({ data }: BarcodeScanningResult) => {
     if (lockRef.current) return;
     lockRef.current = true;
     setScanned(true);
+    setActive(false);
     onResult?.(data, reset);
   };
 
-  const onRequestCamera = async () => {
-    if (permission?.canAskAgain === false) {
-      await Linking.openSettings();
-      return;
+  const onActivateCamera = async () => {
+    if (!permission?.granted) {
+      if (permission?.canAskAgain === false) {
+        await Linking.openSettings();
+        return;
+      }
+      const result = await requestPermission();
+      if (!result.granted) return;
     }
-    await requestPermission();
+    lockRef.current = false;
+    setScanned(false);
+    setActive(true);
   };
 
   return (
@@ -67,8 +76,8 @@ export default function ScanQrCode({ onPress, onResult }: ComponentProps) {
       </View>
 
       <View style={styles.cameraView}>
-        {!permission?.granted ? (
-          <Pressable onPress={onRequestCamera}>
+        {!active ? (
+          <Pressable onPress={onActivateCamera}>
             <AwaitingCamera />
             <Text style={styles.tapHint}>
               {permission?.canAskAgain === false

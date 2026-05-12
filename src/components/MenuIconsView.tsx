@@ -1,13 +1,10 @@
-import { homeMenu } from "@/src/constants/data";
-import { Fonts } from "@/src/constants/fonts";
-import { Colors } from "@/src/constants/styles";
-import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { FlatList, StyleSheet, Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { homeMenu } from '@/src/constants/data';
+import { Fonts } from '@/src/constants/fonts';
+import { Colors } from '@/src/constants/styles';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 export default function MenuIconsView() {
-  const insets = useSafeAreaInsets();
-
   // getting the tab bar height
   const tabBarHeight = useBottomTabBarHeight();
   return (
@@ -45,14 +42,14 @@ const styles = StyleSheet.create({
     color: Colors.text,
   },
   iconField: {
-    flexDirection: "row",
-    flexWrap: "wrap",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     rowGap: 50,
-    alignItems: "flex-end",
+    alignItems: 'flex-end',
   },
   item: {
-    width: "25%",
-    alignItems: "center",
+    width: '25%',
+    alignItems: 'center',
     gap: 8,
   },
   field: {

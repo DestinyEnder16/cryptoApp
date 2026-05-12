@@ -1,6 +1,10 @@
 import BackHeader from '@/src/components/BackHeader';
 import { Fonts } from '@/src/constants/fonts';
-import { ClipboardIcon, HomeMenuAvatar } from '@/src/constants/images';
+import {
+  ClipboardIcon,
+  HomeMenuAvatar,
+  ThreeDots,
+} from '@/src/constants/images';
 import { Colors } from '@/src/constants/styles';
 import { useAppSelector } from '@/src/store/hooks';
 import * as Clipboard from 'expo-clipboard';
@@ -24,7 +28,10 @@ export default function MenuHeader() {
       locations={[0, 0.4]}
       style={styles.gradient}
     >
-      <BackHeader txt="Menu" marginBottom={30} />
+      <View style={[styles.row, { alignItems: 'baseline' }]}>
+        <BackHeader txt="Menu" marginBottom={30} />
+        <ThreeDots />
+      </View>
 
       <View style={styles.row}>
         <View style={styles.profile}>

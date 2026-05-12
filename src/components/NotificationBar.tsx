@@ -3,14 +3,25 @@ import { Fonts } from '../constants/fonts';
 import { NotificationFilter } from '../constants/images';
 import { Colors } from '../constants/styles';
 
-export default function NotificationBar() {
+type BarProps = {
+  length: number;
+};
+
+export default function NotificationBar({ length }: BarProps) {
   return (
     <View style={styles.row}>
       <Text style={styles.txt}>Notifications</Text>
 
-      <Pressable>
-        <NotificationFilter />
-      </Pressable>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+        {length > 0 && (
+          <Pressable>
+            <Text style={{ color: Colors.ash }}>Mark All As Read</Text>
+          </Pressable>
+        )}
+        <Pressable>
+          <NotificationFilter />
+        </Pressable>
+      </View>
     </View>
   );
 }

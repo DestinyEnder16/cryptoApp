@@ -1,17 +1,24 @@
 import NotificationBar from '@/src/components/NotificationBar';
 import ScreenHeader from '@/src/components/ScreenHeader';
 import { Colors } from '@/src/constants/styles';
-import { StyleSheet, View } from 'react-native';
+import { useFetchNotificationsQuery } from '@/src/store/api/Api';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function Notifications() {
   const insets = useSafeAreaInsets();
-  return (
+  const { isLoading, data } = useFetchNotificationsQuery();
+  console.log(data);
+  isLoading && console.log('loading');
+
+  return isLoading ? (
+    <ActivityIndicator />
+  ) : (
     <View style={[styles.body, { paddingTop: insets.top + 10 }]}>
       <ScreenHeader variant="profile" />
 
       <View style={styles.container}>
-        <NotificationBar />
+        <NotificationBar length={Number(data?.meta.count)} />
       </View>
     </View>
   );

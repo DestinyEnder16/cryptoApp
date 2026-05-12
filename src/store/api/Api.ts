@@ -42,6 +42,23 @@ type AssetDetailsResponse = {
   data: AssetDetails;
 };
 
+type NotificationDetails = {
+  id: string;
+  userId: string;
+  title: string;
+  body: string;
+  type: string;
+  isRead: boolean;
+  createdAt: string;
+};
+
+type NotificationResponse = {
+  data: NotificationDetails;
+  meta: {
+    count: number;
+  };
+};
+
 export const cryptoApi = createApi({
   reducerPath: 'cryptoApi',
   baseQuery: fetchBaseQuery({ baseUrl: process.env.EXPO_PUBLIC_API_URL }),
@@ -95,6 +112,10 @@ export const cryptoApi = createApi({
       query: (arg) => `/market/assets/${arg}`,
       transformResponse: (response: AssetDetailsResponse) => response.data,
     }),
+
+    fetchNotifications: build.query<NotificationResponse, void>({
+      query: () => '/me/notifications',
+    }),
   }),
 });
 
@@ -105,4 +126,5 @@ export const {
   useOtpVerificationMutation,
   useFetchSupportedAssetsQuery,
   useFetchAssetDetailsQuery,
+  useFetchNotificationsQuery,
 } = cryptoApi;

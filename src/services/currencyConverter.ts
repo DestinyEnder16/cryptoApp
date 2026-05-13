@@ -4,7 +4,7 @@ const currencyConverter = (amount: number, from: string, to: string) => {
   if (from === to) return amount;
 
   const converted =
-    from === 'usd' && to === 'btc'
+    from.toLowerCase() === "usd" && to.toLowerCase() === "btc"
       ? amount * exchangeRate
       : amount / exchangeRate;
 

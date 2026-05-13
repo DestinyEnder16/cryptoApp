@@ -120,7 +120,21 @@ export default function Verification() {
         </Text>
       ) : (
         <View style={{ alignItems: "center", gap: 20 }}>
-          {isLoading || pendingVerification || signingUp ? (
+          {error ? (
+            <View style={{ alignItems: "center", gap: 10, marginTop: 50 }}>
+              <Text style={AuthStyles.errorMsg}>
+                Error getting the OTP - retry.
+              </Text>
+              <Pressable
+                onPress={() => {
+                  setTimer(30);
+                  setRetryNum((n) => n + 1);
+                }}
+              >
+                <Text style={styles.info}>Resend Code</Text>
+              </Pressable>
+            </View>
+          ) : isLoading || pendingVerification || signingUp ? (
             <ActivityIndicator />
           ) : (
             <NumInputField num={6} marginTop={50} onFill={setOtp} />
@@ -144,12 +158,6 @@ export default function Verification() {
               </Pressable>
             )}
             <Text style={styles.info}>Resend Link</Text>
-
-            {error && (
-              <Text style={AuthStyles.errorMsg}>
-                Error getting the OTP - retry.
-              </Text>
-            )}
           </View>
         </View>
       )}

@@ -1,16 +1,16 @@
-import BackHeader from '@/src/components/BackHeader';
-import { Fonts } from '@/src/constants/fonts';
+import BackHeader from "@/src/components/BackHeader";
+import { Fonts } from "@/src/constants/fonts";
 import {
   ClipboardIcon,
   HomeMenuAvatar,
   ThreeDots,
-} from '@/src/constants/images';
-import { Colors } from '@/src/constants/styles';
-import { useAppSelector } from '@/src/store/hooks';
-import * as Clipboard from 'expo-clipboard';
-import { LinearGradient } from 'expo-linear-gradient';
-import { router } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+} from "@/src/constants/images";
+import { Colors } from "@/src/constants/styles";
+import { useAppSelector } from "@/src/store/hooks";
+import * as Clipboard from "expo-clipboard";
+import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
 export default function MenuHeader() {
   const name = useAppSelector((state) => state.auth.user?.fullName);
@@ -22,13 +22,13 @@ export default function MenuHeader() {
 
   return (
     <LinearGradient
-      colors={['#5ed5a716', Colors.primaryBackgroundColor]}
+      colors={["#5ed5a716", Colors.primaryBackgroundColor]}
       start={{ x: 0.5, y: 1 }}
       end={{ x: 0.5, y: 0 }}
       locations={[0, 0.4]}
       style={styles.gradient}
     >
-      <View style={[styles.row, { alignItems: 'baseline' }]}>
+      <View style={[styles.row, { alignItems: "baseline" }]}>
         <BackHeader txt="Menu" marginBottom={30} />
         <ThreeDots />
       </View>
@@ -50,7 +50,7 @@ export default function MenuHeader() {
 
         <Pressable
           style={styles.editBtn}
-          onPress={() => router.navigate('/profile')}
+          onPress={() => router.navigate("/profile")}
         >
           <Text style={{ fontFamily: Fonts.regular }}>Edit Profile</Text>
         </Pressable>
@@ -61,18 +61,18 @@ export default function MenuHeader() {
 
 const styles = StyleSheet.create({
   gradient: {
-    width: '100%',
-    overflow: 'hidden',
+    width: "100%",
+    overflow: "hidden",
     paddingHorizontal: 20,
     paddingBottom: 20,
   },
   row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   profile: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 10,
   },
   name: {
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   idRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 10,
   },
   editBtn: {

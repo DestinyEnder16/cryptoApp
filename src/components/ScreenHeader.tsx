@@ -1,6 +1,6 @@
-import { Image } from 'expo-image';
-import { router } from 'expo-router';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Image } from "expo-image";
+import { router } from "expo-router";
+import { Pressable, StyleSheet, View } from "react-native";
 import {
   CurrencyIcon,
   CustomizationIcon,
@@ -8,18 +8,18 @@ import {
   NotifIcon,
   ScanIcon,
   SearchIcon,
-} from '../constants/images';
+} from "../constants/images";
 
 interface HeaderProps {
-  variant: 'profile' | 'market';
+  variant: "profile" | "market";
 }
 
 export default function ScreenHeader({ variant }: HeaderProps) {
   return (
     <View style={[styles.rowContainer, { paddingHorizontal: 20 }]}>
-      <Pressable onPress={() => router.navigate('/settings')}>
+      <Pressable onPress={() => router.navigate("/settings")}>
         <Image
-          source={require('@/assets/images/avatar.png')}
+          source={require("@/assets/images/avatar.png")}
           // contentFit="cover"
           style={{ height: 36, width: 36 }}
           transition={1000}
@@ -28,11 +28,15 @@ export default function ScreenHeader({ variant }: HeaderProps) {
 
       <View style={[styles.rowContainer, { gap: 30 }]}>
         {/* <Text>icon</Text> */}
-        {variant === 'profile' ? (
+        {variant === "profile" ? (
           <>
-            <SearchIcon />
-            <ScanIcon />
-            <Pressable onPress={() => router.navigate('/home/notifications')}>
+            <Pressable onPress={() => router.navigate("/wallet/wallet")}>
+              <SearchIcon />
+            </Pressable>
+            <Pressable onPress={() => router.navigate("/(tabs)/wallet")}>
+              <ScanIcon />
+            </Pressable>
+            <Pressable onPress={() => router.navigate("/home/notifications")}>
               <NotifIcon />
             </Pressable>
           </>
@@ -50,8 +54,8 @@ export default function ScreenHeader({ variant }: HeaderProps) {
 
 const styles = StyleSheet.create({
   rowContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
 });

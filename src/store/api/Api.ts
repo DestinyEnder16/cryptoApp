@@ -9,8 +9,8 @@ import type {
   OtpVerificationRequest,
   OtpVerificationResponse,
   RegisterRequest,
-} from '@/src/types/auth/types';
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+} from "@/src/types/auth/types";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 type CheckAssets = {
   id: string;
@@ -42,6 +42,10 @@ type AssetDetailsResponse = {
   data: AssetDetails;
 };
 
+type TrendingAssetResponse = {
+  data: CheckAssets[];
+};
+
 type NotificationDetails = {
   id: string;
   userId: string;
@@ -60,13 +64,13 @@ type NotificationResponse = {
 };
 
 export const cryptoApi = createApi({
-  reducerPath: 'cryptoApi',
+  reducerPath: "cryptoApi",
   baseQuery: fetchBaseQuery({ baseUrl: process.env.EXPO_PUBLIC_API_URL }),
   endpoints: (build) => ({
     login: build.mutation<AuthPayload, LoginRequest>({
       query: (credentials) => ({
-        url: 'auth/login',
-        method: 'POST',
+        url: "auth/login",
+        method: "POST",
         body: credentials,
       }),
       transformResponse: (response: AuthResponse) => response.data,
@@ -74,8 +78,8 @@ export const cryptoApi = createApi({
 
     signup: build.mutation<AuthPayload, RegisterRequest>({
       query: (credentials) => ({
-        url: 'auth/register',
-        method: 'POST',
+        url: "auth/register",
+        method: "POST",
         body: credentials,
       }),
       transformResponse: (response: AuthResponse) => response.data,
@@ -83,8 +87,8 @@ export const cryptoApi = createApi({
 
     otp: build.mutation<AuthOtp, OtpRequest>({
       query: (body) => ({
-        url: 'auth/otp/request',
-        method: 'POST',
+        url: "auth/otp/request",
+        method: "POST",
         body,
       }),
       transformResponse: (response: OtpResponse) => response.data,
@@ -95,15 +99,15 @@ export const cryptoApi = createApi({
       OtpVerificationRequest
     >({
       query: (body) => ({
-        url: 'auth/otp/verify',
-        method: 'POST',
+        url: "auth/otp/verify",
+        method: "POST",
         body,
       }),
       transformResponse: (response: OtpVerificationResponse) => response.data,
     }),
 
     fetchSupportedAssets: build.query<string[], void>({
-      query: () => '/market/assets',
+      query: () => "/market/assets",
       transformResponse: (response: CheckAssetsResponse) =>
         response.data.map((asset) => asset.symbol),
     }),
@@ -114,7 +118,12 @@ export const cryptoApi = createApi({
     }),
 
     fetchNotifications: build.query<NotificationResponse, void>({
-      query: () => '/me/notifications',
+      query: () => "/me/notifications",
+    }),
+
+    fetchTrendingAssets: build.query<CheckAssets[], void>({
+      query: () => "/market/trending",
+      transformResponse: (response: TrendingAssetResponse) => response.data,
     }),
   }),
 });
@@ -127,4 +136,5 @@ export const {
   useFetchSupportedAssetsQuery,
   useFetchAssetDetailsQuery,
   useFetchNotificationsQuery,
+  useFetchTrendingAssetsQuery,
 } = cryptoApi;

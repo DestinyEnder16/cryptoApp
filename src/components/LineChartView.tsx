@@ -32,7 +32,7 @@ export default function LineChartView({ chartData, isNegative }: ChartProps) {
             width={2.5}
             pathProps={{ isTransitionEnabled: false }}
           >
-            <LineChart.Gradient />
+            <LineChart.Gradient color={color} />
           </LineChart.Path>
         </LineChart>
       </LineChart.Provider>

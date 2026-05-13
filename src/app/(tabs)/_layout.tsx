@@ -4,10 +4,10 @@ import {
   MarketIcon,
   TradeIcon,
   WalletIcon,
-} from '@/src/constants/images';
-import { Colors } from '@/src/constants/styles';
-import { Tabs } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+} from "@/src/constants/images";
+import { Colors } from "@/src/constants/styles";
+import { Tabs } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
@@ -22,9 +22,9 @@ export default function TabLayout() {
           },
           tabBarInactiveTintColor: Colors.ash,
           headerShown: false,
-          animation: 'shift',
+          animation: "shift",
           tabBarStyle: {
-            position: 'absolute',
+            position: "absolute",
             bottom: insets.bottom + 10,
             height: 76,
             backgroundColor: Colors.primaryBackgroundColor,
@@ -47,35 +47,35 @@ export default function TabLayout() {
         <Tabs.Screen
           name="home"
           options={{
-            title: 'Home',
+            title: "Home",
             tabBarIcon: ({ color }) => <HomeIcon color={color} />,
           }}
         />
         <Tabs.Screen
           name="markets"
           options={{
-            title: 'Markets',
+            title: "Markets",
             tabBarIcon: ({ color }) => <MarketIcon color={color} />,
           }}
         />
         <Tabs.Screen
           name="trades"
           options={{
-            title: 'Trades',
+            title: "Trades",
             tabBarIcon: ({ color }) => <TradeIcon color={color} />,
           }}
         />
         <Tabs.Screen
           name="activity"
           options={{
-            title: 'Activity',
+            title: "Activity",
             tabBarIcon: ({ color }) => <ActivityIcon color={color} />,
           }}
         />
         <Tabs.Screen
-          name="wallets"
+          name="wallet"
           options={{
-            title: 'Wallets',
+            title: "Wallets",
             tabBarIcon: ({ color }) => <WalletIcon color={color} />,
           }}
         />

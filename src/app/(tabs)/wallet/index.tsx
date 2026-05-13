@@ -9,7 +9,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type Mode = "show" | "scan";
 
-export default function Wallets() {
+export default function Index() {
   const insets = useSafeAreaInsets();
   const tabBarHeight = useBottomTabBarHeight();
 

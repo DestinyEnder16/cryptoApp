@@ -13,8 +13,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 export default function Notifications() {
   const insets = useSafeAreaInsets();
   const { isLoading, data } = useFetchNotificationsQuery();
-  console.log(data);
-  isLoading && console.log("loading");
   const count = data?.meta.count;
 
   return isLoading ? (

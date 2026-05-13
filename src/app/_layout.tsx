@@ -32,7 +32,11 @@ export default function RootLayout() {
           },
           animation: 'slide_from_bottom',
         }}
-      />
+      >
+        <Stack.Screen name="(tabs)" options={{ animation: 'none' }} />
+        <Stack.Screen name="profile" options={{ animation: 'none' }} />
+        <Stack.Screen name="settings" options={{ animation: 'none' }} />
+      </Stack>
     </Provider>
   );
 }

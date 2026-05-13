@@ -1,48 +1,50 @@
 import { ImageBackground } from "expo-image";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useAppSelector } from "../store/hooks";
+import { selectUser } from "../store/slices/authSlice";
 import { currencyConverter } from "../services/currencyConverter";
 import { EyeSlash } from "../constants/images";
 import { Colors } from "../constants/styles";
 import { Fonts } from "../constants/fonts";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import ActionBtn from "./ActionBtn";
 
-export default function WalletHeader() {
-  const user = useAppSelector((state) => state.auth.user);
+const AMOUNT = 40059.83;
+
+function WalletHeader() {
+  const user = useAppSelector(selectUser);
   const currency = user?.settings.fiatCurrency;
-  const amount = 40059.83;
   const insets = useSafeAreaInsets();
 
   const [visible, setVisible] = useState(true);
 
+  const convertedAmount = useMemo(
+    () => (currency ? `$${currencyConverter(AMOUNT, "btc", currency)}` : "****"),
+    [currency],
+  );
+
+  const toggleVisibility = useCallback(() => setVisible((prev) => !prev), []);
+
   return (
     <ImageBackground
       source={require("@/assets/images/background.png")}
-      style={{
-        paddingTop: insets.top + 10,
-        paddingHorizontal: 15,
-        paddingBottom: 10,
-        gap: 50,
-      }}
+      style={[styles.bg, { paddingTop: insets.top + 10 }]}
     >
       <View style={styles.row}>
         <View>
           <Text style={styles.balance}>Current Balance</Text>
 
-          <Text style={styles.amount}>{visible ? amount : "****"}</Text>
+          <Text style={styles.amount}>{visible ? AMOUNT : "****"}</Text>
 
           <Text style={styles.convertedAmount}>
-            {visible
-              ? `$${currencyConverter(amount, "btc", currency!)}`
-              : "****"}
+            {visible ? convertedAmount : "****"}
           </Text>
         </View>
 
         <View>
-          <Pressable onPress={() => setVisible((prev) => !prev)} hitSlop={20}>
+          <Pressable onPress={toggleVisibility} hitSlop={20}>
             {visible ? (
               <Ionicons name="eye" size={24} color={Colors.grey} />
             ) : (
@@ -52,37 +54,45 @@ export default function WalletHeader() {
         </View>
       </View>
 
-      <View style={[styles.row, { gap: 5 }]}>
+      <View style={[styles.row, styles.actionRow]}>
         <ActionBtn
           text="Deposit"
-          styles={{
-            backgroundColor: Colors.green,
-            txtColor: Colors.dark,
-          }}
-          style={{ flex: 1 }}
+          styles={depositStyles}
+          style={styles.actionBtn}
         />
         <ActionBtn
           text="Withdraw"
-          styles={{
-            backgroundColor: Colors.secondaryBackgroundColor,
-            txtColor: Colors.grey,
-          }}
-          style={{ flex: 1 }}
+          styles={secondaryActionStyles}
+          style={styles.actionBtn}
         />
         <ActionBtn
           text="Transfer"
-          styles={{
-            backgroundColor: Colors.secondaryBackgroundColor,
-            txtColor: Colors.grey,
-          }}
-          style={{ flex: 1 }}
+          styles={secondaryActionStyles}
+          style={styles.actionBtn}
         />
       </View>
     </ImageBackground>
   );
 }
 
+const depositStyles = {
+  backgroundColor: Colors.green,
+  txtColor: Colors.dark,
+};
+
+const secondaryActionStyles = {
+  backgroundColor: Colors.secondaryBackgroundColor,
+  txtColor: Colors.grey,
+};
+
+export default memo(WalletHeader);
+
 const styles = StyleSheet.create({
+  bg: {
+    paddingHorizontal: 15,
+    paddingBottom: 10,
+    gap: 50,
+  },
   balance: {
     color: Colors.ash,
     marginBottom: 20,
@@ -100,4 +110,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
+  actionRow: { gap: 5 },
+  actionBtn: { flex: 1 },
 });

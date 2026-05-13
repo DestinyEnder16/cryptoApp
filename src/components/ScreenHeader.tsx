@@ -1,6 +1,7 @@
-import { Image } from "expo-image";
-import { router } from "expo-router";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Image } from 'expo-image';
+import { router } from 'expo-router';
+import { memo, useCallback } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
 import {
   CurrencyIcon,
   CustomizationIcon,
@@ -8,35 +9,45 @@ import {
   NotifIcon,
   ScanIcon,
   SearchIcon,
-} from "../constants/images";
+} from '../constants/images';
 
 interface HeaderProps {
-  variant: "profile" | "market";
+  variant: 'profile' | 'market';
 }
 
-export default function ScreenHeader({ variant }: HeaderProps) {
+const goToSettings = () => router.navigate('/settings');
+const goToWalletSearch = () => router.navigate('/wallet/main');
+const goToWallet = () => router.navigate('/(tabs)/wallet');
+const goToNotifications = () => router.navigate('/home/notifications');
+
+const AVATAR = require('@/assets/images/avatar.png');
+
+function ScreenHeader({ variant }: HeaderProps) {
+  const isProfile = variant === 'profile';
+  const onAvatarPress = useCallback(goToSettings, []);
+
   return (
-    <View style={[styles.rowContainer, { paddingHorizontal: 20 }]}>
-      <Pressable onPress={() => router.navigate("/settings")}>
+    <View style={[styles.rowContainer, styles.outer]}>
+      <Pressable onPress={onAvatarPress}>
         <Image
-          source={require("@/assets/images/avatar.png")}
-          // contentFit="cover"
-          style={{ height: 36, width: 36 }}
-          transition={1000}
+          source={AVATAR}
+          contentFit="cover"
+          style={styles.avatar}
+          transition={150}
+          cachePolicy="memory-disk"
         />
       </Pressable>
 
-      <View style={[styles.rowContainer, { gap: 30 }]}>
-        {/* <Text>icon</Text> */}
-        {variant === "profile" ? (
+      <View style={[styles.rowContainer, styles.icons]}>
+        {isProfile ? (
           <>
-            <Pressable onPress={() => router.navigate("/wallet/wallet")}>
+            <Pressable onPress={goToWalletSearch}>
               <SearchIcon />
             </Pressable>
-            <Pressable onPress={() => router.navigate("/(tabs)/wallet")}>
+            <Pressable onPress={goToWallet}>
               <ScanIcon />
             </Pressable>
-            <Pressable onPress={() => router.navigate("/home/notifications")}>
+            <Pressable onPress={goToNotifications}>
               <NotifIcon />
             </Pressable>
           </>
@@ -54,8 +65,13 @@ export default function ScreenHeader({ variant }: HeaderProps) {
 
 const styles = StyleSheet.create({
   rowContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
+  outer: { paddingHorizontal: 20 },
+  icons: { gap: 30 },
+  avatar: { height: 36, width: 36 },
 });
+
+export default memo(ScreenHeader);

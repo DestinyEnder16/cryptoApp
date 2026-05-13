@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Fonts } from '../constants/fonts';
 import { BtcCoin } from '../constants/images';
@@ -10,51 +11,34 @@ interface AssetProps {
   coin: string;
 }
 
-export default function AssetPriceView({ coin }: AssetProps) {
+function AssetPriceView({ coin }: AssetProps) {
   const { isLoading, data } = useFetchAssetDetailsQuery(coin, {
-    // SOLUTION: This variable tells RTK Query how often the data is to be re-fetched
-    pollingInterval: 10000,
+    pollingInterval: 20000,
+    skipPollingIfUnfocused: true,
   });
 
-  const chartData = data?.chart.map((point) => ({
-    timestamp: new Date(point.time).getTime(),
-    value: point.priceUsd,
-  }));
+  if (isLoading || !data) {
+    return <AssetDetailSkeleton />;
+  }
 
-  return isLoading ? (
-    <AssetDetailSkeleton />
-  ) : (
-    <View
-      style={[
-        styles.row,
-        {
-          justifyContent: 'space-between',
-          paddingVertical: 15,
-          borderBottomWidth: 0.5,
-          borderBottomColor: Colors.ash,
-          alignItems: 'center',
-        },
-      ]}
-    >
-      <View style={[styles.row, { gap: 10 }]}>
+  const isNegative = data.change24h < 0;
+
+  return (
+    <View style={styles.container}>
+      <View style={[styles.row, styles.left]}>
         <BtcCoin />
-
-        <View style={{ gap: 5 }}>
-          <Text style={styles.info}>{data?.name}</Text>
-          <Text style={{ color: Colors.ash, fontFamily: Fonts.regular }}>
-            {coin}
-          </Text>
+        <View style={styles.nameCol}>
+          <Text style={styles.info}>{data.name}</Text>
+          <Text style={styles.coinSymbol}>{coin}</Text>
         </View>
       </View>
 
-      <LineChartView chartData={chartData!} isNegative={data?.change24h! < 0} />
+      <LineChartView chartData={data.chartData} isNegative={isNegative} />
 
-      <View style={{ alignItems: 'flex-end' }}>
-        <Text style={styles.info}>{data?.priceUsd}</Text>
-        <Text
-          style={[styles.price, data?.change24h! < 0 && { color: Colors.red }]}
-        >
-          {data?.change24h}%
+      <View style={styles.right}>
+        <Text style={styles.info}>{data.priceUsd}</Text>
+        <Text style={[styles.price, isNegative && styles.priceNegative]}>
+          {data.change24h}%
         </Text>
       </View>
     </View>
@@ -62,12 +46,25 @@ export default function AssetPriceView({ coin }: AssetProps) {
 }
 
 const styles = StyleSheet.create({
-  row: {
+  container: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 15,
+    borderBottomWidth: 0.5,
+    borderBottomColor: Colors.ash,
+    alignItems: 'center',
   },
+  row: { flexDirection: 'row' },
+  left: { gap: 10 },
+  right: { alignItems: 'flex-end' },
+  nameCol: { gap: 5 },
   info: { color: Colors.text, fontFamily: Fonts.bold },
+  coinSymbol: { color: Colors.ash, fontFamily: Fonts.regular },
   price: {
     color: Colors.green,
     fontFamily: Fonts.medium,
   },
+  priceNegative: { color: Colors.red },
 });
+
+export default memo(AssetPriceView);

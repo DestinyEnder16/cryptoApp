@@ -22,7 +22,7 @@ export default function TabLayout() {
           },
           tabBarInactiveTintColor: Colors.ash,
           headerShown: false,
-          animation: "shift",
+          animation: "none",
           tabBarStyle: {
             position: "absolute",
             bottom: insets.bottom + 10,

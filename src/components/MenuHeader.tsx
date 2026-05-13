@@ -1,34 +1,44 @@
-import BackHeader from "@/src/components/BackHeader";
-import { Fonts } from "@/src/constants/fonts";
+import BackHeader from '@/src/components/BackHeader';
+import { Fonts } from '@/src/constants/fonts';
 import {
   ClipboardIcon,
   HomeMenuAvatar,
   ThreeDots,
-} from "@/src/constants/images";
-import { Colors } from "@/src/constants/styles";
-import { useAppSelector } from "@/src/store/hooks";
-import * as Clipboard from "expo-clipboard";
-import { LinearGradient } from "expo-linear-gradient";
-import { router } from "expo-router";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+} from '@/src/constants/images';
+import { Colors } from '@/src/constants/styles';
+import { useAppSelector } from '@/src/store/hooks';
+import { selectUser } from '@/src/store/slices/authSlice';
+import * as Clipboard from 'expo-clipboard';
+import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
+import { memo, useCallback } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-export default function MenuHeader() {
-  const name = useAppSelector((state) => state.auth.user?.fullName);
-  const userId = useAppSelector((state) => state.auth.user?.id!);
+const GRADIENT_COLORS = ['#5ed5a716', Colors.primaryBackgroundColor] as const;
+const GRADIENT_START = { x: 0.5, y: 1 };
+const GRADIENT_END = { x: 0.5, y: 0 };
+const GRADIENT_LOCATIONS = [0, 0.4] as const;
 
-  const copyToClipboard = async () => {
+const goToProfile = () => router.navigate('/profile');
+
+function MenuHeader() {
+  const user = useAppSelector(selectUser);
+  const name = user?.fullName;
+  const userId = user?.id ?? '';
+
+  const copyToClipboard = useCallback(async () => {
     await Clipboard.setStringAsync(userId);
-  };
+  }, [userId]);
 
   return (
     <LinearGradient
-      colors={["#5ed5a716", Colors.primaryBackgroundColor]}
-      start={{ x: 0.5, y: 1 }}
-      end={{ x: 0.5, y: 0 }}
-      locations={[0, 0.4]}
+      colors={GRADIENT_COLORS}
+      start={GRADIENT_START}
+      end={GRADIENT_END}
+      locations={GRADIENT_LOCATIONS}
       style={styles.gradient}
     >
-      <View style={[styles.row, { alignItems: "baseline" }]}>
+      <View style={[styles.row, styles.topRow]}>
         <BackHeader txt="Menu" marginBottom={30} />
         <ThreeDots />
       </View>
@@ -36,10 +46,10 @@ export default function MenuHeader() {
       <View style={styles.row}>
         <View style={styles.profile}>
           <HomeMenuAvatar />
-          <View style={{ gap: 5 }}>
+          <View style={styles.nameCol}>
             <Text style={styles.name}>{name}</Text>
             <View style={styles.idRow}>
-              <Text style={{ color: Colors.ash }}>ID: {userId}</Text>
+              <Text style={styles.idTxt}>ID: {userId}</Text>
 
               <Pressable onPress={copyToClipboard}>
                 <ClipboardIcon />
@@ -48,40 +58,43 @@ export default function MenuHeader() {
           </View>
         </View>
 
-        <Pressable
-          style={styles.editBtn}
-          onPress={() => router.navigate("/profile")}
-        >
-          <Text style={{ fontFamily: Fonts.regular }}>Edit Profile</Text>
+        <Pressable style={styles.editBtn} onPress={goToProfile}>
+          <Text style={styles.editTxt}>Edit Profile</Text>
         </Pressable>
       </View>
     </LinearGradient>
   );
 }
 
+export default memo(MenuHeader);
+
 const styles = StyleSheet.create({
   gradient: {
-    width: "100%",
-    overflow: "hidden",
+    width: '100%',
+    overflow: 'hidden',
     paddingHorizontal: 20,
     paddingBottom: 20,
+    gap: 20,
   },
   row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
+  topRow: { alignItems: 'baseline' },
   profile: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 10,
   },
+  nameCol: { gap: 5 },
   name: {
     color: Colors.text,
     fontFamily: Fonts.bold,
     fontSize: 18,
   },
+  idTxt: { color: Colors.ash },
   idRow: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 10,
   },
   editBtn: {
@@ -90,4 +103,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 16,
   },
+  editTxt: { fontFamily: Fonts.regular },
 });

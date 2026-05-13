@@ -34,12 +34,18 @@ type ChartPoint = {
   priceUsd: number;
 };
 
+type ChartDatum = {
+  timestamp: number;
+  value: number;
+};
+
 type AssetDetails = CheckAssets & {
   chart: ChartPoint[];
+  chartData: ChartDatum[];
 };
 
 type AssetDetailsResponse = {
-  data: AssetDetails;
+  data: Omit<AssetDetails, "chartData">;
 };
 
 type TrendingAssetResponse = {
@@ -110,11 +116,19 @@ export const cryptoApi = createApi({
       query: () => "/market/assets",
       transformResponse: (response: CheckAssetsResponse) =>
         response.data.map((asset) => asset.symbol),
+      keepUnusedDataFor: 300,
     }),
 
     fetchAssetDetails: build.query<AssetDetails, string>({
       query: (arg) => `/market/assets/${arg}`,
-      transformResponse: (response: AssetDetailsResponse) => response.data,
+      transformResponse: (response: AssetDetailsResponse): AssetDetails => ({
+        ...response.data,
+        chartData: response.data.chart.map((point) => ({
+          timestamp: new Date(point.time).getTime(),
+          value: point.priceUsd,
+        })),
+      }),
+      keepUnusedDataFor: 60,
     }),
 
     fetchNotifications: build.query<NotificationResponse, void>({
@@ -124,6 +138,7 @@ export const cryptoApi = createApi({
     fetchTrendingAssets: build.query<CheckAssets[], void>({
       query: () => "/market/trending",
       transformResponse: (response: TrendingAssetResponse) => response.data,
+      keepUnusedDataFor: 60,
     }),
   }),
 });

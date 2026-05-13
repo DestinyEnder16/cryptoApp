@@ -6,32 +6,50 @@ import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 
 export default function Wallet() {
   const { data } = useFetchTrendingAssetsQuery(undefined, {
-    pollingInterval: 10000,
+    pollingInterval: 30000,
+    skipPollingIfUnfocused: true,
   });
   return (
     <View style={styles.container}>
       <WalletHeader />
-      <View style={{ paddingHorizontal: 15, marginTop: 20 }}>
+      <View style={styles.listWrapper}>
         <FlatList
           data={data}
-          keyExtractor={(item) => item.id}
+          keyExtractor={keyExtractor}
           ListEmptyComponent={<ActivityIndicator />}
-          renderItem={({ item }) => (
-            <TrendingAssetItem
-              name={item.name}
-              symbol={item.symbol}
-              priceUsd={item.priceUsd}
-            />
-          )}
+          renderItem={renderItem}
+          initialNumToRender={8}
+          maxToRenderPerBatch={6}
+          windowSize={5}
+          removeClippedSubviews
         />
       </View>
     </View>
   );
 }
 
+const keyExtractor = (item: { id: string }) => item.id;
+
+const renderItem = ({
+  item,
+}: {
+  item: { name: string; symbol: string; priceUsd: number };
+}) => (
+  <TrendingAssetItem
+    name={item.name}
+    symbol={item.symbol}
+    priceUsd={item.priceUsd}
+  />
+);
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.primaryBackgroundColor,
+  },
+  listWrapper: {
+    flex: 1,
+    paddingHorizontal: 15,
+    marginTop: 20,
   },
 });

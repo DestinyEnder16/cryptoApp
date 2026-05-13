@@ -13,45 +13,35 @@ interface MarketStripItemProps {
 
 function MarketStripItem({ coin }: MarketStripItemProps) {
   const { isLoading, data } = useFetchAssetDetailsQuery(coin, {
-    pollingInterval: 10000,
+    pollingInterval: 20000,
+    skipPollingIfUnfocused: true,
   });
 
-  if (isLoading) {
+  if (isLoading || !data) {
     return <MarketStripItemSkeleton />;
   }
 
-  const isPositive = data?.change24h! > 0;
-
-  const chartData = data?.chart.map((point) => ({
-    timestamp: new Date(point.time).getTime(),
-    value: point.priceUsd,
-  }));
+  const isPositive = data.change24h > 0;
 
   return (
     <View style={styles.container}>
-      <View style={[styles.row, { gap: 40 }]}>
+      <View style={[styles.row, styles.priceRow]}>
         <Text
-          style={[
-            isPositive ? { color: Colors.green } : { color: Colors.red },
-            styles.priceTxt,
-          ]}
+          style={[styles.priceTxt, isPositive ? styles.green : styles.red]}
         >
-          {data?.priceUsd}
+          {data.priceUsd}
         </Text>
         <HomeCoinBtc />
       </View>
 
-      <View style={[styles.row, { gap: 10 }]}>
-        <Text style={styles.symbolTxt}>{data?.symbol}</Text>
+      <View style={[styles.row, styles.symbolRow]}>
+        <Text style={styles.symbolTxt}>{data.symbol}</Text>
         <Text
-          style={[
-            isPositive ? { color: Colors.green } : { color: Colors.red },
-            styles.changeTxt,
-          ]}
-        >{`${data?.change24h}%`}</Text>
+          style={[styles.changeTxt, isPositive ? styles.green : styles.red]}
+        >{`${data.change24h}%`}</Text>
       </View>
 
-      <LineChartView chartData={chartData!} isNegative={!isPositive} />
+      <LineChartView chartData={data.chartData} isNegative={!isPositive} />
     </View>
   );
 }
@@ -74,6 +64,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  priceRow: { gap: 40 },
+  symbolRow: { gap: 10 },
   priceTxt: {
     fontFamily: Fonts.bold,
     fontSize: 16,
@@ -85,6 +77,8 @@ const styles = StyleSheet.create({
   changeTxt: {
     fontFamily: Fonts.regular,
   },
+  green: { color: Colors.green },
+  red: { color: Colors.red },
 });
 
 export default memo(MarketStripItem);

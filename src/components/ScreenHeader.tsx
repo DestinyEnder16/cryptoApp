@@ -1,7 +1,8 @@
-import { Image } from 'expo-image';
-import { router } from 'expo-router';
-import { memo, useCallback } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Image } from "expo-image";
+import { router } from "expo-router";
+import { memo, useCallback } from "react";
+import { Pressable, StyleSheet, View } from "react-native";
+import { Colors } from "../constants/styles";
 import {
   CurrencyIcon,
   CustomizationIcon,
@@ -9,21 +10,21 @@ import {
   NotifIcon,
   ScanIcon,
   SearchIcon,
-} from '../constants/images';
+} from "../constants/images";
 
 interface HeaderProps {
-  variant: 'profile' | 'market';
+  variant: "profile" | "market";
 }
 
-const goToSettings = () => router.navigate('/settings');
-const goToWalletSearch = () => router.navigate('/wallet/main');
-const goToWallet = () => router.navigate('/(tabs)/wallet');
-const goToNotifications = () => router.navigate('/home/notifications');
+const goToSettings = () => router.navigate("/settings");
+const goToWalletSearch = () => router.navigate("/wallet/main");
+const goToWallet = () => router.navigate("/(tabs)/wallet");
+const goToNotifications = () => router.navigate("/home/notifications");
 
-const AVATAR = require('@/assets/images/avatar.png');
+const AVATAR = require("@/assets/images/avatar.png");
 
 function ScreenHeader({ variant }: HeaderProps) {
-  const isProfile = variant === 'profile';
+  const isProfile = variant === "profile";
   const onAvatarPress = useCallback(goToSettings, []);
 
   return (
@@ -65,11 +66,20 @@ function ScreenHeader({ variant }: HeaderProps) {
 
 const styles = StyleSheet.create({
   rowContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
-  outer: { paddingHorizontal: 20 },
+  outer: {
+    paddingHorizontal: 20,
+    paddingBottom: 12,
+    backgroundColor: Colors.primaryBackgroundColor,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 6,
+    elevation: 4,
+  },
   icons: { gap: 30 },
   avatar: { height: 36, width: 36 },
 });

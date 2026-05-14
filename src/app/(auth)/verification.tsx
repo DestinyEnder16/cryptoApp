@@ -4,6 +4,7 @@ import NumInputField from "@/src/components/NumInputField";
 import { AuthStyles } from "@/src/components/SignInView";
 import { Fonts } from "@/src/constants/fonts";
 import { Colors } from "@/src/constants/styles";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   useOtpMutation,
   useOtpVerificationMutation,
@@ -87,14 +88,15 @@ export default function Verification() {
       const result = await verifyOtp({ email, code: otp }).unwrap();
       if (!result.verified) return;
 
-      const user = await signup({
+      const auth = await signup({
         email,
         fullName: name,
         password,
         phone: mobile,
       }).unwrap();
-      dispatch(setAuth(user));
-
+      dispatch(setAuth(auth));
+      console.log(auth.token);
+      await AsyncStorage.setItem("token", auth.token);
       router.navigate("/success");
     } catch (e) {
       console.log(e);

@@ -12,7 +12,10 @@ import {
 import { Colors } from "../constants/styles";
 import { Fonts } from "../constants/fonts";
 import { SvgProps } from "react-native-svg";
-import { useAppSelector } from "../store/hooks";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import ActionBtn from "../components/ActionBtn";
+import { logout, setToken } from "../store/slices/authSlice";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type SettingsConfig = {
   icon: React.FC<SvgProps>;
@@ -23,6 +26,7 @@ type SettingsConfig = {
 export default function Settings() {
   const insets = useSafeAreaInsets();
   const user = useAppSelector((state) => state.auth.user);
+  const dispatch = useAppDispatch();
   console.log(user?.settings);
   const settings: SettingsConfig[] = [
     {
@@ -52,6 +56,10 @@ export default function Settings() {
     },
   ];
 
+  async function handleLogout() {
+    await AsyncStorage.removeItem("token");
+    dispatch(logout());
+  }
   return (
     <View style={[{ paddingTop: insets.top + 10, paddingHorizontal: 10 }]}>
       <View style={{ paddingLeft: 20 }}>
@@ -101,6 +109,12 @@ export default function Settings() {
             </View>
           );
         })}
+
+        <ActionBtn
+          text="Logout"
+          styles={{ backgroundColor: Colors.red, txtColor: Colors.text }}
+          action={handleLogout}
+        />
       </View>
     </View>
   );

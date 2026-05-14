@@ -9,8 +9,11 @@ import type {
   OtpVerificationRequest,
   OtpVerificationResponse,
   RegisterRequest,
+  User,
+  UserResponse,
 } from "@/src/types/auth/types";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import type { RootState } from "@/src/store";
 
 type CheckAssets = {
   id: string;
@@ -71,7 +74,17 @@ type NotificationResponse = {
 
 export const cryptoApi = createApi({
   reducerPath: "cryptoApi",
-  baseQuery: fetchBaseQuery({ baseUrl: process.env.EXPO_PUBLIC_API_URL }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: process.env.EXPO_PUBLIC_API_URL,
+    prepareHeaders: (headers, { getState }) => {
+      const token = (getState() as RootState).auth.token;
+      if (token) {
+        headers.set("Authorization", `Bearer ${token}`);
+      }
+      return headers;
+    },
+  }),
+
   endpoints: (build) => ({
     login: build.mutation<AuthPayload, LoginRequest>({
       query: (credentials) => ({
@@ -80,6 +93,11 @@ export const cryptoApi = createApi({
         body: credentials,
       }),
       transformResponse: (response: AuthResponse) => response.data,
+    }),
+
+    fetchMe: build.query<User, void>({
+      query: () => "/me",
+      transformResponse: (response: UserResponse) => response.data,
     }),
 
     signup: build.mutation<AuthPayload, RegisterRequest>({
@@ -152,4 +170,5 @@ export const {
   useFetchAssetDetailsQuery,
   useFetchNotificationsQuery,
   useFetchTrendingAssetsQuery,
+  useFetchMeQuery,
 } = cryptoApi;

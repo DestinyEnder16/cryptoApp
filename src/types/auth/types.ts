@@ -30,6 +30,10 @@ export interface User {
   createdAt: string;
 }
 
+export interface UserResponse {
+  data: User;
+}
+
 export interface AuthPayload {
   user: User;
   token: string;

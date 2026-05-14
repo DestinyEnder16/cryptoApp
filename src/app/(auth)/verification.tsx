@@ -109,7 +109,7 @@ export default function Verification() {
 
       <View style={{ marginTop: 20, gap: 5 }}>
         <Text style={styles.desc}>Please type the code we sent to:</Text>
-        <Text style={styles.info}>{mobile}</Text>
+        <Text style={styles.info}>{email}</Text>
       </View>
 
       {signUpError ? (

@@ -69,6 +69,7 @@ export default function Markets() {
       <View style={styles.marketView}>
         <MenuStrip activeField={activeField} setActiveField={goTo} />
 
+        {/*LAZY LOADING - OPTIMISES PERFORMANCE*/}
         <ScrollView
           ref={scrollRef}
           style={styles.flex1}

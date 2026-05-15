@@ -48,11 +48,11 @@ export default function HomeIndex() {
         </View>
 
         <View style={styles.stripsContainer}>
-          <View style={ew`h-40 flex-1`}>
+          <View>
             <Text style={styles.txt}>Recent Coin</Text>
             <MarketStrip />
           </View>
-          <View style={ew`mt-10`}>
+          <View>
             <Text style={styles.txt}>Top Coin</Text>
             <MarketStrip />
           </View>

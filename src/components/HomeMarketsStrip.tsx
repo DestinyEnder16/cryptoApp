@@ -1,4 +1,4 @@
-import { memo, useEffect } from "react";
+import { memo } from "react";
 import { ActivityIndicator, StyleSheet } from "react-native";
 import { useFetchSupportedAssetsQuery } from "../store/api/Api";
 import MarketStripItem from "./MarketStripItem";
@@ -13,7 +13,7 @@ function MarketStrip() {
 
   return (
     <FlashList
-      style={styles.content}
+      contentContainerStyle={styles.content}
       horizontal
       showsHorizontalScrollIndicator={false}
       data={data}
@@ -30,7 +30,10 @@ const renderItem = ({ item }: { item: string }) => {
 };
 
 const styles = StyleSheet.create({
-  content: { marginVertical: 20, flex: 1, paddingHorizontal: 10 },
+  content: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+  },
 });
 
 export default memo(MarketStrip);

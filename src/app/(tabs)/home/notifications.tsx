@@ -18,9 +18,7 @@ export default function Notifications() {
   return isLoading ? (
     <ActivityIndicator />
   ) : (
-    <View style={[styles.body, { paddingTop: insets.top + 10 }]}>
-      <ScreenHeader variant="profile" />
-
+    <View style={[styles.body]}>
       <View style={styles.container}>
         <NotificationBar length={Number(data?.meta.count)} />
         {count === undefined && (

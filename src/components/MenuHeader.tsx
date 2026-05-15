@@ -1,30 +1,30 @@
-import BackHeader from '@/src/components/BackHeader';
-import { Fonts } from '@/src/constants/fonts';
+import BackHeader from "@/src/components/BackHeader";
+import { Fonts } from "@/src/constants/fonts";
 import {
   ClipboardIcon,
   HomeMenuAvatar,
   ThreeDots,
-} from '@/src/constants/images';
-import { Colors } from '@/src/constants/styles';
-import { useAppSelector } from '@/src/store/hooks';
-import { selectUser } from '@/src/store/slices/authSlice';
-import * as Clipboard from 'expo-clipboard';
-import { LinearGradient } from 'expo-linear-gradient';
-import { router } from 'expo-router';
-import { memo, useCallback } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+} from "@/src/constants/images";
+import { Colors } from "@/src/constants/styles";
+import { useAppSelector } from "@/src/store/hooks";
+import { selectUser } from "@/src/store/slices/authSlice";
+import * as Clipboard from "expo-clipboard";
+import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router";
+import { memo, useCallback } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
-const GRADIENT_COLORS = ['#5ed5a716', Colors.primaryBackgroundColor] as const;
+const GRADIENT_COLORS = ["#5ed5a716", Colors.primaryBackgroundColor] as const;
 const GRADIENT_START = { x: 0.5, y: 1 };
 const GRADIENT_END = { x: 0.5, y: 0 };
 const GRADIENT_LOCATIONS = [0, 0.4] as const;
 
-const goToProfile = () => router.navigate('/profile');
+const goToProfile = () => router.navigate("/profile");
 
 function MenuHeader() {
   const user = useAppSelector(selectUser);
   const name = user?.fullName;
-  const userId = user?.id ?? '';
+  const userId = user?.id ?? "";
 
   const copyToClipboard = useCallback(async () => {
     await Clipboard.setStringAsync(userId);
@@ -38,29 +38,31 @@ function MenuHeader() {
       locations={GRADIENT_LOCATIONS}
       style={styles.gradient}
     >
-      <View style={[styles.row, styles.topRow]}>
-        <BackHeader txt="Menu" marginBottom={30} />
-        <ThreeDots />
-      </View>
-
-      <View style={styles.row}>
-        <View style={styles.profile}>
-          <HomeMenuAvatar />
-          <View style={styles.nameCol}>
-            <Text style={styles.name}>{name}</Text>
-            <View style={styles.idRow}>
-              <Text style={styles.idTxt}>ID: {userId}</Text>
-
-              <Pressable onPress={copyToClipboard}>
-                <ClipboardIcon />
-              </Pressable>
-            </View>
-          </View>
+      <View style={{ gap: 10 }}>
+        <View style={[styles.row, styles.topRow]}>
+          <BackHeader txt="Menu" marginBottom={30} />
+          <ThreeDots />
         </View>
 
-        <Pressable style={styles.editBtn} onPress={goToProfile}>
-          <Text style={styles.editTxt}>Edit Profile</Text>
-        </Pressable>
+        <View style={styles.row}>
+          <View style={styles.profile}>
+            <HomeMenuAvatar />
+            <View style={styles.nameCol}>
+              <Text style={styles.name}>{name}</Text>
+              <View style={styles.idRow}>
+                <Text style={styles.idTxt}>ID: {userId}</Text>
+
+                <Pressable onPress={copyToClipboard}>
+                  <ClipboardIcon />
+                </Pressable>
+              </View>
+            </View>
+          </View>
+
+          <Pressable style={styles.editBtn} onPress={goToProfile}>
+            <Text style={styles.editTxt}>Edit Profile</Text>
+          </Pressable>
+        </View>
       </View>
     </LinearGradient>
   );
@@ -70,20 +72,19 @@ export default memo(MenuHeader);
 
 const styles = StyleSheet.create({
   gradient: {
-    width: '100%',
-    overflow: 'hidden',
+    width: "100%",
+    overflow: "hidden",
     paddingHorizontal: 20,
     paddingBottom: 20,
-    gap: 20,
   },
   row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
-  topRow: { alignItems: 'baseline' },
+  topRow: { alignItems: "baseline" },
   profile: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 10,
   },
   nameCol: { gap: 5 },
@@ -94,7 +95,7 @@ const styles = StyleSheet.create({
   },
   idTxt: { color: Colors.ash },
   idRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 10,
   },
   editBtn: {

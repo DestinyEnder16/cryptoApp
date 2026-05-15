@@ -23,10 +23,6 @@ export default function HomeIndex() {
         },
       ]}
     >
-      <View style={[styles.headerSpacing, { paddingTop: insets.top + 10 }]}>
-        <ScreenHeader variant="profile" />
-      </View>
-
       <HomeIconsView />
 
       <ScrollView
@@ -72,7 +68,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerSpacing: {
-    paddingBottom: 20,
     backgroundColor: Colors.primaryBackgroundColor,
   },
   scroll: { flex: 1, backgroundColor: Colors.text },

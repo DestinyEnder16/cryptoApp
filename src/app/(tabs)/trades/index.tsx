@@ -11,7 +11,10 @@ export default function Trades() {
       <View style={{ flexDirection: "row", flex: 1 }}>
         <ActionBtn
           text="Buy"
-          styles={{ backgroundColor: Colors.red, txtColor: Colors.dark }}
+          styles={{
+            backgroundColor: Colors.red,
+            txtColor: Colors.text,
+          }}
           style={{ flex: 1, borderRadius: 0 }}
           action={() => router.navigate("/trades/buy")}
         />

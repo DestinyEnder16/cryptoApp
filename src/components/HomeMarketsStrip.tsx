@@ -1,11 +1,8 @@
-import { memo } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet } from 'react-native';
-import { useFetchSupportedAssetsQuery } from '../store/api/Api';
-import MarketStripItem from './MarketStripItem';
-
-const CARD_WIDTH = 165;
-const CARD_MARGIN = 10;
-const ITEM_TOTAL = CARD_WIDTH + CARD_MARGIN;
+import { memo, useEffect } from "react";
+import { ActivityIndicator, StyleSheet } from "react-native";
+import { useFetchSupportedAssetsQuery } from "../store/api/Api";
+import MarketStripItem from "./MarketStripItem";
+import { FlashList } from "@shopify/flash-list";
 
 function MarketStrip() {
   const { isLoading, data } = useFetchSupportedAssetsQuery();
@@ -15,32 +12,25 @@ function MarketStrip() {
   }
 
   return (
-    <FlatList
-      contentContainerStyle={styles.content}
+    <FlashList
+      style={styles.content}
       horizontal
       showsHorizontalScrollIndicator={false}
       data={data}
       keyExtractor={keyExtractor}
       renderItem={renderItem}
-      initialNumToRender={4}
-      maxToRenderPerBatch={4}
-      windowSize={5}
-      getItemLayout={getItemLayout}
-      removeClippedSubviews
+      drawDistance={100}
     />
   );
 }
 
 const keyExtractor = (symbol: string) => symbol;
-const renderItem = ({ item }: { item: string }) => <MarketStripItem coin={item} />;
-const getItemLayout = (_: ArrayLike<string> | null | undefined, index: number) => ({
-  length: ITEM_TOTAL,
-  offset: ITEM_TOTAL * index,
-  index,
-});
+const renderItem = ({ item }: { item: string }) => {
+  return <MarketStripItem coin={item} />;
+};
 
 const styles = StyleSheet.create({
-  content: { marginTop: 20 },
+  content: { marginVertical: 20, flex: 1, paddingHorizontal: 10 },
 });
 
 export default memo(MarketStrip);

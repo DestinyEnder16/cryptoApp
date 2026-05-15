@@ -1,11 +1,11 @@
-import { memo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { Fonts } from '../constants/fonts';
-import { HomeCoinBtc } from '../constants/images';
-import { Colors } from '../constants/styles';
-import { useFetchAssetDetailsQuery } from '../store/api/Api';
-import LineChartView from './LineChartView';
-import MarketStripItemSkeleton from './MarketStripItemSkeleton';
+import { memo, useEffect } from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { Fonts } from "../constants/fonts";
+import { HomeCoinBtc } from "../constants/images";
+import { Colors } from "../constants/styles";
+import { useFetchAssetDetailsQuery } from "../store/api/Api";
+import LineChartView from "./LineChartView";
+import MarketStripItemSkeleton from "./MarketStripItemSkeleton";
 
 interface MarketStripItemProps {
   coin: string;
@@ -17,6 +17,9 @@ function MarketStripItem({ coin }: MarketStripItemProps) {
     skipPollingIfUnfocused: true,
   });
 
+  useEffect(() => {
+    console.log("i rerendered", coin);
+  }, []);
   if (isLoading || !data) {
     return <MarketStripItemSkeleton />;
   }
@@ -26,9 +29,7 @@ function MarketStripItem({ coin }: MarketStripItemProps) {
   return (
     <View style={styles.container}>
       <View style={[styles.row, styles.priceRow]}>
-        <Text
-          style={[styles.priceTxt, isPositive ? styles.green : styles.red]}
-        >
+        <Text style={[styles.priceTxt, isPositive ? styles.green : styles.red]}>
           {data.priceUsd}
         </Text>
         <HomeCoinBtc />
@@ -54,15 +55,16 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.text,
     borderRadius: 12,
     padding: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    elevation: 3,
+    marginBottom: 4,
   },
   row: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   priceRow: { gap: 40 },
   symbolRow: { gap: 10 },

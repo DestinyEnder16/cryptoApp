@@ -1,13 +1,14 @@
-import HomeIconsView from '@/src/components/HomeIconsView';
-import MarketStrip from '@/src/components/HomeMarketsStrip';
+import HomeIconsView from "@/src/components/HomeIconsView";
+import MarketStrip from "@/src/components/HomeMarketsStrip";
 
-import ScreenHeader from '@/src/components/ScreenHeader';
-import { Fonts } from '@/src/constants/fonts';
-import { Colors } from '@/src/constants/styles';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import { Image } from 'expo-image';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import ScreenHeader from "@/src/components/ScreenHeader";
+import { Fonts } from "@/src/constants/fonts";
+import { Colors } from "@/src/constants/styles";
+import ew from "@/src/lib/tw";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { Image } from "expo-image";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function HomeIndex() {
   const insets = useSafeAreaInsets();
@@ -36,14 +37,14 @@ export default function HomeIndex() {
         <View style={styles.buttonsContainer}>
           <Pressable>
             <Image
-              source={require('@/assets/images/HomeComponentA.png')}
+              source={require("@/assets/images/HomeComponentA.png")}
               style={styles.img}
               contentFit="cover"
             />
           </Pressable>
           <Pressable>
             <Image
-              source={require('@/assets/images/HomeComponentB.png')}
+              source={require("@/assets/images/HomeComponentB.png")}
               style={styles.img}
               contentFit="cover"
             />
@@ -51,11 +52,11 @@ export default function HomeIndex() {
         </View>
 
         <View style={styles.stripsContainer}>
-          <View>
+          <View style={ew`h-40 flex-1`}>
             <Text style={styles.txt}>Recent Coin</Text>
             <MarketStrip />
           </View>
-          <View>
+          <View style={ew`mt-10`}>
             <Text style={styles.txt}>Top Coin</Text>
             <MarketStrip />
           </View>
@@ -80,7 +81,7 @@ const styles = StyleSheet.create({
     paddingTop: 30,
     paddingBottom: 30,
   },
-  img: { width: '100%', height: 78 },
+  img: { width: "100%", height: 78 },
   buttonsContainer: {
     gap: 10,
   },

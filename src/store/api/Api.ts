@@ -12,65 +12,15 @@ import type {
   User,
   UserResponse,
 } from "@/src/types/auth/types";
+import type { AssetDetails, CoinData } from "@/src/types/coin/types";
+import type {
+  AssetDetailsResponse,
+  SupportedAssetsResponse,
+  TrendingAssetsResponse,
+} from "@/src/types/market/types";
+import type { NotificationResponse } from "@/src/types/notification/types";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { RootState } from "@/src/store";
-
-type CheckAssets = {
-  id: string;
-  symbol: string;
-  name: string;
-  network: string;
-  priceUsd: number;
-  change24h: number;
-  isActive: boolean;
-  minBuyUsd: number;
-  minSellUsd: number;
-  iconUrl: string;
-};
-
-type CheckAssetsResponse = {
-  data: CheckAssets[];
-};
-
-type ChartPoint = {
-  time: string;
-  priceUsd: number;
-};
-
-type ChartDatum = {
-  timestamp: number;
-  value: number;
-};
-
-type AssetDetails = CheckAssets & {
-  chart: ChartPoint[];
-  chartData: ChartDatum[];
-};
-
-type AssetDetailsResponse = {
-  data: Omit<AssetDetails, "chartData">;
-};
-
-type TrendingAssetResponse = {
-  data: CheckAssets[];
-};
-
-type NotificationDetails = {
-  id: string;
-  userId: string;
-  title: string;
-  body: string;
-  type: string;
-  isRead: boolean;
-  createdAt: string;
-};
-
-type NotificationResponse = {
-  data: NotificationDetails;
-  meta: {
-    count: number;
-  };
-};
 
 export const cryptoApi = createApi({
   reducerPath: "cryptoApi",
@@ -132,7 +82,7 @@ export const cryptoApi = createApi({
 
     fetchSupportedAssets: build.query<string[], void>({
       query: () => "/market/assets",
-      transformResponse: (response: CheckAssetsResponse) =>
+      transformResponse: (response: SupportedAssetsResponse) =>
         response.data.map((asset) => asset.symbol),
       keepUnusedDataFor: 300,
     }),
@@ -153,9 +103,9 @@ export const cryptoApi = createApi({
       query: () => "/me/notifications",
     }),
 
-    fetchTrendingAssets: build.query<CheckAssets[], void>({
+    fetchTrendingAssets: build.query<CoinData[], void>({
       query: () => "/market/trending",
-      transformResponse: (response: TrendingAssetResponse) => response.data,
+      transformResponse: (response: TrendingAssetsResponse) => response.data,
       keepUnusedDataFor: 60,
     }),
   }),

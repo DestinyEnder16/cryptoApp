@@ -10,3 +10,18 @@ export interface CoinData {
   minSellUsd: number;
   iconUrl: string;
 }
+
+export interface ChartPoint {
+  time: string;
+  priceUsd: number;
+}
+
+export interface ChartDatum {
+  timestamp: number;
+  value: number;
+}
+
+export interface AssetDetails extends CoinData {
+  chart: ChartPoint[];
+  chartData: ChartDatum[];
+}

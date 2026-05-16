@@ -2,14 +2,13 @@ import Btn from '@/src/components/Btn';
 import { Fonts } from '@/src/constants/fonts';
 import { Fingerprint } from '@/src/constants/images';
 import { Colors } from '@/src/constants/styles';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { authenticateWithBiometrics } from '../services/biometricAuth';
 import { cryptoApi } from '../store/api/Api';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { logout, setAuth } from '../store/slices/authSlice';
+import { setAuth } from '../store/slices/authSlice';
 
 export default function RetryAuthScreen() {
   const insets = useSafeAreaInsets();
@@ -17,21 +16,28 @@ export default function RetryAuthScreen() {
   const token = useAppSelector((state) => state.auth.token);
 
   async function handleRetry() {
+    if (!token) {
+      router.replace('/');
+      return;
+    }
+    const ok = await authenticateWithBiometrics();
+    if (!ok) return; // user cancelled — stay on screen
     try {
-      const response = await authenticateWithBiometrics();
-      if (token === null) throw new Error();
-      if (response === false) throw new Error();
-      try {
-        const user = await dispatch(
-          cryptoApi.endpoints.fetchMe.initiate()
-        ).unwrap();
-        dispatch(setAuth({ user, token }));
-        router.replace('/(tabs)/home');
-      } catch {
-        await AsyncStorage.removeItem('token');
-        dispatch(logout());
-      }
-    } catch {}
+      const user = await dispatch(
+        cryptoApi.endpoints.fetchMe.initiate()
+      ).unwrap();
+      dispatch(setAuth({ user, token }));
+      router.replace('/(tabs)/home');
+    } catch (err) {
+      console.log(err);
+      // if (isAuthError(err)) {
+      //   // 401/403 only
+      //   await AsyncStorage.removeItem('token');
+      //   dispatch(logout());
+      //   router.replace('/');
+      // }
+      // else: network blip — leave state alone, user can press again
+    }
   }
 
   return (

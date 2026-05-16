@@ -1,58 +1,58 @@
-import { yupResolver } from "@hookform/resolvers/yup";
-import { LinearGradient } from "expo-linear-gradient";
-import { router } from "expo-router";
-import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { yupResolver } from '@hookform/resolvers/yup';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
+import { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import {
   StyleSheet,
   Text,
   TextInput,
   useWindowDimensions,
   View,
-} from "react-native";
-import * as yup from "yup";
-import { Fonts } from "../constants/fonts";
-import { Colors } from "../constants/styles";
-import { useLoginMutation } from "../store/api/Api";
-import { useAppDispatch } from "../store/hooks";
-import { setAuth } from "../store/slices/authSlice";
+} from 'react-native';
+import * as yup from 'yup';
+import { Fonts } from '../constants/fonts';
+import { Colors } from '../constants/styles';
+import { useLoginMutation } from '../store/api/Api';
+import { useAppDispatch } from '../store/hooks';
+import { setAuth } from '../store/slices/authSlice';
 import {
   addUserEmail,
   addUserMobile,
   addUserPassword,
-} from "../store/slices/userSlice";
-import AltLoginView from "./AltLoginView";
-import AuthMethod from "./AuthMethod";
-import Btn from "./Btn";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+} from '../store/slices/userSlice';
+import AltLoginView from './AltLoginView';
+import AuthMethod from './AuthMethod';
+import Btn from './Btn';
 
-type Mode = "email" | "mobile";
+type Mode = 'email' | 'mobile';
 
 function SignInView() {
   const { width } = useWindowDimensions();
-  const [mode, setMode] = useState<Mode>("email");
+  const [mode, setMode] = useState<Mode>('email');
   const dispatch = useAppDispatch();
-  const [login, { isLoading, error }] = useLoginMutation();
+  const [login, { isLoading, error: fetchError }] = useLoginMutation();
 
   const schema = yup.object({
     email:
-      mode === "email"
+      mode === 'email'
         ? yup
             .string()
-            .required("Email is required")
-            .email("Enter a valid email address")
+            .required('Email is required')
+            .email('Enter a valid email address')
         : yup.string(),
     mobile:
-      mode === "mobile"
+      mode === 'mobile'
         ? yup
             .string()
-            .required("Mobile number is required")
-            .matches(/^\+?\d{7,15}$/, "Enter a valid mobile number")
+            .required('Mobile number is required')
+            .matches(/^\+?\d{7,15}$/, 'Enter a valid mobile number')
         : yup.string(),
     password: yup
       .string()
-      .required("Password is required")
-      .min(8, "Must be at least 8 characters"),
+      .required('Password is required')
+      .min(8, 'Must be at least 8 characters'),
   });
 
   // handles the form
@@ -62,18 +62,18 @@ function SignInView() {
     reset,
     formState: { errors },
   } = useForm({
-    mode: "onBlur",
+    mode: 'onBlur',
     defaultValues: {
-      email: "",
-      password: "",
-      mobile: "",
+      email: '',
+      password: '',
+      mobile: '',
     },
     resolver: yupResolver(schema),
   });
   const onSubmit = async (data: yup.InferType<typeof schema>) => {
-    if (mode === "email" && data.email) {
+    if (mode === 'email' && data.email) {
       dispatch(addUserEmail(data.email));
-    } else if (mode === "mobile" && data.mobile) {
+    } else if (mode === 'mobile' && data.mobile) {
       dispatch(addUserMobile(data.mobile));
     }
     if (data.password) dispatch(addUserPassword(data.password));
@@ -85,14 +85,14 @@ function SignInView() {
       }).unwrap();
 
       dispatch(setAuth(result));
-      await AsyncStorage.setItem("token", result.token);
+      await AsyncStorage.setItem('token', result.token);
       console.log(result.token);
 
       reset();
 
-      router.replace("/home");
+      router.replace('/home');
     } catch (error) {
-      console.log("error", error);
+      console.log('error', error);
     }
   };
 
@@ -108,19 +108,19 @@ function SignInView() {
         <View style={AuthStyles.formContainer}>
           <View style={AuthStyles.field}>
             <View
-              style={{ flexDirection: "row", justifyContent: "space-between" }}
+              style={{ flexDirection: 'row', justifyContent: 'space-between' }}
             >
-              {mode === "email" ? (
+              {mode === 'email' ? (
                 <AuthMethod
                   label="Email"
                   instruction="Sign in with mobile"
-                  onPress={() => setMode("mobile")}
+                  onPress={() => setMode('mobile')}
                 />
               ) : (
                 <AuthMethod
                   label="Mobile Number"
                   instruction="Sign in with email"
-                  onPress={() => setMode("email")}
+                  onPress={() => setMode('email')}
                 />
               )}
             </View>
@@ -137,7 +137,7 @@ function SignInView() {
                     isLoading && { color: Colors.ash },
                   ]}
                   keyboardType={
-                    mode === "email" ? "email-address" : "phone-pad"
+                    mode === 'email' ? 'email-address' : 'phone-pad'
                   }
                   onChangeText={onChange}
                   onBlur={onBlur}
@@ -178,9 +178,9 @@ function SignInView() {
               <Text style={AuthStyles.errorMsg}>{errors.password.message}</Text>
             )}
 
-            {error && (
+            {fetchError && (
               <Text style={AuthStyles.errorMsg}>
-                Email or password is incorrect
+                Network error. Check your internet connection and try again
               </Text>
             )}
 
@@ -221,7 +221,7 @@ export const AuthStyles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontFamily: Fonts.regular,
-    color: "#A7AFB7",
+    color: '#A7AFB7',
   },
   inputField: {
     borderRadius: 12,

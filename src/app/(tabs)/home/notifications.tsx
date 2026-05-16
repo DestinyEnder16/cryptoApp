@@ -1,3 +1,4 @@
+import Loader from "@/src/components/Loader";
 import NotificationBar from "@/src/components/NotificationBar";
 import ScreenHeader from "@/src/components/ScreenHeader";
 import { Fonts } from "@/src/constants/fonts";
@@ -7,14 +8,14 @@ import {
 } from "@/src/constants/images";
 import { Colors } from "@/src/constants/styles";
 import { useFetchNotificationsQuery } from "@/src/store/api/Api";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 export default function Notifications() {
   const { isLoading, data } = useFetchNotificationsQuery();
   const count = data?.meta.count;
 
   return isLoading ? (
-    <ActivityIndicator />
+    <Loader />
   ) : (
     <View style={[styles.body]}>
       <View style={styles.container}>

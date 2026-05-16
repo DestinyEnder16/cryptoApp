@@ -1,5 +1,6 @@
 import HomeIconsView from '@/src/components/HomeIconsView';
 import MarketStrip from '@/src/components/HomeMarketsStrip';
+import Loader from '@/src/components/Loader';
 import TrendingCoinStrip from '@/src/components/TrendingCoinsStrip';
 
 import { Fonts } from '@/src/constants/fonts';
@@ -10,7 +11,6 @@ import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { Image } from 'expo-image';
 import { useEffect } from 'react';
 import {
-  ActivityIndicator,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -32,7 +32,7 @@ export default function HomeIndex() {
   }, [data, dispatch]);
 
   return isLoading ? (
-    <ActivityIndicator color={Colors.green} />
+    <Loader />
   ) : (
     <View
       style={[

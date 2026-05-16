@@ -1,6 +1,7 @@
 import { memo } from "react";
-import { ActivityIndicator, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import { useFetchSupportedAssetsQuery } from "../store/api/Api";
+import Loader from "./Loader";
 import MarketStripItem from "./MarketStripItem";
 import { FlashList } from "@shopify/flash-list";
 
@@ -8,7 +9,7 @@ function MarketStrip() {
   const { isLoading, data } = useFetchSupportedAssetsQuery();
 
   if (isLoading) {
-    return <ActivityIndicator />;
+    return <Loader />;
   }
 
   return (

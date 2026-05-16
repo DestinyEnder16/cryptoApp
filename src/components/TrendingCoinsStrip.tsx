@@ -8,7 +8,7 @@ export default function TrendingCoinStrip() {
   return (
     <FlashList
       data={trendingCoins}
-      style={styles.strip}
+      contentContainerStyle={styles.strip}
       horizontal
       renderItem={({ item }) => <MarketStripItem coin={item} />}
     />
@@ -17,6 +17,7 @@ export default function TrendingCoinStrip() {
 
 const styles = StyleSheet.create({
   strip: {
-    flexDirection: 'row',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
   },
 });

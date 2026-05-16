@@ -1,3 +1,4 @@
+import Loader from "@/src/components/Loader";
 import TrendingAssetItem from "@/src/components/TrendingAssetItem";
 import WalletHeader from "@/src/components/WalletHeader";
 import { Colors } from "@/src/constants/styles";
@@ -5,7 +6,7 @@ import { useFetchTrendingAssetsQuery } from "@/src/store/api/Api";
 import { setTrendingCoins } from "@/src/store/slices/coinSlice";
 import { FlashList } from "@shopify/flash-list";
 import { useEffect } from "react";
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useDispatch } from "react-redux";
 
 export default function Wallet() {
@@ -28,7 +29,7 @@ export default function Wallet() {
         <FlashList
           data={data}
           keyExtractor={keyExtractor}
-          ListEmptyComponent={<ActivityIndicator />}
+          ListEmptyComponent={<Loader />}
           renderItem={renderItem}
           removeClippedSubviews
         />

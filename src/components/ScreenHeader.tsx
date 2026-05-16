@@ -1,31 +1,31 @@
-import { Image } from "expo-image";
-import { router } from "expo-router";
-import { memo, useCallback } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
-import { Colors } from "../constants/styles";
+import { Image } from 'expo-image';
+import { router } from 'expo-router';
+import { memo, useCallback } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
 import {
   CurrencyIcon,
   CustomizationIcon,
   FavoriteIcon,
   NotifIcon,
   ScanIcon,
-  SearchIcon,
-} from "../constants/images";
+  SettingsIcon,
+} from '../constants/images';
+import { Colors } from '../constants/styles';
 
 interface HeaderProps {
-  variant: "profile" | "market";
+  variant: 'profile' | 'market';
 }
 
-const goToSettings = () => router.navigate("/settings");
-const goToWalletSearch = () => router.navigate("/wallet/main");
-const goToWallet = () => router.navigate("/wallet/qrcode");
-const goToNotifications = () => router.navigate("/home/notifications");
+const goToSettings = () => router.navigate('/settings');
+const goToProfile = () => router.navigate('/profile');
+const goToWallet = () => router.navigate('/wallet/qrcode');
+const goToNotifications = () => router.navigate('/home/notifications');
 
-const AVATAR = require("@/assets/images/avatar.png");
+const AVATAR = require('@/assets/images/avatar.png');
 
 function ScreenHeader({ variant }: HeaderProps) {
-  const isProfile = variant === "profile";
-  const onAvatarPress = useCallback(goToSettings, []);
+  const isProfile = variant === 'profile';
+  const onAvatarPress = useCallback(goToProfile, []);
 
   return (
     <View style={[styles.rowContainer, styles.outer]}>
@@ -42,8 +42,8 @@ function ScreenHeader({ variant }: HeaderProps) {
       <View style={[styles.rowContainer, styles.icons]}>
         {isProfile ? (
           <>
-            <Pressable onPress={goToWalletSearch}>
-              <SearchIcon />
+            <Pressable onPress={goToSettings}>
+              <SettingsIcon />
             </Pressable>
             <Pressable onPress={goToWallet}>
               <ScanIcon />
@@ -66,20 +66,20 @@ function ScreenHeader({ variant }: HeaderProps) {
 
 const styles = StyleSheet.create({
   rowContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   outer: {
     paddingHorizontal: 20,
     paddingBottom: 20,
     backgroundColor: Colors.primaryBackgroundColor,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: "rgba(0,0,0,0.15)",
+    borderBottomColor: 'rgba(0,0,0,0.15)',
   },
   icons: { gap: 30 },
   avatar: { height: 36, width: 36 },

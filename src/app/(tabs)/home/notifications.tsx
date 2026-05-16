@@ -1,38 +1,39 @@
-import Loader from "@/src/components/Loader";
-import NotificationBar from "@/src/components/NotificationBar";
-import ScreenHeader from "@/src/components/ScreenHeader";
-import { Fonts } from "@/src/constants/fonts";
-import {
-  NotificationEmptyIcon,
-  NotificationIconRain,
-} from "@/src/constants/images";
-import { Colors } from "@/src/constants/styles";
-import { useFetchNotificationsQuery } from "@/src/store/api/Api";
-import { StyleSheet, Text, View } from "react-native";
+import Loader from '@/src/components/Loader';
+import NotificationBar from '@/src/components/NotificationBar';
+import { Fonts } from '@/src/constants/fonts';
+import { NotificationEmptyIcon } from '@/src/constants/images';
+import { Colors } from '@/src/constants/styles';
+import { useFetchNotificationsQuery } from '@/src/store/api/Api';
+import { FlashList } from '@shopify/flash-list';
+import { StyleSheet, Text, View } from 'react-native';
 
 export default function Notifications() {
   const { isLoading, data } = useFetchNotificationsQuery();
-  const count = data?.meta.count;
+  const count = data?.meta.count ?? 0;
 
   return isLoading ? (
     <Loader />
   ) : (
-    <View style={[styles.body]}>
+    <View style={styles.body}>
       <View style={styles.container}>
-        <NotificationBar length={Number(data?.meta.count)} />
-        {count === undefined && (
-          <View
-            style={{
-              alignItems: "center",
-              justifyContent: "center",
-              flex: 1,
-              gap: 15,
-            }}
-          >
+        <NotificationBar length={count} />
+        {count === 0 ? (
+          <View style={styles.empty}>
             <NotificationEmptyIcon />
             <Text style={styles.mainTxt}>You have no notifications</Text>
             <Text style={styles.desc}>lorem ipsum lorem ipsum</Text>
           </View>
+        ) : (
+          <FlashList
+            data={data?.data}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <View style={styles.item}>
+                <Text style={styles.itemTitle}>{item.title}</Text>
+                <Text style={styles.itemBody}>{item.body}</Text>
+              </View>
+            )}
+          />
         )}
       </View>
     </View>
@@ -48,6 +49,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     flex: 1,
   },
+  empty: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+    gap: 15,
+  },
   mainTxt: {
     fontFamily: Fonts.medium,
     fontSize: 16,
@@ -56,5 +63,21 @@ const styles = StyleSheet.create({
   desc: {
     fontFamily: Fonts.medium,
     color: Colors.ash,
+  },
+  item: {
+    paddingVertical: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: Colors.dotInactive,
+    gap: 4,
+  },
+  itemTitle: {
+    fontFamily: Fonts.medium,
+    fontSize: 15,
+    color: Colors.text,
+  },
+  itemBody: {
+    fontFamily: Fonts.medium,
+    fontSize: 13,
+    color: Colors.lightTxt,
   },
 });

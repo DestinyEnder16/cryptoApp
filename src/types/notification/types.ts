@@ -9,7 +9,7 @@ export interface NotificationDetails {
 }
 
 export interface NotificationResponse {
-  data: NotificationDetails;
+  data: NotificationDetails[];
   meta: {
     count: number;
   };

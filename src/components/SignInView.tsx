@@ -90,7 +90,7 @@ function SignInView() {
 
       reset();
 
-      router.navigate("/home");
+      router.replace("/home");
     } catch (error) {
       console.log("error", error);
     }

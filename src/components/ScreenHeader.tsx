@@ -18,7 +18,7 @@ interface HeaderProps {
 
 const goToSettings = () => router.navigate("/settings");
 const goToWalletSearch = () => router.navigate("/wallet/main");
-const goToWallet = () => router.navigate("/(tabs)/wallet");
+const goToWallet = () => router.navigate("/wallet/qrcode");
 const goToNotifications = () => router.navigate("/home/notifications");
 
 const AVATAR = require("@/assets/images/avatar.png");

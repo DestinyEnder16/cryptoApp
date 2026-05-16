@@ -17,9 +17,6 @@ function MarketStripItem({ coin }: MarketStripItemProps) {
     skipPollingIfUnfocused: true,
   });
 
-  useEffect(() => {
-    console.log("i rerendered", coin);
-  }, []);
   if (isLoading || !data) {
     return <MarketStripItemSkeleton />;
   }

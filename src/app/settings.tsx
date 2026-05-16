@@ -60,6 +60,7 @@ export default function Settings() {
     await AsyncStorage.removeItem("token");
     dispatch(logout());
   }
+
   return (
     <View style={[{ paddingTop: insets.top + 10, paddingHorizontal: 10 }]}>
       <View style={{ paddingLeft: 20 }}>

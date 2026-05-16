@@ -2,25 +2,34 @@ import TrendingAssetItem from "@/src/components/TrendingAssetItem";
 import WalletHeader from "@/src/components/WalletHeader";
 import { Colors } from "@/src/constants/styles";
 import { useFetchTrendingAssetsQuery } from "@/src/store/api/Api";
-import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
+import { setTrendingCoins } from "@/src/store/slices/coinSlice";
+import { FlashList } from "@shopify/flash-list";
+import { useEffect } from "react";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { useDispatch } from "react-redux";
 
 export default function Wallet() {
+  const dispatch = useDispatch();
   const { data } = useFetchTrendingAssetsQuery(undefined, {
     pollingInterval: 30000,
     skipPollingIfUnfocused: true,
   });
+
+  useEffect(() => {
+    if (data) {
+      dispatch(setTrendingCoins(data));
+    }
+  }, [data, dispatch]);
+
   return (
     <View style={styles.container}>
       <WalletHeader />
       <View style={styles.listWrapper}>
-        <FlatList
+        <FlashList
           data={data}
           keyExtractor={keyExtractor}
           ListEmptyComponent={<ActivityIndicator />}
           renderItem={renderItem}
-          initialNumToRender={8}
-          maxToRenderPerBatch={6}
-          windowSize={5}
           removeClippedSubviews
         />
       </View>

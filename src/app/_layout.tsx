@@ -80,9 +80,9 @@ function AuthBootstrap({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!ready) return;
     router.replace(isAuthed ? "/(tabs)/home" : "/");
-    requestAnimationFrame(() =>
-      requestAnimationFrame(() => SplashScreen.hideAsync()),
-    );
+    // requestAnimationFrame(() =>
+    //   requestAnimationFrame(() => SplashScreen.hideAsync()),
+    // );
   }, [ready, isAuthed]);
 
   if (!ready) return null;

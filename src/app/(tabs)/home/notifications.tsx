@@ -8,10 +8,8 @@ import {
 import { Colors } from "@/src/constants/styles";
 import { useFetchNotificationsQuery } from "@/src/store/api/Api";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function Notifications() {
-  const insets = useSafeAreaInsets();
   const { isLoading, data } = useFetchNotificationsQuery();
   const count = data?.meta.count;
 

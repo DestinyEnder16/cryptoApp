@@ -34,6 +34,12 @@
           "cameraPermission": "Allow tMinus1 to access your camera"
         }
       ],
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Allow tMinus1 to use Face ID"
+        }
+      ],
       "expo-notifications"
     ],
     "experiments": {

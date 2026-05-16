@@ -1,6 +1,6 @@
 import { memo, useCallback, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { currencyConverter } from '../services/currencyConverter';
+import { currencyConverter } from '../utils/currencyConverter';
 
 import { LinearGradient } from 'expo-linear-gradient';
 import { Fonts } from '../constants/fonts';
@@ -27,9 +27,9 @@ function CurrencyHeader({ amount, baseCurrency }: CurrencyProps) {
     () =>
       currencyConverter(amount, baseCurrency, activeCurrency).toLocaleString(
         'en-US',
-        FORMAT_OPTIONS,
+        FORMAT_OPTIONS
       ),
-    [amount, baseCurrency, activeCurrency],
+    [amount, baseCurrency, activeCurrency]
   );
 
   const showUsd = useCallback(() => setActiveCurrency('usd'), []);

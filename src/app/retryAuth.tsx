@@ -2,13 +2,17 @@ import Btn from '@/src/components/Btn';
 import { Fonts } from '@/src/constants/fonts';
 import { Fingerprint } from '@/src/constants/images';
 import { Colors } from '@/src/constants/styles';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { authenticateWithBiometrics } from '../services/biometricAuth';
-import { cryptoApi } from '../store/api/Api';
+import { completeAuth } from '../services/auth';
+import {
+  authenticateWithBiometrics,
+  isBiometricAvailable,
+} from '../services/biometricAuth';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { setAuth } from '../store/slices/authSlice';
+import { logout } from '../store/slices/authSlice';
 
 export default function RetryAuthScreen() {
   const insets = useSafeAreaInsets();
@@ -17,27 +21,22 @@ export default function RetryAuthScreen() {
 
   async function handleRetry() {
     if (!token) {
-      router.replace('/');
+      router.replace('/(auth)/auth');
       return;
     }
-    const ok = await authenticateWithBiometrics();
-    if (!ok) return; // user cancelled — stay on screen
-    try {
-      const user = await dispatch(
-        cryptoApi.endpoints.fetchMe.initiate()
-      ).unwrap();
-      dispatch(setAuth({ user, token }));
-      router.replace('/(tabs)/home');
-    } catch (err) {
-      console.log(err);
-      // if (isAuthError(err)) {
-      //   // 401/403 only
-      //   await AsyncStorage.removeItem('token');
-      //   dispatch(logout());
-      //   router.replace('/');
-      // }
-      // else: network blip — leave state alone, user can press again
+
+    if (!(await isBiometricAvailable())) {
+      await AsyncStorage.removeItem('token');
+      dispatch(logout());
+      router.replace('/(auth)/auth');
+      return;
     }
+
+    const ok = await authenticateWithBiometrics();
+    if (!ok) return;
+
+    const next = await completeAuth(dispatch, token);
+    if (next) router.replace(next);
   }
 
   return (
@@ -100,13 +99,5 @@ const styles = StyleSheet.create({
   footer: {
     gap: 16,
     alignItems: 'center',
-  },
-  altBtn: {
-    paddingVertical: 8,
-  },
-  altBtnTxt: {
-    color: Colors.green,
-    fontFamily: Fonts.medium,
-    fontSize: 14,
   },
 });

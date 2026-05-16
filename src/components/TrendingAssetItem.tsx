@@ -1,9 +1,9 @@
-import { memo } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { Fonts } from "../constants/fonts";
-import { BtcCoin } from "../constants/images";
-import { Colors } from "../constants/styles";
-import { currencyConverter } from "../services/currencyConverter";
+import { memo } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { Fonts } from '../constants/fonts';
+import { BtcCoin } from '../constants/images';
+import { Colors } from '../constants/styles';
+import { currencyConverter } from '../utils/currencyConverter';
 
 interface TrendingAssetItemProps {
   name: string;
@@ -12,14 +12,14 @@ interface TrendingAssetItemProps {
 }
 
 function TrendingAssetItem({ name, symbol, priceUsd }: TrendingAssetItemProps) {
-  const priceBtc = currencyConverter(priceUsd, "usd", "btc");
+  const priceBtc = currencyConverter(priceUsd, 'usd', 'btc');
 
-  const formattedUsd = priceUsd.toLocaleString("en-US", {
+  const formattedUsd = priceUsd.toLocaleString('en-US', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
 
-  const formattedBtc = priceBtc.toLocaleString("en-US", {
+  const formattedBtc = priceBtc.toLocaleString('en-US', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 8,
   });
@@ -44,20 +44,20 @@ function TrendingAssetItem({ name, symbol, priceUsd }: TrendingAssetItemProps) {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingVertical: 25,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: Colors.dotInactive,
   },
   left: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 12,
   },
   right: {
-    alignItems: "flex-end",
+    alignItems: 'flex-end',
     gap: 2,
   },
   name: {

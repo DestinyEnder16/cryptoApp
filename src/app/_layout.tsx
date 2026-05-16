@@ -4,16 +4,14 @@ import { router, SplashScreen, Stack } from 'expo-router';
 import { ReactNode, useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
 import { Colors } from '../constants/styles';
-import { authenticateWithBiometrics } from '../services/biometricAuth';
-import { store } from '../store';
-import { cryptoApi } from '../store/api/Api';
-import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { completeAuth } from '../services/auth';
 import {
-  logout,
-  selectIsAuthenticated,
-  setAuth,
-  setToken,
-} from '../store/slices/authSlice';
+  authenticateWithBiometrics,
+  isBiometricAvailable,
+} from '../services/biometricAuth';
+import { store } from '../store';
+import { useAppDispatch } from '../store/hooks';
+import { logout, setToken } from '../store/slices/authSlice';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -56,35 +54,38 @@ export default function RootLayout() {
   );
 }
 
+type Route = '/' | '/(auth)/auth' | '/(tabs)/home' | '/retryAuth';
+
 function AuthBootstrap({ children }: { children: ReactNode }) {
   const dispatch = useAppDispatch();
-  const isAuthed = useAppSelector(selectIsAuthenticated);
-  const [failedBioMetricAuth, setFailedBiometricAuth] = useState<boolean>();
   const [ready, setReady] = useState(false);
+  const [redirectTo, setRedirectTo] = useState<Route>('/');
 
   useEffect(() => {
     async function bootstrap() {
       try {
         const token = await AsyncStorage.getItem('token');
-        console.log(`Token: ${token}`);
-        if (!token) return;
+        if (!token) {
+          setRedirectTo('/');
+          return;
+        }
 
-        dispatch(setToken(token));
-        try {
-          const user = await dispatch(
-            cryptoApi.endpoints.fetchMe.initiate()
-          ).unwrap();
-          dispatch(setAuth({ user, token }));
-          const response = await authenticateWithBiometrics();
-          if (response === false) {
-            setFailedBiometricAuth(true);
-          } else {
-            setFailedBiometricAuth(false);
-          }
-        } catch {
+        if (!(await isBiometricAvailable())) {
           await AsyncStorage.removeItem('token');
           dispatch(logout());
+          setRedirectTo('/(auth)/auth');
+          return;
         }
+
+        dispatch(setToken(token));
+        const ok = await authenticateWithBiometrics();
+        if (!ok) {
+          setRedirectTo('/retryAuth');
+          return;
+        }
+
+        const next = await completeAuth(dispatch, token);
+        setRedirectTo(next ?? '/retryAuth');
       } finally {
         setReady(true);
       }
@@ -94,13 +95,8 @@ function AuthBootstrap({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!ready) return;
-    router.replace(
-      failedBioMetricAuth ? '/retryAuth' : isAuthed ? '/(tabs)/home' : '/'
-    );
-    // requestAnimationFrame(() =>
-    //   requestAnimationFrame(() => SplashScreen.hideAsync()),
-    // );
-  }, [ready, isAuthed, failedBioMetricAuth]);
+    router.replace(redirectTo);
+  }, [ready, redirectTo]);
 
   if (!ready) return null;
   return <>{children}</>;

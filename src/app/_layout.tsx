@@ -55,7 +55,12 @@ export default function RootLayout() {
   );
 }
 
-type Route = '/' | '/(auth)/auth' | '/(tabs)/home' | '/retryAuth';
+type Route =
+  | '/'
+  | '/onboarding'
+  | '/(auth)/auth'
+  | '/(tabs)/home'
+  | '/retryAuth';
 
 function AuthBootstrap({ children }: { children: ReactNode }) {
   const dispatch = useAppDispatch();
@@ -67,7 +72,7 @@ function AuthBootstrap({ children }: { children: ReactNode }) {
       try {
         const token = await AsyncStorage.getItem('token');
         if (!token) {
-          setRedirectTo('/');
+          setRedirectTo('/onboarding');
           return;
         }
         dispatch(setToken(token));

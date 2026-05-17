@@ -14,8 +14,9 @@ import { Fonts } from "../constants/fonts";
 import { SvgProps } from "react-native-svg";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import ActionBtn from "../components/ActionBtn";
-import { logout, setToken } from "../store/slices/authSlice";
+import { logout } from "../store/slices/authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router } from "expo-router";
 
 type SettingsConfig = {
   icon: React.FC<SvgProps>;
@@ -59,6 +60,7 @@ export default function Settings() {
   async function handleLogout() {
     await AsyncStorage.removeItem("token");
     dispatch(logout());
+    router.replace("/onboarding");
   }
 
   return (

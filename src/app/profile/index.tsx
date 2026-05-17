@@ -18,9 +18,9 @@ export default function ProfileIndex() {
   const user = useAppSelector((state) => state.auth.user);
 
   const userDetails: Details[] = [
-    { info: 'Username', details: 'Not yet defined' },
-    { info: 'Email', details: user?.email! },
-    { info: 'Mobile Number', details: user?.phone! },
+    { info: 'Username', details: 'Not provided' },
+    { info: 'Email', details: user?.email ?? 'Not provided' },
+    { info: 'Mobile Number', details: user?.phone ?? 'Not provided' },
   ];
 
   return (

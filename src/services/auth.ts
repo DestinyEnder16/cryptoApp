@@ -20,7 +20,6 @@ export async function completeAuth(
     const user = await dispatch(
       cryptoApi.endpoints.fetchMe.initiate()
     ).unwrap();
-    console.log(user);
     dispatch(setAuth({ user, token }));
     return '/(tabs)/home';
   } catch (err) {

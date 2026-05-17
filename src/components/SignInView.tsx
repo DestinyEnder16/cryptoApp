@@ -86,7 +86,6 @@ function SignInView() {
 
       dispatch(setAuth(result));
       await AsyncStorage.setItem('token', result.token);
-      console.log(result.token);
 
       reset();
 

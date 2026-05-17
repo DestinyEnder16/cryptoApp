@@ -1,3 +1,4 @@
+import { Redirect } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SvgProps } from 'react-native-svg';
@@ -25,8 +26,10 @@ type SettingsConfig = {
 export default function Settings() {
   const insets = useSafeAreaInsets();
   const user = useAppSelector((state) => state.auth.user);
+  const token = useAppSelector((state) => state.auth.token);
   const dispatch = useAppDispatch();
-  console.log(user?.settings);
+
+  if (!token) return <Redirect href="/(auth)/auth" />;
   const settings: SettingsConfig[] = [
     {
       icon: SettingsLanguage,

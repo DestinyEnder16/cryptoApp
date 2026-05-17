@@ -1,16 +1,11 @@
-import { memo } from "react";
-import { StyleSheet } from "react-native";
-import { useFetchSupportedAssetsQuery } from "../store/api/Api";
-import Loader from "./Loader";
-import MarketStripItem from "./MarketStripItem";
-import { FlashList } from "@shopify/flash-list";
+import { FlashList } from '@shopify/flash-list';
+import { memo } from 'react';
+import { StyleSheet } from 'react-native';
+import { useFetchSupportedAssetsQuery } from '../store/api/Api';
+import MarketStripItem from './MarketStripItem';
 
 function MarketStrip() {
-  const { isLoading, data } = useFetchSupportedAssetsQuery();
-
-  if (isLoading) {
-    return <Loader />;
-  }
+  const { data } = useFetchSupportedAssetsQuery();
 
   return (
     <FlashList

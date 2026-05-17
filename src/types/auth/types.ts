@@ -69,3 +69,16 @@ export interface OtpVerificationPayload {
 export interface OtpVerificationResponse {
   data: OtpVerificationPayload;
 }
+
+export interface SettingDetails {
+  language: string;
+  fiatCurrency: string;
+  theme: string;
+  priceAlerts: boolean;
+  pushNotifications: true;
+  biometricEnabled: false;
+}
+
+export interface SettingsResponse {
+  data: SettingDetails;
+}

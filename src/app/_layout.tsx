@@ -10,6 +10,7 @@ import {
   isBiometricAvailable,
 } from '../services/biometricAuth';
 import { store } from '../store';
+import { cryptoApi } from '../store/api/Api';
 import { useAppDispatch } from '../store/hooks';
 import { logout, setToken } from '../store/slices/authSlice';
 
@@ -69,19 +70,34 @@ function AuthBootstrap({ children }: { children: ReactNode }) {
           setRedirectTo('/');
           return;
         }
+        dispatch(setToken(token));
 
-        if (!(await isBiometricAvailable())) {
+        let biometricRequired: boolean;
+        try {
+          const settings = await dispatch(
+            cryptoApi.endpoints.fetchMySettings.initiate()
+          ).unwrap();
+          biometricRequired = settings.biometricEnabled;
+        } catch {
+          setRedirectTo('/(auth)/auth');
+          return;
+        }
+
+        const biometricAvailable = await isBiometricAvailable();
+
+        if (biometricRequired && !biometricAvailable) {
           await AsyncStorage.removeItem('token');
           dispatch(logout());
           setRedirectTo('/(auth)/auth');
           return;
         }
 
-        dispatch(setToken(token));
-        const ok = await authenticateWithBiometrics();
-        if (!ok) {
-          setRedirectTo('/retryAuth');
-          return;
+        if (biometricRequired) {
+          const ok = await authenticateWithBiometrics();
+          if (!ok) {
+            setRedirectTo('/retryAuth');
+            return;
+          }
         }
 
         const next = await completeAuth(dispatch, token);

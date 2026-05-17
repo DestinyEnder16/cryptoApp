@@ -1,6 +1,9 @@
-import { StyleSheet, Text, View } from "react-native";
-import BackHeader from "../components/BackHeader";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SvgProps } from 'react-native-svg';
+import ActionBtn from '../components/ActionBtn';
+import BackHeader from '../components/BackHeader';
+import { Fonts } from '../constants/fonts';
 import {
   ForwardBtn,
   SettingsAbout,
@@ -8,15 +11,10 @@ import {
   SettingsCurrency,
   SettingsLanguage,
   SettingsPreference,
-} from "../constants/images";
-import { Colors } from "../constants/styles";
-import { Fonts } from "../constants/fonts";
-import { SvgProps } from "react-native-svg";
-import { useAppDispatch, useAppSelector } from "../store/hooks";
-import ActionBtn from "../components/ActionBtn";
-import { logout } from "../store/slices/authSlice";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { router } from "expo-router";
+} from '../constants/images';
+import { Colors } from '../constants/styles';
+import { completeLogout } from '../helpers/completeLogout';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
 
 type SettingsConfig = {
   icon: React.FC<SvgProps>;
@@ -32,36 +30,30 @@ export default function Settings() {
   const settings: SettingsConfig[] = [
     {
       icon: SettingsLanguage,
-      info: "English",
-      type: "Langugage",
+      info: 'English',
+      type: 'Langugage',
     },
     {
       icon: SettingsCurrency,
       info: user?.settings.fiatCurrency!,
-      type: "Currency",
+      type: 'Currency',
     },
     {
       icon: SettingsAppearance,
       info: user?.settings.theme!,
-      type: "Appearance",
+      type: 'Appearance',
     },
     {
       icon: SettingsPreference,
-      info: "Customize",
-      type: "Preference",
+      info: 'Customize',
+      type: 'Preference',
     },
     {
       icon: SettingsAbout,
-      info: "v1.2.3",
-      type: "About Us",
+      info: 'v1.2.3',
+      type: 'About Us',
     },
   ];
-
-  async function handleLogout() {
-    await AsyncStorage.removeItem("token");
-    dispatch(logout());
-    router.replace("/onboarding");
-  }
 
   return (
     <View style={[{ paddingTop: insets.top + 10, paddingHorizontal: 10 }]}>
@@ -76,9 +68,9 @@ export default function Settings() {
             <View
               key={index}
               style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
                 borderBottomWidth: 0.2,
                 paddingBottom: 30,
                 borderBottomColor: Colors.textMuted,
@@ -91,8 +83,8 @@ export default function Settings() {
                     padding: 15,
                     height: 28,
                     width: 31,
-                    alignItems: "center",
-                    justifyContent: "center",
+                    alignItems: 'center',
+                    justifyContent: 'center',
                     borderRadius: 100,
                   }}
                 >
@@ -116,7 +108,7 @@ export default function Settings() {
         <ActionBtn
           text="Logout"
           styles={{ backgroundColor: Colors.red, txtColor: Colors.text }}
-          action={handleLogout}
+          action={() => completeLogout(dispatch)}
         />
       </View>
     </View>
@@ -125,9 +117,9 @@ export default function Settings() {
 
 const styles = StyleSheet.create({
   row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   txt: {
     color: Colors.ash,

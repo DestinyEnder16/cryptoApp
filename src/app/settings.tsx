@@ -34,7 +34,7 @@ export default function Settings() {
     {
       icon: SettingsLanguage,
       info: 'English',
-      type: 'Langugage',
+      type: 'Language',
     },
     {
       icon: SettingsCurrency,

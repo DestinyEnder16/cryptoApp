@@ -16,9 +16,14 @@ export type Details = {
 export default function ProfileIndex() {
   const insets = useSafeAreaInsets();
   const user = useAppSelector((state) => state.auth.user);
+  const displayName = user?.fullName.split(' ');
+  console.log(displayName);
 
   const userDetails: Details[] = [
-    { info: 'Username', details: 'Not provided' },
+    {
+      info: 'Username',
+      details: user?.fullName?.split(' ')[0] ?? 'Not provided',
+    },
     { info: 'Email', details: user?.email ?? 'Not provided' },
     { info: 'Mobile Number', details: user?.phone ?? 'Not provided' },
   ];
@@ -60,16 +65,25 @@ export default function ProfileIndex() {
                 borderRadius: 100,
               }}
             />
-            <Text
-              style={{
-                color: Colors.text,
-                fontSize: 18,
-                fontFamily: Fonts.bold,
-                textAlign: 'center',
+            <Pressable
+              onPress={() => {
+                router.navigate({
+                  pathname: '/profile/edit',
+                  params: { focus: 'fullName' },
+                });
               }}
             >
-              {user?.fullName}
-            </Text>
+              <Text
+                style={{
+                  color: Colors.text,
+                  fontSize: 18,
+                  fontFamily: Fonts.bold,
+                  textAlign: 'center',
+                }}
+              >
+                {user?.fullName}
+              </Text>
+            </Pressable>
           </View>
         </View>
       </LinearGradient>
@@ -80,7 +94,12 @@ export default function ProfileIndex() {
             <Text style={styles.info}>{el.info}</Text>
 
             <Pressable
-              onPress={() => router.navigate('/profile/edit')}
+              onPress={() =>
+                router.navigate({
+                  pathname: '/profile/edit',
+                  params: { focus: el.info },
+                })
+              }
               style={[styles.row, { gap: 10 }]}
             >
               <Text style={styles.details}>{el.details}</Text>

@@ -15,7 +15,7 @@ export default function SwitchSignMode({ view, setView }: SwitchProps) {
 
   return (
     <View style={[styles.container, { paddingTop: inset.top + 10 }]}>
-      <Pressable onPress={() => router.back()}>
+      <Pressable onPress={() => router.canGoBack() && router.back()}>
         <CancelBtn />
       </Pressable>
 

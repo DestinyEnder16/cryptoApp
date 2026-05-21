@@ -24,6 +24,13 @@ import type {
 import type { NotificationResponse } from '@/src/types/notification/types';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
+type ProfileUpdate = {
+  fullName: string;
+  phone: string;
+  avatarUrl?: string;
+  email: string;
+};
+
 export const cryptoApi = createApi({
   reducerPath: 'cryptoApi',
   baseQuery: fetchBaseQuery({
@@ -50,6 +57,14 @@ export const cryptoApi = createApi({
     fetchMe: build.query<User, void>({
       query: () => '/me',
       transformResponse: (response: UserResponse) => response.data,
+    }),
+
+    editProfile: build.mutation<User, ProfileUpdate>({
+      query: (profile) => ({
+        url: '/me',
+        method: 'PATCH',
+        body: profile,
+      }),
     }),
 
     fetchMySettings: build.query<SettingDetails, void>({
@@ -128,4 +143,5 @@ export const {
   useFetchNotificationsQuery,
   useFetchTrendingAssetsQuery,
   useFetchMeQuery,
+  useEditProfileMutation,
 } = cryptoApi;

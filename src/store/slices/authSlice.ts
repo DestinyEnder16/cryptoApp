@@ -5,11 +5,13 @@ import type { AuthPayload, User } from "@/src/types/auth/types";
 interface AuthState {
   user: User | null;
   token: string | null;
+  username: string | null;
 }
 
 const initialState: AuthState = {
   user: null,
   token: null,
+  username: null,
 };
 
 const authSlice = createSlice({
@@ -23,20 +25,26 @@ const authSlice = createSlice({
     setUser(state, action: PayloadAction<User>) {
       state.user = action.payload;
     },
+    setUsername(state, action: PayloadAction<string>) {
+      state.username = action.payload;
+    },
     setToken(state, action: PayloadAction<string | null>) {
       state.token = action.payload;
     },
     logout(state) {
       state.user = null;
       state.token = null;
+      state.username = null;
     },
   },
 });
 
-export const { setAuth, setUser, logout, setToken } = authSlice.actions;
+export const { setAuth, setUser, setUsername, logout, setToken } =
+  authSlice.actions;
 
 export const selectUser = (state: RootState) => state.auth.user;
 export const selectToken = (state: RootState) => state.auth.token;
+export const selectUsername = (state: RootState) => state.auth.username;
 export const selectIsAuthenticated = (state: RootState) =>
   state.auth.token !== null;
 

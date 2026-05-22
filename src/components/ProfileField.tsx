@@ -11,10 +11,11 @@ import { Colors } from '../constants/styles';
 
 interface ProfileFieldProps extends TextInputProps {
   label: string;
+  error?: string;
 }
 
 const ProfileField = forwardRef<TextInput, ProfileFieldProps>(
-  ({ label, style, ...rest }, ref) => {
+  ({ label, error, style, ...rest }, ref) => {
     return (
       <View>
         <Text style={styles.label}>{label}</Text>
@@ -24,6 +25,7 @@ const ProfileField = forwardRef<TextInput, ProfileFieldProps>(
           style={[styles.input, style]}
           {...rest}
         />
+        {error ? <Text style={styles.error}>{error}</Text> : null}
       </View>
     );
   }
@@ -42,5 +44,11 @@ const styles = StyleSheet.create({
   input: {
     color: Colors.text,
     fontFamily: Fonts.regular,
+  },
+  error: {
+    fontFamily: Fonts.regular,
+    color: '#ff6b6b',
+    fontSize: 12,
+    marginTop: 4,
   },
 });

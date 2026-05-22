@@ -16,13 +16,12 @@ export type Details = {
 export default function ProfileIndex() {
   const insets = useSafeAreaInsets();
   const user = useAppSelector((state) => state.auth.user);
-  const displayName = user?.fullName.split(' ');
-  console.log(displayName);
+  const username = useAppSelector((state) => state.auth.username);
 
   const userDetails: Details[] = [
     {
       info: 'Username',
-      details: user?.fullName?.split(' ')[0] ?? 'Not provided',
+      details: username ?? user?.fullName.split(' ')[0] ?? 'Not provided',
     },
     { info: 'Email', details: user?.email ?? 'Not provided' },
     { info: 'Mobile Number', details: user?.phone ?? 'Not provided' },
@@ -63,6 +62,7 @@ export default function ProfileIndex() {
                 width: 110,
                 height: 110,
                 borderRadius: 100,
+                alignSelf: 'center',
               }}
             />
             <Pressable

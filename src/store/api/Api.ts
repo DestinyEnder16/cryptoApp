@@ -65,6 +65,7 @@ export const cryptoApi = createApi({
         method: 'PATCH',
         body: profile,
       }),
+      transformResponse: (response: UserResponse) => response.data,
     }),
 
     fetchMySettings: build.query<SettingDetails, void>({

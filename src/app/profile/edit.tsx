@@ -4,31 +4,54 @@ import ProfileField from '@/src/components/ProfileField';
 import { Fonts } from '@/src/constants/fonts';
 import { ProfileCamera } from '@/src/constants/images';
 import { Colors } from '@/src/constants/styles';
+import { editProfileSchema } from '@/src/schemas/editProfileSchema';
 import { useEditProfileMutation } from '@/src/store/api/Api';
 import { useAppDispatch, useAppSelector } from '@/src/store/hooks';
-import { setUser } from '@/src/store/slices/authSlice';
+import { setUser, setUsername } from '@/src/store/slices/authSlice';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
-import { StyleSheet, TextInput, View } from 'react-native';
+import { useEffect, useRef } from 'react';
+import { Controller, useForm, useWatch } from 'react-hook-form';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+type ProfileFormValues = {
+  fullName: string;
+  username: string;
+  email: string;
+  phone: string;
+};
 
 export default function EditProfile() {
   const insets = useSafeAreaInsets();
 
   const user = useAppSelector((state) => state.auth.user);
+  const storedUsername = useAppSelector((state) => state.auth.username);
   const dispatch = useAppDispatch();
   const { focus } = useLocalSearchParams<{ focus?: string }>();
-
-  const [fullName, setFullName] = useState(user?.fullName ?? '');
-  const [email, setEmail] = useState(user?.email ?? '');
-  const [phone, setPhone] = useState(user?.phone ?? '');
-  const [username, setUsername] = useState(user?.fullName.split(' ')[0] ?? '');
 
   const inputRefs = useRef<Record<string, TextInput | null>>({});
 
   const [editProfile, { isLoading }] = useEditProfileMutation();
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ProfileFormValues>({
+    resolver: yupResolver(editProfileSchema),
+    mode: 'onBlur',
+    defaultValues: {
+      fullName: user?.fullName ?? '',
+      username: storedUsername ?? '',
+      email: user?.email ?? '',
+      phone: user?.phone ?? '',
+    },
+  });
+
+  const watchedFullName = useWatch({ control, name: 'fullName' });
 
   useEffect(() => {
     if (focus && inputRefs.current[focus]) {
@@ -36,11 +59,16 @@ export default function EditProfile() {
     }
   }, [focus]);
 
-  const handleSave = async () => {
+  const onSubmit = async (values: ProfileFormValues) => {
     if (!user) return;
     try {
-      const updated = await editProfile({ fullName, phone, email }).unwrap();
+      const updated = await editProfile({
+        fullName: values.fullName,
+        email: values.email,
+        phone: values.phone,
+      }).unwrap();
       dispatch(setUser(updated));
+      dispatch(setUsername(values.username));
       router.back();
     } catch (e) {
       console.log(e);
@@ -104,15 +132,9 @@ export default function EditProfile() {
             </View>
 
             <View style={{ alignItems: 'center', gap: 8 }}>
-              <TextInput
-                style={styles.username}
-                value={fullName}
-                ref={(node) => {
-                  inputRefs.current['fullName'] = node;
-                }}
-                onChangeText={setFullName}
-              />
-
+              <Text style={styles.username}>
+                {watchedFullName || 'User1234'}
+              </Text>
               <View style={styles.underline} />
             </View>
           </View>
@@ -120,33 +142,74 @@ export default function EditProfile() {
       </LinearGradient>
 
       <View style={styles.userDetails}>
-        <ProfileField
-          ref={(node) => {
-            inputRefs.current['Username'] = node;
-          }}
-          label="Username"
-          value={username}
-          onChangeText={setUsername}
-          autoCapitalize="words"
+        <Controller
+          control={control}
+          name="fullName"
+          render={({ field: { value, onChange, onBlur } }) => (
+            <ProfileField
+              ref={(node) => {
+                inputRefs.current['Full Name'] = node;
+              }}
+              label="Full Name"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              autoCapitalize="words"
+              error={errors.fullName?.message}
+            />
+          )}
         />
-        <ProfileField
-          ref={(node) => {
-            inputRefs.current['Email'] = node;
-          }}
-          label="Email"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
+        <Controller
+          control={control}
+          name="username"
+          render={({ field: { value, onChange, onBlur } }) => (
+            <ProfileField
+              ref={(node) => {
+                inputRefs.current['Username'] = node;
+              }}
+              label="Username"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              autoCapitalize="none"
+              error={errors.username?.message}
+            />
+          )}
         />
-        <ProfileField
-          ref={(node) => {
-            inputRefs.current['Mobile Number'] = node;
-          }}
-          label="Mobile Number"
-          value={phone}
-          onChangeText={setPhone}
-          keyboardType="phone-pad"
+        <Controller
+          control={control}
+          name="email"
+          render={({ field: { value, onChange, onBlur } }) => (
+            <ProfileField
+              ref={(node) => {
+                inputRefs.current['Email'] = node;
+              }}
+              label="Email"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              error={errors.email?.message}
+            />
+          )}
+        />
+        <Controller
+          control={control}
+          name="phone"
+          render={({ field: { value, onChange, onBlur } }) => (
+            <ProfileField
+              ref={(node) => {
+                inputRefs.current['Mobile Number'] = node;
+              }}
+              label="Mobile Number"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              keyboardType="phone-pad"
+              error={errors.phone?.message}
+            />
+          )}
         />
         <View
           style={{
@@ -161,9 +224,9 @@ export default function EditProfile() {
             style={{ flex: 1 }}
           />
           <ActionBtn
-            text="Save Changes"
+            text={isLoading ? 'Saving...' : 'Save Changes'}
             styles={{ backgroundColor: Colors.green, txtColor: Colors.dark }}
-            action={handleSave}
+            action={handleSubmit(onSubmit)}
             style={{ flex: 1 }}
           />
         </View>

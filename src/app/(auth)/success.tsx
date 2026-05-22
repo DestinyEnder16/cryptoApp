@@ -2,11 +2,24 @@ import Btn from "@/src/components/Btn";
 import { Fonts } from "@/src/constants/fonts";
 import { Colors } from "@/src/constants/styles";
 import { router } from "expo-router";
+import { useEffect } from "react";
 import { Image, ImageBackground, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
 
 export default function SuccessScreen() {
   const insets = useSafeAreaInsets();
+
+  useEffect(() => {
+    Toast.show({
+      type: "success",
+      text1: "Success",
+      text2: "You have been signed in successfully.",
+      text2Style: { fontFamily: Fonts.bold, fontSize: 13 },
+      topOffset: 50,
+    });
+  }, []);
+
   return (
     <ImageBackground
       source={require("@/assets/images/onboarding-bg.png")}

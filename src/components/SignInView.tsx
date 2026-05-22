@@ -1,32 +1,33 @@
-import { yupResolver } from '@hookform/resolvers/yup';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { LinearGradient } from 'expo-linear-gradient';
-import { router } from 'expo-router';
-import { useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { yupResolver } from "@hookform/resolvers/yup";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import {
   StyleSheet,
   Text,
   TextInput,
   useWindowDimensions,
   View,
-} from 'react-native';
-import * as yup from 'yup';
-import { Fonts } from '../constants/fonts';
-import { Colors } from '../constants/styles';
-import { useLoginMutation } from '../store/api/Api';
-import { useAppDispatch } from '../store/hooks';
-import { setAuth } from '../store/slices/authSlice';
+} from "react-native";
+import * as yup from "yup";
+import { Fonts } from "../constants/fonts";
+import { Colors } from "../constants/styles";
+import { useLoginMutation } from "../store/api/Api";
+import { useAppDispatch } from "../store/hooks";
+import { setAuth } from "../store/slices/authSlice";
 import {
   addUserEmail,
   addUserMobile,
   addUserPassword,
-} from '../store/slices/userSlice';
-import AltLoginView from './AltLoginView';
-import AuthMethod from './AuthMethod';
-import Btn from './Btn';
+} from "../store/slices/userSlice";
+import AltLoginView from "./AltLoginView";
+import AuthMethod from "./AuthMethod";
+import Btn from "./Btn";
+import Toast from "react-native-toast-message";
 
-type Mode = 'email' | 'mobile';
+type Mode = "email" | "mobile";
 
 interface AuthProps {
   showFingerprintIcon?: boolean;
@@ -34,29 +35,29 @@ interface AuthProps {
 
 function SignInView({ showFingerprintIcon = true }: AuthProps) {
   const { width } = useWindowDimensions();
-  const [mode, setMode] = useState<Mode>('email');
+  const [mode, setMode] = useState<Mode>("email");
   const dispatch = useAppDispatch();
   const [login, { isLoading, error: fetchError }] = useLoginMutation();
 
   const schema = yup.object({
     email:
-      mode === 'email'
+      mode === "email"
         ? yup
             .string()
-            .required('Email is required')
-            .email('Enter a valid email address')
+            .required("Email is required")
+            .email("Enter a valid email address")
         : yup.string(),
     mobile:
-      mode === 'mobile'
+      mode === "mobile"
         ? yup
             .string()
-            .required('Mobile number is required')
-            .matches(/^\+?\d{7,15}$/, 'Enter a valid mobile number')
+            .required("Mobile number is required")
+            .matches(/^\+?\d{7,15}$/, "Enter a valid mobile number")
         : yup.string(),
     password: yup
       .string()
-      .required('Password is required')
-      .min(8, 'Must be at least 8 characters'),
+      .required("Password is required")
+      .min(8, "Must be at least 8 characters"),
   });
 
   // handles the form
@@ -66,18 +67,18 @@ function SignInView({ showFingerprintIcon = true }: AuthProps) {
     reset,
     formState: { errors },
   } = useForm({
-    mode: 'onBlur',
+    mode: "onBlur",
     defaultValues: {
-      email: '',
-      password: '',
-      mobile: '',
+      email: "",
+      password: "",
+      mobile: "",
     },
     resolver: yupResolver(schema),
   });
   const onSubmit = async (data: yup.InferType<typeof schema>) => {
-    if (mode === 'email' && data.email) {
+    if (mode === "email" && data.email) {
       dispatch(addUserEmail(data.email));
-    } else if (mode === 'mobile' && data.mobile) {
+    } else if (mode === "mobile" && data.mobile) {
       dispatch(addUserMobile(data.mobile));
     }
     if (data.password) dispatch(addUserPassword(data.password));
@@ -89,15 +90,42 @@ function SignInView({ showFingerprintIcon = true }: AuthProps) {
       }).unwrap();
 
       dispatch(setAuth(result));
-      await AsyncStorage.setItem('token', result.token);
+      Toast.show({
+        type: "success",
+        text1: "Success",
+        text2: "You have been signed in successfully.",
+        topOffset: 50,
+      });
+      await AsyncStorage.setItem("token", result.token);
 
       reset();
 
-      router.replace('/home');
-    } catch (error) {
-      console.log('error', error);
+      router.replace("/home");
+    } catch (e) {
+      console.log(e);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Invalid credentials. Please try again.",
+        topOffset: 50,
+        text2Style: { fontWeight: "bold", fontSize: 12 },
+      });
     }
   };
+
+  const showToast = (msg: string) => {
+    Toast.show({
+      type: "error",
+      text1: "Error",
+      text2: msg,
+      position: "bottom",
+    });
+  };
+
+  const modeErrorMsg = errors[mode]?.message;
+  useEffect(() => {
+    if (modeErrorMsg) showToast(modeErrorMsg);
+  }, [modeErrorMsg, mode]);
 
   return (
     <LinearGradient
@@ -111,19 +139,19 @@ function SignInView({ showFingerprintIcon = true }: AuthProps) {
         <View style={AuthStyles.formContainer}>
           <View style={AuthStyles.field}>
             <View
-              style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+              style={{ flexDirection: "row", justifyContent: "space-between" }}
             >
-              {mode === 'email' ? (
+              {mode === "email" ? (
                 <AuthMethod
                   label="Email"
                   instruction="Sign in with mobile"
-                  onPress={() => setMode('mobile')}
+                  onPress={() => setMode("mobile")}
                 />
               ) : (
                 <AuthMethod
                   label="Mobile Number"
                   instruction="Sign in with email"
-                  onPress={() => setMode('email')}
+                  onPress={() => setMode("email")}
                 />
               )}
             </View>
@@ -140,7 +168,7 @@ function SignInView({ showFingerprintIcon = true }: AuthProps) {
                     isLoading && { color: Colors.ash },
                   ]}
                   keyboardType={
-                    mode === 'email' ? 'email-address' : 'phone-pad'
+                    mode === "email" ? "email-address" : "phone-pad"
                   }
                   onChangeText={onChange}
                   onBlur={onBlur}
@@ -149,10 +177,6 @@ function SignInView({ showFingerprintIcon = true }: AuthProps) {
                 />
               )}
             />
-
-            {errors[mode] && (
-              <Text style={AuthStyles.errorMsg}>{errors[mode]?.message}</Text>
-            )}
           </View>
 
           <View style={AuthStyles.field}>
@@ -181,11 +205,14 @@ function SignInView({ showFingerprintIcon = true }: AuthProps) {
               <Text style={AuthStyles.errorMsg}>{errors.password.message}</Text>
             )}
 
-            {fetchError && (
-              <Text style={AuthStyles.errorMsg}>
-                Network error. Check your internet connection and try again
-              </Text>
-            )}
+            {fetchError &&
+              "status" in fetchError &&
+              (fetchError.status === "FETCH_ERROR" ||
+                fetchError.status === "TIMEOUT_ERROR") && (
+                <Text style={AuthStyles.errorMsg}>
+                  Network error. Check your internet connection and try again
+                </Text>
+              )}
 
             <Text style={{ color: Colors.green, fontFamily: Fonts.regular }}>
               Forgot password?
@@ -224,7 +251,7 @@ export const AuthStyles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontFamily: Fonts.regular,
-    color: '#A7AFB7',
+    color: "#A7AFB7",
   },
   inputField: {
     borderRadius: 12,

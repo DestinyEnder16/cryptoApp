@@ -1,11 +1,11 @@
-import { memo, useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { Fonts } from "../constants/fonts";
-import { HomeCoinBtc } from "../constants/images";
-import { Colors } from "../constants/styles";
-import { useFetchAssetDetailsQuery } from "../store/api/Api";
-import LineChartView from "./LineChartView";
-import MarketStripItemSkeleton from "./MarketStripItemSkeleton";
+import { Image } from 'expo-image';
+import { memo } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { Fonts } from '../constants/fonts';
+import { Colors } from '../constants/styles';
+import { useFetchAssetDetailsQuery } from '../store/api/Api';
+import LineChartView from './LineChartView';
+import MarketStripItemSkeleton from './MarketStripItemSkeleton';
 
 interface MarketStripItemProps {
   coin: string;
@@ -29,7 +29,11 @@ function MarketStripItem({ coin }: MarketStripItemProps) {
         <Text style={[styles.priceTxt, isPositive ? styles.green : styles.red]}>
           {data.priceUsd}
         </Text>
-        <HomeCoinBtc />
+        <Image
+          cachePolicy={'memory-disk'}
+          source={{ uri: `${process.env.EXPO_PUBLIC_API_URL}${data.iconUrl}` }}
+          style={{ width: 24, height: 24 }}
+        />
       </View>
 
       <View style={[styles.row, styles.symbolRow]}>
@@ -52,17 +56,17 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.text,
     borderRadius: 12,
     padding: 12,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.12,
     shadowRadius: 6,
     elevation: 3,
     marginBottom: 4,
-    height: "100%",
+    height: '100%',
   },
   row: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   priceRow: { gap: 40 },
   symbolRow: { gap: 10 },

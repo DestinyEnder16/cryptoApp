@@ -1,13 +1,13 @@
-import Loader from "@/src/components/Loader";
-import TrendingAssetItem from "@/src/components/TrendingAssetItem";
-import WalletHeader from "@/src/components/WalletHeader";
-import { Colors } from "@/src/constants/styles";
-import { useFetchTrendingAssetsQuery } from "@/src/store/api/Api";
-import { setTrendingCoins } from "@/src/store/slices/coinSlice";
-import { FlashList } from "@shopify/flash-list";
-import { useEffect } from "react";
-import { StyleSheet, View } from "react-native";
-import { useDispatch } from "react-redux";
+import Loader from '@/src/components/Loader';
+import TrendingAssetItem from '@/src/components/TrendingAssetItem';
+import WalletHeader from '@/src/components/WalletHeader';
+import { Colors } from '@/src/constants/styles';
+import { useFetchTrendingAssetsQuery } from '@/src/store/api/Api';
+import { setTrendingCoins } from '@/src/store/slices/coinSlice';
+import { FlashList } from '@shopify/flash-list';
+import { useEffect } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { useDispatch } from 'react-redux';
 
 export default function Wallet() {
   const dispatch = useDispatch();
@@ -43,9 +43,10 @@ const keyExtractor = (item: { id: string }) => item.id;
 const renderItem = ({
   item,
 }: {
-  item: { name: string; symbol: string; priceUsd: number };
+  item: { name: string; symbol: string; priceUsd: number; iconUrl: string };
 }) => (
   <TrendingAssetItem
+    iconUrl={item.iconUrl}
     name={item.name}
     symbol={item.symbol}
     priceUsd={item.priceUsd}

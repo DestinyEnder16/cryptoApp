@@ -1,7 +1,7 @@
+import { Image } from 'expo-image';
 import { memo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Fonts } from '../constants/fonts';
-import { BtcCoin } from '../constants/images';
 import { Colors } from '../constants/styles';
 import { currencyConverter } from '../utils/currencyConverter';
 
@@ -9,9 +9,15 @@ interface TrendingAssetItemProps {
   name: string;
   symbol: string;
   priceUsd: number;
+  iconUrl: string;
 }
 
-function TrendingAssetItem({ name, symbol, priceUsd }: TrendingAssetItemProps) {
+function TrendingAssetItem({
+  name,
+  symbol,
+  priceUsd,
+  iconUrl,
+}: TrendingAssetItemProps) {
   const priceBtc = currencyConverter(priceUsd, 'usd', 'btc');
 
   const formattedUsd = priceUsd.toLocaleString('en-US', {
@@ -27,7 +33,10 @@ function TrendingAssetItem({ name, symbol, priceUsd }: TrendingAssetItemProps) {
   return (
     <View style={styles.container}>
       <View style={styles.left}>
-        <BtcCoin width={41} height={41} />
+        <Image
+          style={{ width: 40, height: 40 }}
+          source={{ uri: `${process.env.EXPO_PUBLIC_API_URL}${iconUrl}` }}
+        />
         <View>
           <Text style={styles.name}>{name}</Text>
           <Text style={styles.symbol}>{symbol}</Text>

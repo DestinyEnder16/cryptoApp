@@ -31,6 +31,15 @@ type ProfileUpdate = {
   email: string;
 };
 
+type SettingsRequest = {
+  language: string;
+  fiatCurrency: string;
+  theme: string;
+  priceAlerts: boolean;
+  pushNotifications: boolean;
+  biometricEnabled: boolean;
+};
+
 export const cryptoApi = createApi({
   reducerPath: 'cryptoApi',
   baseQuery: fetchBaseQuery({
@@ -66,6 +75,15 @@ export const cryptoApi = createApi({
         body: profile,
       }),
       transformResponse: (response: UserResponse) => response.data,
+    }),
+
+    editSettings: build.mutation<SettingDetails, SettingsRequest>({
+      query: (settings) => ({
+        url: '/me/settings',
+        method: 'PATCH',
+        body: settings,
+      }),
+      transformResponse: (response: SettingsResponse) => response.data,
     }),
 
     fetchMySettings: build.query<SettingDetails, void>({
@@ -145,4 +163,5 @@ export const {
   useFetchTrendingAssetsQuery,
   useFetchMeQuery,
   useEditProfileMutation,
+  useEditSettingsMutation,
 } = cryptoApi;

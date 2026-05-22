@@ -1,6 +1,6 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "..";
-import type { AuthPayload, User } from "@/src/types/auth/types";
+import type { AuthPayload, SettingDetails, User } from "@/src/types/auth/types";
 
 interface AuthState {
   user: User | null;
@@ -25,6 +25,11 @@ const authSlice = createSlice({
     setUser(state, action: PayloadAction<User>) {
       state.user = action.payload;
     },
+    setSettings(state, action: PayloadAction<SettingDetails>) {
+      if (state.user) {
+        state.user.settings = action.payload;
+      }
+    },
     setUsername(state, action: PayloadAction<string>) {
       state.username = action.payload;
     },
@@ -39,7 +44,7 @@ const authSlice = createSlice({
   },
 });
 
-export const { setAuth, setUser, setUsername, logout, setToken } =
+export const { setAuth, setUser, setSettings, setUsername, logout, setToken } =
   authSlice.actions;
 
 export const selectUser = (state: RootState) => state.auth.user;

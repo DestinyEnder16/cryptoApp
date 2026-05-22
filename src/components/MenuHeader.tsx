@@ -38,7 +38,7 @@ function MenuHeader() {
       locations={GRADIENT_LOCATIONS}
       style={styles.gradient}
     >
-      <View style={{ gap: 10 }}>
+      <View style={{ gap: 15 }}>
         <View style={[styles.row, styles.topRow]}>
           <BackHeader txt="Menu" marginBottom={30} />
           <ThreeDots />

@@ -28,7 +28,11 @@ import Btn from './Btn';
 
 type Mode = 'email' | 'mobile';
 
-function SignInView() {
+interface AuthProps {
+  showFingerprintIcon?: boolean;
+}
+
+function SignInView({ showFingerprintIcon = true }: AuthProps) {
   const { width } = useWindowDimensions();
   const [mode, setMode] = useState<Mode>('email');
   const dispatch = useAppDispatch();
@@ -197,7 +201,7 @@ function SignInView() {
           />
         </View>
 
-        <AltLoginView />
+        <AltLoginView showFingerPrintOption={showFingerprintIcon} />
       </View>
     </LinearGradient>
   );

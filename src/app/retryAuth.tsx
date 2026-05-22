@@ -1,18 +1,18 @@
-import Btn from '@/src/components/Btn';
-import { Fonts } from '@/src/constants/fonts';
-import { Fingerprint } from '@/src/constants/images';
-import { Colors } from '@/src/constants/styles';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { completeAuth } from '../services/auth';
+import Btn from "@/src/components/Btn";
+import { Fonts } from "@/src/constants/fonts";
+import { Fingerprint } from "@/src/constants/images";
+import { Colors } from "@/src/constants/styles";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router } from "expo-router";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { completeAuth } from "../services/auth";
 import {
   authenticateWithBiometrics,
   isBiometricAvailable,
-} from '../services/biometricAuth';
-import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { logout } from '../store/slices/authSlice';
+} from "../services/biometricAuth";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { logout } from "../store/slices/authSlice";
 
 export default function RetryAuthScreen() {
   const insets = useSafeAreaInsets();
@@ -21,14 +21,14 @@ export default function RetryAuthScreen() {
 
   async function handleRetry() {
     if (!token) {
-      router.replace('/(auth)/auth');
+      router.replace("/(auth)/auth");
       return;
     }
 
     if (!(await isBiometricAvailable())) {
-      await AsyncStorage.removeItem('token');
+      await AsyncStorage.removeItem("token");
       dispatch(logout());
-      router.replace('/(auth)/auth');
+      router.replace("/(auth)/auth");
       return;
     }
 
@@ -52,6 +52,10 @@ export default function RetryAuthScreen() {
         </Text>
       </View>
 
+      <Pressable onPress={() => router.replace("/userLogin")}>
+        <Text style={styles.txt}>Try signing in with email and password</Text>
+      </Pressable>
+
       <View style={styles.footer}>
         <Btn text="Try Again" action={handleRetry} />
       </View>
@@ -65,12 +69,12 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primaryBackgroundColor,
     paddingHorizontal: 20,
     paddingBottom: 30,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
   content: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     gap: 20,
   },
   iconWrapper: {
@@ -78,26 +82,32 @@ const styles = StyleSheet.create({
     height: 140,
     borderRadius: 70,
     backgroundColor: Colors.secondaryBackgroundColor,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: 10,
   },
   heading: {
     color: Colors.text,
     fontFamily: Fonts.bold,
     fontSize: 22,
-    textAlign: 'center',
+    textAlign: "center",
   },
   desc: {
     color: Colors.grey,
     fontFamily: Fonts.regular,
     fontSize: 14,
-    textAlign: 'center',
+    textAlign: "center",
     paddingHorizontal: 20,
     lineHeight: 20,
   },
   footer: {
     gap: 16,
-    alignItems: 'center',
+    alignItems: "center",
+  },
+  txt: {
+    fontFamily: Fonts.regular,
+    color: Colors.green,
+    textAlign: "center",
+    marginBottom: 30,
   },
 });

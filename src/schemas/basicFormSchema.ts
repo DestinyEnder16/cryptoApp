@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 
-const emailRule = yup
+export const emailRule = yup
   .string()
   .required('Email is required')
   .email('Enter a valid email address');
@@ -17,7 +17,7 @@ const mobileRule = yup
   .required('Enter a mobile number')
   .matches(/^\+?\d{7,15}$/, 'Enter a valid mobile number');
 
-const nameRule = yup
+export const nameRule = yup
   .string()
   .required('Enter a name')
   .min(3, 'Name must be at least 3 characters');

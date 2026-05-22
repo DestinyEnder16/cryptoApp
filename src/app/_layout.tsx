@@ -13,6 +13,7 @@ import { store } from "../store";
 import { cryptoApi } from "../store/api/Api";
 import { useAppDispatch } from "../store/hooks";
 import { setToken } from "../store/slices/authSlice";
+import Toast from "react-native-toast-message";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -53,6 +54,7 @@ export default function RootLayout() {
           <Stack.Screen name="UserPreferenceSetting" />
         </Stack>
       </AuthBootstrap>
+      <Toast />
     </Provider>
   );
 }

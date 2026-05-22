@@ -1,4 +1,5 @@
 import ActionBtn from '@/src/components/ActionBtn';
+import AppKeyboardScrollView from '@/src/components/AppKeyboardScrollView';
 import BackHeader from '@/src/components/BackHeader';
 import ProfileField from '@/src/components/ProfileField';
 import { Fonts } from '@/src/constants/fonts';
@@ -76,162 +77,164 @@ export default function EditProfile() {
   };
 
   return (
-    <View
-      style={{
-        backgroundColor: Colors.primaryBackgroundColor,
-        flex: 1,
-        paddingTop: insets.top + 10,
-      }}
-    >
-      <LinearGradient
-        colors={['#5ed5a716', Colors.primaryBackgroundColor]}
-        start={{ x: 0.5, y: 1 }}
-        end={{ x: 0.5, y: 0 }}
-        locations={[0, 0.4]}
-        style={{ width: '100%' }}
+    <AppKeyboardScrollView>
+      <View
+        style={{
+          backgroundColor: Colors.primaryBackgroundColor,
+          flex: 1,
+          paddingTop: insets.top + 10,
+        }}
       >
-        <View style={{ height: 175 }}>
-          <View style={{ marginLeft: 30 }}>
-            <BackHeader txt="Profile" marginBottom={10} />
-          </View>
+        <LinearGradient
+          colors={['#5ed5a716', Colors.primaryBackgroundColor]}
+          start={{ x: 0.5, y: 1 }}
+          end={{ x: 0.5, y: 0 }}
+          locations={[0, 0.4]}
+          style={{ width: '100%' }}
+        >
+          <View style={{ height: 175 }}>
+            <View style={{ marginLeft: 30 }}>
+              <BackHeader txt="Profile" marginBottom={10} />
+            </View>
 
-          <View
-            style={{
-              position: 'absolute',
-              bottom: -90,
-              alignSelf: 'center',
-              alignItems: 'center',
-              gap: 12,
-            }}
-          >
-            <View style={{ position: 'relative' }}>
-              <Image
-                source={require('@/assets/images/avatar.jpg')}
-                style={{
-                  width: 110,
-                  height: 110,
-                  borderRadius: 100,
-                }}
-              />
+            <View
+              style={{
+                position: 'absolute',
+                bottom: -90,
+                alignSelf: 'center',
+                alignItems: 'center',
+                gap: 12,
+              }}
+            >
+              <View style={{ position: 'relative' }}>
+                <Image
+                  source={require('@/assets/images/avatar.jpg')}
+                  style={{
+                    width: 110,
+                    height: 110,
+                    borderRadius: 100,
+                  }}
+                />
 
-              <View
-                style={{
-                  backgroundColor: '#203234',
-                  width: 36,
-                  height: 36,
-                  borderRadius: 100,
-                  position: 'absolute',
-                  right: -10,
-                  bottom: 6,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <ProfileCamera />
+                <View
+                  style={{
+                    backgroundColor: '#203234',
+                    width: 36,
+                    height: 36,
+                    borderRadius: 100,
+                    position: 'absolute',
+                    right: -10,
+                    bottom: 6,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <ProfileCamera />
+                </View>
+              </View>
+
+              <View style={{ alignItems: 'center', gap: 8 }}>
+                <Text style={styles.username}>
+                  {watchedFullName || 'User1234'}
+                </Text>
+                <View style={styles.underline} />
               </View>
             </View>
+          </View>
+        </LinearGradient>
 
-            <View style={{ alignItems: 'center', gap: 8 }}>
-              <Text style={styles.username}>
-                {watchedFullName || 'User1234'}
-              </Text>
-              <View style={styles.underline} />
-            </View>
+        <View style={styles.userDetails}>
+          <Controller
+            control={control}
+            name="fullName"
+            render={({ field: { value, onChange, onBlur } }) => (
+              <ProfileField
+                ref={(node) => {
+                  inputRefs.current['Full Name'] = node;
+                }}
+                label="Full Name"
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                autoCapitalize="words"
+                error={errors.fullName?.message}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="username"
+            render={({ field: { value, onChange, onBlur } }) => (
+              <ProfileField
+                ref={(node) => {
+                  inputRefs.current['Username'] = node;
+                }}
+                label="Username"
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                autoCapitalize="none"
+                error={errors.username?.message}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="email"
+            render={({ field: { value, onChange, onBlur } }) => (
+              <ProfileField
+                ref={(node) => {
+                  inputRefs.current['Email'] = node;
+                }}
+                label="Email"
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                error={errors.email?.message}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="phone"
+            render={({ field: { value, onChange, onBlur } }) => (
+              <ProfileField
+                ref={(node) => {
+                  inputRefs.current['Mobile Number'] = node;
+                }}
+                label="Mobile Number"
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                keyboardType="phone-pad"
+                error={errors.phone?.message}
+              />
+            )}
+          />
+          <View
+            style={{
+              flexDirection: 'row',
+              gap: 10,
+            }}
+          >
+            <ActionBtn
+              text="Cancel"
+              styles={{ backgroundColor: Colors.ash, txtColor: Colors.text }}
+              action={() => router.back()}
+              style={{ flex: 1 }}
+            />
+            <ActionBtn
+              text={isLoading ? 'Saving...' : 'Save Changes'}
+              styles={{ backgroundColor: Colors.green, txtColor: Colors.dark }}
+              action={handleSubmit(onSubmit)}
+              style={{ flex: 1 }}
+            />
           </View>
         </View>
-      </LinearGradient>
-
-      <View style={styles.userDetails}>
-        <Controller
-          control={control}
-          name="fullName"
-          render={({ field: { value, onChange, onBlur } }) => (
-            <ProfileField
-              ref={(node) => {
-                inputRefs.current['Full Name'] = node;
-              }}
-              label="Full Name"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              autoCapitalize="words"
-              error={errors.fullName?.message}
-            />
-          )}
-        />
-        <Controller
-          control={control}
-          name="username"
-          render={({ field: { value, onChange, onBlur } }) => (
-            <ProfileField
-              ref={(node) => {
-                inputRefs.current['Username'] = node;
-              }}
-              label="Username"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              autoCapitalize="none"
-              error={errors.username?.message}
-            />
-          )}
-        />
-        <Controller
-          control={control}
-          name="email"
-          render={({ field: { value, onChange, onBlur } }) => (
-            <ProfileField
-              ref={(node) => {
-                inputRefs.current['Email'] = node;
-              }}
-              label="Email"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              error={errors.email?.message}
-            />
-          )}
-        />
-        <Controller
-          control={control}
-          name="phone"
-          render={({ field: { value, onChange, onBlur } }) => (
-            <ProfileField
-              ref={(node) => {
-                inputRefs.current['Mobile Number'] = node;
-              }}
-              label="Mobile Number"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              keyboardType="phone-pad"
-              error={errors.phone?.message}
-            />
-          )}
-        />
-        <View
-          style={{
-            flexDirection: 'row',
-            gap: 10,
-          }}
-        >
-          <ActionBtn
-            text="Cancel"
-            styles={{ backgroundColor: Colors.ash, txtColor: Colors.text }}
-            action={() => router.back()}
-            style={{ flex: 1 }}
-          />
-          <ActionBtn
-            text={isLoading ? 'Saving...' : 'Save Changes'}
-            styles={{ backgroundColor: Colors.green, txtColor: Colors.dark }}
-            action={handleSubmit(onSubmit)}
-            style={{ flex: 1 }}
-          />
-        </View>
       </View>
-    </View>
+    </AppKeyboardScrollView>
   );
 }
 

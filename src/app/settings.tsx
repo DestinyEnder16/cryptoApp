@@ -72,7 +72,7 @@ export default function Settings() {
               key={index}
               onPress={() =>
                 el.type === 'Preference' &&
-                router.navigate('/userPreferenceSetting')
+                router.navigate('/UserPreferenceSetting')
               }
             >
               <View

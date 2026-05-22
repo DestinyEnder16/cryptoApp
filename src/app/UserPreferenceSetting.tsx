@@ -1,13 +1,13 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from "react-native";
 
-import { router } from 'expo-router';
-import { useState } from 'react';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import ActionBtn from '../components/ActionBtn';
-import { Colors } from '../constants/styles';
-import { useEditSettingsMutation } from '../store/api/Api';
-import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { setSettings } from '../store/slices/authSlice';
+import { router } from "expo-router";
+import { useState } from "react";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import ActionBtn from "../components/ActionBtn";
+import { Colors } from "../constants/styles";
+import { useEditSettingsMutation } from "../store/api/Api";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { setSettings } from "../store/slices/authSlice";
 
 export default function UserPreferenceSettingView() {
   const insets = useSafeAreaInsets();
@@ -16,7 +16,7 @@ export default function UserPreferenceSettingView() {
   const userBiometricEnabled = user?.settings.biometricEnabled;
 
   const [isBiometricEnabled, setIsBiometricEnabled] = useState(
-    userBiometricEnabled ?? false
+    Boolean(userBiometricEnabled),
   );
 
   const [editSettings, { isLoading }] = useEditSettingsMutation();
@@ -41,10 +41,10 @@ export default function UserPreferenceSettingView() {
       style={{ paddingTop: insets.top + 10, paddingLeft: insets.left + 10 }}
     >
       <Text style={styles.txt}>
-        {userBiometricEnabled ? 'Disable Biometrics' : 'Enable Biometric'}
+        {userBiometricEnabled ? "Disable Biometrics" : "Enable Biometric"}
       </Text>
 
-      <View style={{ flexDirection: 'row', gap: 10 }}>
+      <View style={{ flexDirection: "row", gap: 10 }}>
         <ActionBtn
           text="Yes"
           styles={{ backgroundColor: Colors.green, txtColor: Colors.text }}
@@ -63,7 +63,7 @@ export default function UserPreferenceSettingView() {
       </View>
 
       <ActionBtn
-        text={isLoading ? 'Editing' : 'Save Changes'}
+        text={isLoading ? "Editing" : "Save Changes"}
         styles={{ backgroundColor: Colors.ash, txtColor: Colors.text }}
         action={() => handleEditSetting()}
       />
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   error: {
-    color: Colors.red ?? '#ff5a5a',
+    color: Colors.red ?? "#ff5a5a",
     marginTop: 16,
   },
 });

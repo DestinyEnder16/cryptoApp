@@ -1,5 +1,5 @@
-import { Redirect } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
+import { Redirect, router } from 'expo-router';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SvgProps } from 'react-native-svg';
 import ActionBtn from '../components/ActionBtn';
@@ -68,43 +68,53 @@ export default function Settings() {
         {settings.map((el, index) => {
           const Icon = el.icon;
           return (
-            <View
+            <Pressable
               key={index}
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                borderBottomWidth: 0.2,
-                paddingBottom: 30,
-                borderBottomColor: Colors.textMuted,
-              }}
+              onPress={() =>
+                el.type === 'Preference' &&
+                router.navigate('/userPreferenceSetting')
+              }
             >
-              <View style={[styles.row, { gap: 30 }]}>
-                <View
-                  style={{
-                    backgroundColor: Colors.secondaryBackgroundColor,
-                    padding: 15,
-                    height: 28,
-                    width: 31,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: 100,
-                  }}
-                >
-                  <Icon />
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  borderBottomWidth: 0.2,
+                  paddingBottom: 30,
+                  borderBottomColor: Colors.textMuted,
+                }}
+              >
+                <View style={[styles.row, { gap: 30 }]}>
+                  <View
+                    style={{
+                      backgroundColor: Colors.secondaryBackgroundColor,
+                      padding: 15,
+                      height: 28,
+                      width: 31,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: 100,
+                    }}
+                  >
+                    <Icon />
+                  </View>
+                  <Text
+                    style={{
+                      fontFamily: Fonts.regular,
+                      color: Colors.textMuted,
+                    }}
+                  >
+                    {el.type}
+                  </Text>
                 </View>
-                <Text
-                  style={{ fontFamily: Fonts.regular, color: Colors.textMuted }}
-                >
-                  {el.type}
-                </Text>
-              </View>
 
-              <View style={[styles.row, { gap: 10 }]}>
-                <Text style={styles.txt}>{el.info}</Text>
-                <ForwardBtn />
+                <View style={[styles.row, { gap: 10 }]}>
+                  <Text style={styles.txt}>{el.info}</Text>
+                  <ForwardBtn />
+                </View>
               </View>
-            </View>
+            </Pressable>
           );
         })}
 

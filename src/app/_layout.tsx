@@ -49,6 +49,8 @@ export default function RootLayout() {
             name="retryAuth"
             options={{ animation: 'fade_from_bottom' }}
           />
+          <Stack.Screen name="userLogin" />
+          <Stack.Screen name="userPreferenceSetting" />
         </Stack>
       </AuthBootstrap>
     </Provider>
@@ -60,7 +62,8 @@ type Route =
   | '/onboarding'
   | '/(auth)/auth'
   | '/(tabs)/home'
-  | '/retryAuth';
+  | '/retryAuth'
+  | '/userLogin';
 
 function AuthBootstrap({ children }: { children: ReactNode }) {
   const dispatch = useAppDispatch();
@@ -70,13 +73,19 @@ function AuthBootstrap({ children }: { children: ReactNode }) {
   useEffect(() => {
     async function bootstrap() {
       try {
+        // IMPORTANT: Checks if there is a token stored in the device
         const token = await AsyncStorage.getItem('token');
+
+        // NOTE: If no token, show the onboarding screen
         if (!token) {
           setRedirectTo('/onboarding');
           return;
         }
+
+        // move the token from async storage to redux store
         dispatch(setToken(token));
 
+        // IMPORTANT: Checking if the user in question needs biometrics to login
         let biometricRequired: boolean;
         try {
           const settings = await dispatch(
@@ -84,16 +93,18 @@ function AuthBootstrap({ children }: { children: ReactNode }) {
           ).unwrap();
           biometricRequired = settings.biometricEnabled;
         } catch {
+          await AsyncStorage.removeItem('token');
           setRedirectTo('/(auth)/auth');
           return;
         }
 
+        // IMPORTANT: Checks if the user has saved means of authentication
         const biometricAvailable = await isBiometricAvailable();
 
         if (biometricRequired && !biometricAvailable) {
           await AsyncStorage.removeItem('token');
           dispatch(logout());
-          setRedirectTo('/(auth)/auth');
+          setRedirectTo('/userLogin');
           return;
         }
 

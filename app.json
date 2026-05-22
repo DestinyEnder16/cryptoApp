@@ -40,7 +40,8 @@
           "faceIDPermission": "Allow tMinus1 to use Face ID"
         }
       ],
-      "expo-notifications"
+      "expo-notifications",
+      "./plugins/withCustomSplash.js"
     ],
     "experiments": {
       "typedRoutes": true,

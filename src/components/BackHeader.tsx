@@ -12,7 +12,7 @@ interface HeaderProps {
 function BackHeader({ txt, marginBottom }: HeaderProps) {
   return (
     <View style={[styles.container, { marginBottom }]}>
-      <Pressable hitSlop={10} onPress={() => router.back()}>
+      <Pressable hitSlop={30} onPress={() => router.back()}>
         <BackBtn />
       </Pressable>
 

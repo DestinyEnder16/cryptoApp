@@ -1,29 +1,31 @@
-import BackHeader from '@/src/components/BackHeader';
-import Btn from '@/src/components/Btn';
-import NumInputField from '@/src/components/NumInputField';
-import { AuthStyles } from '@/src/components/SignInView';
-import { Fonts } from '@/src/constants/fonts';
-import { Colors } from '@/src/constants/styles';
+import { getApiErrorMessage } from "@/src/helpers/getApiErrorMessage";
+import BackHeader from "@/src/components/BackHeader";
+import Btn from "@/src/components/Btn";
+import NumInputField from "@/src/components/NumInputField";
+import { AuthStyles } from "@/src/components/SignInView";
+import { Fonts } from "@/src/constants/fonts";
+import { Colors } from "@/src/constants/styles";
 import {
   useOtpMutation,
   useOtpVerificationMutation,
   useSignupMutation,
-} from '@/src/store/api/Api';
-import { useAppDispatch, useAppSelector } from '@/src/store/hooks';
-import { setAuth } from '@/src/store/slices/authSlice';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Notifications from 'expo-notifications';
-import { router } from 'expo-router';
-import { useCallback, useEffect, useState } from 'react';
+} from "@/src/store/api/Api";
+import { useAppDispatch, useAppSelector } from "@/src/store/hooks";
+import { setAuth } from "@/src/store/slices/authSlice";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Notifications from "expo-notifications";
+import { router } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Pressable,
   StyleSheet,
   Text,
   View,
-} from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+// This handled the notification
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldPlaySound: true,
@@ -44,7 +46,8 @@ export default function Verification() {
   const password = useAppSelector((state) => state.user.password);
 
   const [timer, setTimer] = useState(RESEND_INTERVAL);
-  const [otp, setOtp] = useState('');
+  const [otp, setOtp] = useState("");
+  // Increased on resend; used as a dep of the request effect below to re-fire it.
   const [retryNum, setRetryNum] = useState(0);
 
   const [getOtp, { error: otpError, isLoading }] = useOtpMutation();
@@ -62,28 +65,30 @@ export default function Verification() {
     setRetryNum((n) => n + 1);
   }, []);
 
+  // Runs on mount and again whenever retryNum changes (i.e. the user resends).
   useEffect(() => {
     async function requestOtp() {
       try {
         const result = await getOtp({ email }).unwrap();
 
         const { status } = await Notifications.requestPermissionsAsync();
-        if (status !== 'granted') return;
+        if (status !== "granted") return;
 
         await Notifications.scheduleNotificationAsync({
           content: {
-            title: 'Your verification code',
+            title: "Your verification code",
             body: `Your code is ${result.demoCode}`,
           },
           trigger: null,
         });
       } catch (e) {
-        console.log('otp error', e);
+        console.warn(e);
       }
     }
     requestOtp();
   }, [getOtp, email, retryNum]);
 
+  // Countdown
   useEffect(() => {
     if (timer <= 0) return;
     const id = setTimeout(() => setTimer((prev) => prev - 1), 1000);
@@ -93,6 +98,7 @@ export default function Verification() {
   async function verify() {
     try {
       const result = await verifyOtp({ email, code: otp }).unwrap();
+      // Server returned 200 but the code didn't match — bail without signing up.
       if (!result.verified) return;
 
       const auth = await signup({
@@ -102,9 +108,10 @@ export default function Verification() {
         phone: mobile,
       }).unwrap();
       dispatch(setAuth(auth));
-      await AsyncStorage.setItem('token', auth.token);
-      router.navigate('/success');
+      await AsyncStorage.setItem("token", auth.token);
+      router.navigate("/success");
     } catch (e) {
+      // Thrown failures surface via verificationError / signUpError in the UI.
       console.log(e);
     }
   }
@@ -120,16 +127,17 @@ export default function Verification() {
         <Text style={styles.info}>{mobile}</Text>
       </View>
 
+      {/* Signup failure is terminal — replace the OTP UI with an error + Log In. */}
       {signUpError ? (
         <Text style={[AuthStyles.errorMsg, styles.signupError]}>
-          A user with this email already exists.
+          {getApiErrorMessage(signUpError)}
         </Text>
       ) : (
         <View style={styles.body}>
           {otpError ? (
             <View style={styles.otpErrorBlock}>
               <Text style={AuthStyles.errorMsg}>
-                Error getting the OTP - retry.
+                {getApiErrorMessage(otpError, "Error getting the OTP - retry.")}
               </Text>
               <ResendCode onPress={resendOtp} />
             </View>
@@ -140,9 +148,12 @@ export default function Verification() {
           )}
 
           {verificationError && (
-            <Text style={AuthStyles.errorMsg}>Invalid or expired code</Text>
+            <Text style={AuthStyles.errorMsg}>
+              {getApiErrorMessage(verificationError, "Invalid or expired code")}
+            </Text>
           )}
 
+          {/* Suppress this resend button when the otpError branch is already showing one. Activate the resend button when the timer has been exhausted. */}
           <View style={styles.resendRow}>
             {timer > 0 ? (
               <Text style={styles.desc}>Resend Code ({timer})</Text>
@@ -155,7 +166,7 @@ export default function Verification() {
 
       <View style={styles.footer}>
         {signUpError ? (
-          <Btn text="Log In" action={() => router.replace('/(auth)/auth')} />
+          <Btn text="Log In" action={() => router.replace("/(auth)/auth")} />
         ) : (
           <Btn text="Continue" action={() => otp.length === 6 && verify()} />
         )}
@@ -181,20 +192,20 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   body: {
-    alignItems: 'center',
+    alignItems: "center",
     gap: 20,
   },
   otpErrorBlock: {
-    alignItems: 'center',
+    alignItems: "center",
     gap: 10,
     marginTop: 50,
   },
   resendRow: {
-    alignItems: 'center',
+    alignItems: "center",
     gap: 5,
   },
   signupError: {
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 15,
   },
   footer: {

@@ -1,6 +1,7 @@
 import Btn from "@/src/components/Btn";
 import { Fonts } from "@/src/constants/fonts";
 import { Colors } from "@/src/constants/styles";
+import { showToast } from "@/src/helpers/showToast";
 import { router } from "expo-router";
 import { useEffect } from "react";
 import { Image, ImageBackground, StyleSheet, Text, View } from "react-native";
@@ -11,12 +12,10 @@ export default function SuccessScreen() {
   const insets = useSafeAreaInsets();
 
   useEffect(() => {
-    Toast.show({
+    showToast({
       type: "success",
-      text1: "Success",
-      text2: "You have been signed in successfully.",
-      text2Style: { fontFamily: Fonts.bold, fontSize: 13 },
-      topOffset: 50,
+      title: "Success",
+      message: "You have been signed in successfully.",
     });
   }, []);
 

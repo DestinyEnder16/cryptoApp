@@ -1,10 +1,10 @@
-import { FlashList } from '@shopify/flash-list';
-import { memo } from 'react';
-import { StyleSheet } from 'react-native';
-import { useFetchSupportedAssetsQuery } from '../store/api/Api';
-import MarketStripItem from './MarketStripItem';
+import { FlashList } from "@shopify/flash-list";
+import { memo } from "react";
+import { StyleSheet } from "react-native";
+import { useFetchSupportedAssetsQuery } from "../store/api/Api";
+import CoinItem from "./CoinItem";
 
-function MarketStrip() {
+function HomeRecentCoinsStrip() {
   const { data } = useFetchSupportedAssetsQuery();
 
   return (
@@ -22,7 +22,7 @@ function MarketStrip() {
 
 const keyExtractor = (symbol: string) => symbol;
 const renderItem = ({ item }: { item: string }) => {
-  return <MarketStripItem coin={item} />;
+  return <CoinItem coin={item} />;
 };
 
 const styles = StyleSheet.create({
@@ -32,4 +32,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default memo(MarketStrip);
+export default memo(HomeRecentCoinsStrip);

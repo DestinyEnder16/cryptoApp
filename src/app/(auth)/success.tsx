@@ -6,7 +6,6 @@ import { router } from "expo-router";
 import { useEffect } from "react";
 import { Image, ImageBackground, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Toast from "react-native-toast-message";
 
 export default function SuccessScreen() {
   const insets = useSafeAreaInsets();

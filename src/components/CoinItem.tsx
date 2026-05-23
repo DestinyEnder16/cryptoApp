@@ -1,17 +1,17 @@
-import { Image } from 'expo-image';
-import { memo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { Fonts } from '../constants/fonts';
-import { Colors } from '../constants/styles';
-import { useFetchAssetDetailsQuery } from '../store/api/Api';
-import LineChartView from './LineChartView';
-import MarketStripItemSkeleton from './MarketStripItemSkeleton';
+import { Image } from "expo-image";
+import { memo } from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { Fonts } from "../constants/fonts";
+import { Colors } from "../constants/styles";
+import { useFetchAssetDetailsQuery } from "../store/api/Api";
+import LineChartView from "./LineChartView";
+import MarketStripItemSkeleton from "./CoinItemSkeleton";
 
 interface MarketStripItemProps {
   coin: string;
 }
 
-function MarketStripItem({ coin }: MarketStripItemProps) {
+function CoinItem({ coin }: MarketStripItemProps) {
   const { isLoading, data } = useFetchAssetDetailsQuery(coin, {
     pollingInterval: 20000,
     skipPollingIfUnfocused: true,
@@ -30,7 +30,7 @@ function MarketStripItem({ coin }: MarketStripItemProps) {
           {data.priceUsd}
         </Text>
         <Image
-          cachePolicy={'memory-disk'}
+          cachePolicy={"memory-disk"}
           source={{ uri: `${process.env.EXPO_PUBLIC_API_URL}${data.iconUrl}` }}
           style={{ width: 24, height: 24 }}
         />
@@ -56,19 +56,19 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.text,
     borderRadius: 12,
     padding: 12,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.12,
     shadowRadius: 6,
     elevation: 3,
     marginBottom: 4,
-    height: '100%',
+    height: "100%",
   },
   row: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
-  priceRow: { gap: 40 },
+  priceRow: { justifyContent: "space-between" },
   symbolRow: { gap: 10 },
   priceTxt: {
     fontFamily: Fonts.bold,
@@ -85,4 +85,4 @@ const styles = StyleSheet.create({
   red: { color: Colors.red },
 });
 
-export default memo(MarketStripItem);
+export default memo(CoinItem);

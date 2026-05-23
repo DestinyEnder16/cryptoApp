@@ -1,6 +1,6 @@
 import { FlatList, StyleSheet, useWindowDimensions } from "react-native";
 import { useFetchSupportedAssetsQuery } from "../store/api/Api";
-import AssetPriceView from "./AssetPriceView";
+import MarketAssetView from "./MarketAssetView";
 
 function MarketSpotView() {
   const { data: assets } = useFetchSupportedAssetsQuery();
@@ -19,7 +19,7 @@ function MarketSpotView() {
 
 const keyExtractor = (item: string) => item;
 const renderItem = ({ item }: { item: string }) => (
-  <AssetPriceView coin={item} />
+  <MarketAssetView coin={item} />
 );
 
 const styles = StyleSheet.create({

@@ -1,16 +1,16 @@
-import { FlashList } from '@shopify/flash-list';
-import { StyleSheet } from 'react-native';
-import { useAppSelector } from '../store/hooks';
-import MarketStripItem from './MarketStripItem';
+import { FlashList } from "@shopify/flash-list";
+import { StyleSheet } from "react-native";
+import { useAppSelector } from "../store/hooks";
+import CoinItem from "./CoinItem";
 
-export default function TrendingCoinStrip() {
+export default function HomeTrendingCoinStrip() {
   const { trendingCoins } = useAppSelector((state) => state.coin);
   return (
     <FlashList
       data={trendingCoins}
       contentContainerStyle={styles.strip}
       horizontal
-      renderItem={({ item }) => <MarketStripItem coin={item} />}
+      renderItem={({ item }) => <CoinItem coin={item} />}
     />
   );
 }

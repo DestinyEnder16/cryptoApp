@@ -25,7 +25,7 @@ import {
 import AltLoginView from "./AltLoginView";
 import AuthMethod from "./AuthMethod";
 import Btn from "./Btn";
-import Toast from "react-native-toast-message";
+import { showToast } from "../helpers/showToast";
 
 type Mode = "email" | "mobile";
 
@@ -90,11 +90,10 @@ function SignInView({ showFingerprintIcon = true }: AuthProps) {
       }).unwrap();
 
       dispatch(setAuth(result));
-      Toast.show({
+      showToast({
         type: "success",
-        text1: "Success",
-        text2: "You have been signed in successfully.",
-        topOffset: 50,
+        title: "Success",
+        message: "You have been signed in successfully.",
       });
       await AsyncStorage.setItem("token", result.token);
 
@@ -103,28 +102,18 @@ function SignInView({ showFingerprintIcon = true }: AuthProps) {
       router.replace("/home");
     } catch (e) {
       console.log(e);
-      Toast.show({
+      showToast({
         type: "error",
-        text1: "Error",
-        text2: "Invalid credentials. Please try again.",
-        topOffset: 50,
-        text2Style: { fontWeight: "bold", fontSize: 12 },
+        title: "Error",
+        message: "Invalid credentials. Please try again.",
       });
     }
   };
 
-  const showToast = (msg: string) => {
-    Toast.show({
-      type: "error",
-      text1: "Error",
-      text2: msg,
-      position: "bottom",
-    });
-  };
-
   const modeErrorMsg = errors[mode]?.message;
   useEffect(() => {
-    if (modeErrorMsg) showToast(modeErrorMsg);
+    if (modeErrorMsg)
+      showToast({ type: "error", title: "Error", message: modeErrorMsg });
   }, [modeErrorMsg, mode]);
 
   return (

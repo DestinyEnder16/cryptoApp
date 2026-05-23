@@ -17,6 +17,7 @@ import { Colors } from "../constants/styles";
 import { completeLogout } from "../helpers/completeLogout";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import Toast from "react-native-toast-message";
+import { showToast } from "../helpers/showToast";
 
 type SettingsConfig = {
   icon: React.FC<SvgProps>;
@@ -58,16 +59,6 @@ export default function Settings() {
       type: "About Us",
     },
   ];
-
-  function showToast(title: string, message: string) {
-    Toast.show({
-      type: "error",
-      text1: title,
-      text2: message,
-      text2Style: { fontFamily: Fonts.bold, fontSize: 14 },
-      topOffset: 50,
-    });
-  }
 
   return (
     <View style={[{ paddingTop: insets.top + 10, paddingHorizontal: 10 }]}>
@@ -134,7 +125,11 @@ export default function Settings() {
           styles={{ backgroundColor: Colors.red, txtColor: Colors.text }}
           action={() => {
             completeLogout(dispatch);
-            showToast("Logout", "You have been logged out successfully.");
+            showToast({
+              type: "error",
+              title: "Logout",
+              message: "You have been logged out.",
+            });
           }}
         />
       </View>

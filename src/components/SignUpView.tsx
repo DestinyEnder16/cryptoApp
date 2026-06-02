@@ -1,24 +1,28 @@
-import { yupResolver } from "@hookform/resolvers/yup";
-import { LinearGradient } from "expo-linear-gradient";
-import { router } from "expo-router";
-import { Controller, useForm } from "react-hook-form";
-import { Text, TextInput, useWindowDimensions, View } from "react-native";
-import * as yup from "yup";
-import { Colors } from "../constants/styles";
-import { signUpSchema } from "../schemas/basicFormSchema";
-import { useAppDispatch } from "../store/hooks";
+import { yupResolver } from '@hookform/resolvers/yup';
+import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
+import { Controller, useForm } from 'react-hook-form';
+import { Text, TextInput, useWindowDimensions, View } from 'react-native';
+import * as yup from 'yup';
+import { Colors } from '../constants/styles';
+import { showToast } from '../helpers/showToast';
+import { signUpSchema } from '../schemas/basicFormSchema';
+import { useValidateSignUpDetailsMutation } from '../store/api/verificationApi';
+import { useAppDispatch } from '../store/hooks';
 import {
   addUserEmail,
   addUserName,
   addUserPassword,
-} from "../store/slices/userSlice";
-import AltLoginView from "./AltLoginView";
-import Btn from "./Btn";
-import { AuthStyles } from "./SignInView";
+} from '../store/slices/userSlice';
+import AltLoginView from './AltLoginView';
+import Btn from './Btn';
+import { AuthStyles } from './SignInView';
 
 function SignUpView() {
   const { width } = useWindowDimensions();
   const dispatch = useAppDispatch();
+  const [validateSignup, { error: validationError, isLoading: isValidating }] =
+    useValidateSignUpDetailsMutation();
 
   // IMPORTANT: Creating the form handler
   const {
@@ -27,22 +31,34 @@ function SignUpView() {
     reset,
     formState: { errors },
   } = useForm({
-    mode: "onBlur",
+    mode: 'onBlur',
     defaultValues: {
-      email: "",
-      password: "",
-      name: "",
+      email: '',
+      password: '',
+      name: '',
     },
     resolver: yupResolver(signUpSchema),
     // NOTE: Schema is imported
   });
 
-  const onSubmit = (data: yup.InferType<typeof signUpSchema>) => {
-    dispatch(addUserEmail(data.email));
-    dispatch(addUserPassword(data.password));
-    dispatch(addUserName(data.name));
-    reset();
-    router.navigate("/register");
+  const onSubmit = async (data: yup.InferType<typeof signUpSchema>) => {
+    try {
+      const res = await validateSignup({ email: data.email });
+      console.log(res);
+      if (res.data?.canRegister === false) throw new Error();
+      dispatch(addUserEmail(data.email));
+      dispatch(addUserPassword(data.password));
+      dispatch(addUserName(data.name));
+      reset();
+      router.navigate('/register');
+    } catch {
+      showToast({
+        type: 'error',
+        position: 'top',
+        title: 'Sign up error',
+        message: 'User with this email already exists. Try to sign in.',
+      });
+    }
   };
 
   return (
@@ -74,8 +90,8 @@ function SignUpView() {
               )}
             />
 
-            {errors["name"] && (
-              <Text style={AuthStyles.errorMsg}>{errors["name"].message}</Text>
+            {errors['name'] && (
+              <Text style={AuthStyles.errorMsg}>{errors['name'].message}</Text>
             )}
           </View>
 
@@ -100,8 +116,8 @@ function SignUpView() {
             />
 
             {/* IMPORTANT: Show the error message */}
-            {errors["email"] && (
-              <Text style={AuthStyles.errorMsg}>{errors["email"].message}</Text>
+            {errors['email'] && (
+              <Text style={AuthStyles.errorMsg}>{errors['email'].message}</Text>
             )}
           </View>
 
@@ -123,16 +139,20 @@ function SignUpView() {
               )}
             />
             {/* IMPORTANT: Show the error message */}
-            {errors["password"] && (
+            {errors['password'] && (
               <Text style={AuthStyles.errorMsg}>
-                {errors["password"].message}
+                {errors['password'].message}
               </Text>
             )}
           </View>
         </View>
 
         <View style={{ marginTop: 40 }}>
-          <Btn text="Sign Up" action={handleSubmit(onSubmit)} />
+          <Btn
+            text="Sign Up"
+            disabled={isValidating}
+            action={handleSubmit(onSubmit)}
+          />
         </View>
 
         <AltLoginView showFingerPrintOption={false} />

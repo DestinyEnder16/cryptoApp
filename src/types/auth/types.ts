@@ -86,8 +86,8 @@ export interface SettingsResponse {
 // Validating details
 
 export interface ValidationRequest {
-  email: string;
-  phone: string;
+  email?: string;
+  phone?: string;
 }
 
 /*

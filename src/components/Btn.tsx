@@ -4,7 +4,7 @@ import { Colors } from '../constants/styles';
 
 interface BtnProps {
   text: string;
-  action: () => void;
+  action?: () => void;
   styles?: { backgroundColor: string; txtColor: string };
   disabled?: boolean;
 }

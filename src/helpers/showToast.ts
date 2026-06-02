@@ -1,8 +1,8 @@
-import Toast from "react-native-toast-message";
-import { Fonts } from "../constants/fonts";
+import Toast from 'react-native-toast-message';
+import { Fonts } from '../constants/fonts';
 
-type ToastType = "success" | "error" | "info";
-type ToastPosition = "top" | "bottom";
+type ToastType = 'success' | 'error' | 'info';
+type ToastPosition = 'top' | 'bottom';
 
 type ToastOptions = {
   type: ToastType;
@@ -13,7 +13,7 @@ type ToastOptions = {
 
 export function showToast({
   type,
-  position = "top",
+  position = 'top',
   title,
   message,
 }: ToastOptions) {
@@ -24,5 +24,6 @@ export function showToast({
     text2Style: { fontFamily: Fonts.medium, fontSize: 13 },
     topOffset: 50,
     position,
+    visibilityTime: type === 'error' ? 10000 : 4000,
   });
 }

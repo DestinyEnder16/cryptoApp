@@ -5,6 +5,9 @@ import type {
   OtpVerificationPayload,
   OtpVerificationRequest,
   OtpVerificationResponse,
+  ValidationDetails,
+  ValidationRequest,
+  ValidationResponse,
 } from '@/src/types/auth/types';
 import { baseApi } from './baseApi';
 
@@ -30,7 +33,22 @@ export const verificationApi = baseApi.injectEndpoints({
       }),
       transformResponse: (response: OtpVerificationResponse) => response.data,
     }),
+
+    validateSignUpDetails: build.mutation<ValidationDetails, ValidationRequest>(
+      {
+        query: (body) => ({
+          url: 'auth/validate-signup',
+          method: 'POST',
+          body,
+        }),
+        transformResponse: (response: ValidationResponse) => response.data,
+      }
+    ),
   }),
 });
 
-export const { useOtpMutation, useOtpVerificationMutation } = verificationApi;
+export const {
+  useOtpMutation,
+  useOtpVerificationMutation,
+  useValidateSignUpDetailsMutation,
+} = verificationApi;

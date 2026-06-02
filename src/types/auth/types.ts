@@ -82,3 +82,64 @@ export interface SettingDetails {
 export interface SettingsResponse {
   data: SettingDetails;
 }
+
+// Validating details
+
+export interface ValidationRequest {
+  email: string;
+  phone: string;
+}
+
+/*
+
+{
+  "data": {
+    "email": {
+      "value": "ada@example.com",
+      "normalized": "ada@example.com",
+      "valid": true,
+      "available": true,
+      "code": "AVAILABLE",
+      "message": "Email is available."
+    },
+    "phone": {
+      "value": "+2348010000001",
+      "normalized": "+2348010000001",
+      "valid": true,
+      "available": false,
+      "code": "PHONE_EXISTS",
+      "message": "A user with this phone number already exists."
+    },
+    "canRegister": false
+  }
+}
+
+*/
+
+interface ValidationEmailDetails {
+  value: string;
+  normalized: string;
+  valid: boolean;
+  available: boolean;
+  code: string;
+  message: string;
+}
+
+interface ValidationPhoneDetails {
+  value: string;
+  normalized: string;
+  valid: boolean;
+  available: boolean;
+  code: string;
+  message: string;
+}
+
+export interface ValidationDetails {
+  email: ValidationEmailDetails;
+  phone: ValidationPhoneDetails;
+  canRegister: boolean;
+}
+
+export interface ValidationResponse {
+  data: ValidationDetails;
+}

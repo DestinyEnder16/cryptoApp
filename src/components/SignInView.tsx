@@ -105,7 +105,6 @@ function SignInView({ showFingerprintIcon = true }: AuthProps) {
 
       router.replace('/home');
     } catch (e) {
-      console.log(e);
       showToast({
         type: 'error',
         title: 'Error',

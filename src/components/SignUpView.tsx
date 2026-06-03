@@ -72,6 +72,7 @@ function SignUpView() {
     dispatch(addUserEmail(data.email));
     dispatch(addUserPassword(data.password));
     dispatch(addUserName(data.name));
+
     reset();
     router.navigate('/register');
   };

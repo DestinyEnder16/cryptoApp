@@ -79,9 +79,7 @@ export default function EditProfile() {
       dispatch(setUser(updated));
       dispatch(setUsername(values.username));
       router.back();
-    } catch (e) {
-      console.log(e);
-    }
+    } catch {}
   };
 
   return (

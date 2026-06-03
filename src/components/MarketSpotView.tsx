@@ -1,5 +1,5 @@
 import { FlatList, StyleSheet, useWindowDimensions } from "react-native";
-import { useFetchSupportedAssetsQuery } from "../store/api/Api";
+import { useFetchSupportedAssetsQuery } from "../store/api/marketApi";
 import MarketAssetView from "./MarketAssetView";
 
 function MarketSpotView() {

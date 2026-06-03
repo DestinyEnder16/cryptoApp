@@ -14,7 +14,7 @@ import {
 import * as yup from "yup";
 import { Fonts } from "../constants/fonts";
 import { Colors } from "../constants/styles";
-import { useLoginMutation } from "../store/api/Api";
+import { useLoginMutation } from "../store/api/authApi";
 import { useAppDispatch } from "../store/hooks";
 import { setAuth } from "../store/slices/authSlice";
 import {

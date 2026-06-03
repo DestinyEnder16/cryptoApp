@@ -27,7 +27,6 @@
     },
     "plugins": [
       "expo-router",
-
       [
         "expo-camera",
         {
@@ -41,7 +40,8 @@
         }
       ],
       "expo-notifications",
-      "./plugins/withCustomSplash.js"
+      "./plugins/withCustomSplash.js",
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true,

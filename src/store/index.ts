@@ -1,6 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
-import { cryptoApi } from './api/Api';
+import { baseApi } from './api/baseApi';
+import './api/authApi';
+import './api/marketApi';
+import './api/notificationApi';
+import './api/profileApi';
+import './api/settingsApi';
+import './api/verificationApi';
 import authReducer from './slices/authSlice';
 import coinReducer from './slices/coinSlice';
 import userReducer from './slices/userSlice';
@@ -10,10 +16,10 @@ export const store = configureStore({
     user: userReducer,
     auth: authReducer,
     coin: coinReducer,
-    [cryptoApi.reducerPath]: cryptoApi.reducer,
+    [baseApi.reducerPath]: baseApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(cryptoApi.middleware),
+    getDefaultMiddleware().concat(baseApi.middleware),
 });
 
 // optional, but required for refetchOnFocus/refetchOnReconnect behaviors

@@ -6,7 +6,7 @@ import { Fonts } from '@/src/constants/fonts';
 import { ProfileCamera } from '@/src/constants/images';
 import { Colors } from '@/src/constants/styles';
 import { editProfileSchema } from '@/src/schemas/editProfileSchema';
-import { useEditProfileMutation } from '@/src/store/api/Api';
+import { useEditProfileMutation } from '@/src/store/api/profileApi';
 import { useAppDispatch, useAppSelector } from '@/src/store/hooks';
 import { setUser, setUsername } from '@/src/store/slices/authSlice';
 import { yupResolver } from '@hookform/resolvers/yup';

@@ -1,4 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
+import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
@@ -42,23 +43,37 @@ function SignUpView() {
   });
 
   const onSubmit = async (data: yup.InferType<typeof signUpSchema>) => {
-    try {
-      const res = await validateSignup({ email: data.email });
-      console.log(res);
-      if (res.data?.canRegister === false) throw new Error();
-      dispatch(addUserEmail(data.email));
-      dispatch(addUserPassword(data.password));
-      dispatch(addUserName(data.name));
-      reset();
-      router.navigate('/register');
-    } catch {
+    const res = await validateSignup({ email: data.email });
+
+    if (res.error) {
+      const isNetworkError =
+        (res.error as FetchBaseQueryError).status === 'FETCH_ERROR';
+      showToast({
+        type: 'error',
+        position: 'top',
+        title: isNetworkError ? 'Network error' : 'Sign up error',
+        message: isNetworkError
+          ? 'Unable to reach the server. Check your internet connection and try again.'
+          : 'Something went wrong. Please try again.',
+      });
+      return;
+    }
+
+    if (res.data?.canRegister === false) {
       showToast({
         type: 'error',
         position: 'top',
         title: 'Sign up error',
         message: 'User with this email already exists. Try to sign in.',
       });
+      return;
     }
+
+    dispatch(addUserEmail(data.email));
+    dispatch(addUserPassword(data.password));
+    dispatch(addUserName(data.name));
+    reset();
+    router.navigate('/register');
   };
 
   return (

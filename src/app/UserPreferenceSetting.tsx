@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ActionBtn from "../components/ActionBtn";
 import { Colors } from "../constants/styles";
-import { useEditSettingsMutation } from "../store/api/Api";
+import { useEditSettingsMutation } from "../store/api/settingsApi";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { setSettings } from "../store/slices/authSlice";
 

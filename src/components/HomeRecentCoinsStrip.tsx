@@ -1,7 +1,7 @@
 import { FlashList } from "@shopify/flash-list";
 import { memo } from "react";
 import { StyleSheet } from "react-native";
-import { useFetchSupportedAssetsQuery } from "../store/api/Api";
+import { useFetchSupportedAssetsQuery } from "../store/api/marketApi";
 import CoinItem from "./CoinItem";
 
 function HomeRecentCoinsStrip() {

@@ -1,29 +1,30 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useFonts } from "expo-font";
-import { router, SplashScreen, Stack } from "expo-router";
-import { ReactNode, useEffect, useRef, useState } from "react";
-import { Provider } from "react-redux";
-import { Colors } from "../constants/styles";
-import { completeAuth, isAuthError, signOut } from "../services/auth";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFonts } from 'expo-font';
+import { router, SplashScreen, Stack } from 'expo-router';
+import { ReactNode, useEffect, useRef, useState } from 'react';
+import Toast from 'react-native-toast-message';
+import { Provider } from 'react-redux';
+import { Colors } from '../constants/styles';
+import { completeAuth, isAuthError, signOut } from '../services/auth';
 import {
   authenticateWithBiometrics,
   isBiometricAvailable,
-} from "../services/biometricAuth";
-import { store } from "../store";
-import { settingsApi } from "../store/api/settingsApi";
-import { useAppDispatch } from "../store/hooks";
-import { setToken } from "../store/slices/authSlice";
-import Toast from "react-native-toast-message";
+} from '../services/biometricAuth';
+import { getCredentials } from '../services/nativeKeychain';
+import { store } from '../store';
+import { settingsApi } from '../store/api/settingsApi';
+import { useAppDispatch } from '../store/hooks';
+import { setToken } from '../store/slices/authSlice';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
-    "NeueMontreal-Bold": require("@/assets/fonts/NeueMontreal-Bold.otf"),
-    "NeueMontreal-Italic": require("@/assets/fonts/NeueMontreal-Italic.otf"),
-    "NeueMontreal-Light": require("@/assets/fonts/NeueMontreal-Light.otf"),
-    "NeueMontreal-Medium": require("@/assets/fonts/NeueMontreal-Medium.otf"),
-    "NeueMontreal-Regular": require("@/assets/fonts/NeueMontreal-Regular.otf"),
+    'NeueMontreal-Bold': require('@/assets/fonts/NeueMontreal-Bold.otf'),
+    'NeueMontreal-Italic': require('@/assets/fonts/NeueMontreal-Italic.otf'),
+    'NeueMontreal-Light': require('@/assets/fonts/NeueMontreal-Light.otf'),
+    'NeueMontreal-Medium': require('@/assets/fonts/NeueMontreal-Medium.otf'),
+    'NeueMontreal-Regular': require('@/assets/fonts/NeueMontreal-Regular.otf'),
   });
 
   if (!fontsLoaded && !fontError) return null;
@@ -37,18 +38,18 @@ export default function RootLayout() {
             contentStyle: {
               backgroundColor: Colors.primaryBackgroundColor,
             },
-            animation: "slide_from_bottom",
+            animation: 'slide_from_bottom',
           }}
         >
-          <Stack.Screen name="(tabs)" options={{ animation: "none" }} />
-          <Stack.Screen name="profile" options={{ animation: "none" }} />
+          <Stack.Screen name="(tabs)" options={{ animation: 'none' }} />
+          <Stack.Screen name="profile" options={{ animation: 'none' }} />
           <Stack.Screen
             name="settings"
-            options={{ animation: "fade_from_bottom" }}
+            options={{ animation: 'fade_from_bottom' }}
           />
           <Stack.Screen
             name="retryAuth"
-            options={{ animation: "fade_from_bottom" }}
+            options={{ animation: 'fade_from_bottom' }}
           />
           <Stack.Screen name="userLogin" />
           <Stack.Screen name="UserPreferenceSetting" />
@@ -60,28 +61,29 @@ export default function RootLayout() {
 }
 
 type Route =
-  | "/"
-  | "/onboarding"
-  | "/(auth)/auth"
-  | "/(tabs)/home"
-  | "/retryAuth"
-  | "/userLogin";
+  | '/'
+  | '/onboarding'
+  | '/(auth)/auth'
+  | '/(tabs)/home'
+  | '/retryAuth'
+  | '/userLogin';
 
 function AuthBootstrap({ children }: { children: ReactNode }) {
   const dispatch = useAppDispatch();
   const [ready, setReady] = useState(false);
-  const targetRef = useRef<Route>("/");
+  const targetRef = useRef<Route>('/');
 
   useEffect(() => {
     async function bootstrap() {
-      let target: Route = "/";
+      let target: Route = '/';
       try {
+        await getCredentials();
         // check if a token exists
-        const token = await AsyncStorage.getItem("token");
+        const token = await AsyncStorage.getItem('token');
 
         // if no token, redirect to onboarding
         if (!token) {
-          target = "/onboarding";
+          target = '/onboarding';
           return;
         }
 
@@ -92,31 +94,31 @@ function AuthBootstrap({ children }: { children: ReactNode }) {
         try {
           // get biometric requirement from user profile
           const settings = await dispatch(
-            settingsApi.endpoints.fetchMySettings.initiate(),
+            settingsApi.endpoints.fetchMySettings.initiate()
           ).unwrap();
           biometricRequired = settings.biometricEnabled;
         } catch (err) {
           if (isAuthError(err)) {
-            console.warn("auth error");
+            console.warn('auth error');
             await signOut(dispatch);
-            target = "/(auth)/auth";
+            target = '/(auth)/auth';
             return;
           }
           // Transient/network failure: proceed without biometric gate
           // so the user isn't kicked out for a flaky connection.
-          console.warn("fetchMySettings failed; skipping biometric gate", err);
+          console.warn('fetchMySettings failed; skipping biometric gate', err);
         }
 
         if (biometricRequired) {
           const biometricAvailable = await isBiometricAvailable();
           if (!biometricAvailable) {
             await signOut(dispatch);
-            target = "/userLogin";
+            target = '/userLogin';
             return;
           }
           const ok = await authenticateWithBiometrics();
           if (!ok) {
-            target = "/retryAuth";
+            target = '/retryAuth';
             return;
           }
         }
@@ -125,7 +127,7 @@ function AuthBootstrap({ children }: { children: ReactNode }) {
         // Fallback when /me fails for non-auth reasons: send to home and let
         // the destination surface its own error state. Don't use /retryAuth —
         // that screen is for biometric retries, not network errors.
-        target = next ?? "/(tabs)/home";
+        target = next ?? '/(tabs)/home';
       } finally {
         targetRef.current = target;
         setReady(true);

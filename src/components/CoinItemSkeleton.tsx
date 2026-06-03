@@ -5,7 +5,8 @@ import { Colors } from "../constants/styles";
 
 const AnimatedLG = Animated.createAnimatedComponent(LinearGradient);
 const CARD_WIDTH = 165;
-const SHIMMER_COLORS = ["transparent", Colors.grey, "transparent"] as const;
+const SKELETON_COLOR = Colors.dotInactive;
+const SHIMMER_COLORS = ["transparent", "rgba(255,255,255,0.04)", "transparent"] as const;
 const SHIMMER_START = { x: 0, y: 0 };
 const SHIMMER_END = { x: 1, y: 0 };
 
@@ -76,12 +77,12 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: Colors.grey,
+    backgroundColor: SKELETON_COLOR,
   },
   bar: {
     height: 12,
     borderRadius: 4,
-    backgroundColor: Colors.grey,
+    backgroundColor: SKELETON_COLOR,
   },
   bar40: { width: 40 },
   bar50: { width: 50 },
@@ -90,6 +91,6 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 70,
     borderRadius: 4,
-    backgroundColor: Colors.grey,
+    backgroundColor: SKELETON_COLOR,
   },
 });

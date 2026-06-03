@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import type { AppDispatch } from '../store';
-import { cryptoApi } from '../store/api/Api';
+import { profileApi } from '../store/api/profileApi';
 import { logout, setUser } from '../store/slices/authSlice';
 
 export function isAuthError(err: unknown): boolean {
@@ -23,7 +23,7 @@ export async function completeAuth(
 ): Promise<CompleteAuthResult> {
   try {
     const user = await dispatch(
-      cryptoApi.endpoints.fetchMe.initiate()
+      profileApi.endpoints.fetchMe.initiate()
     ).unwrap();
     dispatch(setUser(user));
     return '/(tabs)/home';

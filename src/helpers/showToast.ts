@@ -24,6 +24,6 @@ export function showToast({
     text2Style: { fontFamily: Fonts.medium, fontSize: 13 },
     topOffset: 50,
     position,
-    visibilityTime: type === 'error' ? 10000 : 4000,
+    visibilityTime: type === 'error' ? 6000 : 4000,
   });
 }

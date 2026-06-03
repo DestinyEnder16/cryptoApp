@@ -3,7 +3,7 @@ import { memo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Fonts } from "../constants/fonts";
 import { Colors } from "../constants/styles";
-import { useFetchAssetDetailsQuery } from "../store/api/Api";
+import { useFetchAssetDetailsQuery } from "../store/api/marketApi";
 import LineChartView from "./LineChartView";
 import MarketStripItemSkeleton from "./CoinItemSkeleton";
 

@@ -1,64 +1,52 @@
-import BackHeader from '@/src/components/BackHeader';
-import Btn from '@/src/components/Btn';
-import { AuthStyles } from '@/src/components/SignInView';
-import { Fonts } from '@/src/constants/fonts';
-import { Colors } from '@/src/constants/styles';
-import { showToast } from '@/src/helpers/showToast';
-import { registerMobileSchema } from '@/src/schemas/basicFormSchema';
-import { useValidateSignUpDetailsMutation } from '@/src/store/api/verificationApi';
-import { useAppDispatch } from '@/src/store/hooks';
-import { addUserMobile } from '@/src/store/slices/userSlice';
-import { yupResolver } from '@hookform/resolvers/yup';
-import PhoneInput from '@perttu/react-native-phone-number-input';
-import { router } from 'expo-router';
-import { useRef, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import * as yup from 'yup';
+import BackHeader from "@/src/components/BackHeader";
+import Btn from "@/src/components/Btn";
+import { AuthStyles } from "@/src/components/SignInView";
+import { Fonts } from "@/src/constants/fonts";
+import { Colors } from "@/src/constants/styles";
+import { getUserRegion } from "@/src/helpers/getUserLocale";
+import { showToast } from "@/src/helpers/showToast";
+import { useValidateSignUpDetailsMutation } from "@/src/store/api/verificationApi";
+import PhoneInput from "@perttu/react-native-phone-number-input";
+import { router } from "expo-router";
+import { useRef, useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function RegisterScreen() {
   const insets = useSafeAreaInsets();
-  const dispatch = useAppDispatch();
   const [validateSignup, { isLoading: isValidating }] =
     useValidateSignUpDetailsMutation();
 
-  const [value, setValue] = useState('');
-  const [formattedValue, setFormattedValue] = useState('');
-  const [valid, setValid] = useState(false);
-  const [showMessage, setShowMessage] = useState(false);
+  const [value, setValue] = useState("");
+  const [formattedValue, setFormattedValue] = useState("");
   const phoneInput = useRef<PhoneInput>(null);
 
-  // IMPORTANT: Creating the form handler
-  const {
-    control,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm({
-    mode: 'onBlur',
-    defaultValues: {
-      mobile: '',
-    },
-    resolver: yupResolver(registerMobileSchema),
-    // NOTE: Schema is imported
-  });
+  function reset() {
+    setValue("");
+    setFormattedValue("");
+  }
 
-  const onSubmit = async (data: yup.InferType<typeof registerMobileSchema>) => {
+  const onSubmit = async () => {
     try {
-      const res = await validateSignup({ phone: data.mobile });
-      console.log(res);
-      if (res.data?.canRegister === false) throw new Error();
+      // IMPORTANT checking number validity
+      const checkValid = phoneInput.current?.isValidNumber(value);
+      console.log(formattedValue, value);
+      if (!checkValid) throw new Error("Phone number is not valid");
+      const res = await validateSignup({ phone: formattedValue });
+      if (res.data?.canRegister === false)
+        throw new Error("This number is already linked to an email");
 
-      dispatch(addUserMobile(data.mobile));
       reset();
-      router.navigate('/verification');
-    } catch {
+      router.navigate("/verification");
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Something went wrong";
+      console.log(message);
       showToast({
-        type: 'error',
-        position: 'top',
-        title: 'Sign up error',
-        message: 'This phone number is already linked to an email',
+        type: "error",
+        position: "top",
+        title: "Sign up error",
+        message,
       });
     }
   };
@@ -80,26 +68,10 @@ export default function RegisterScreen() {
         <View style={AuthStyles.field}>
           <Text style={AuthStyles.label}>Mobile Number</Text>
 
-          <Controller
-            control={control}
-            name="mobile"
-            render={({ field: { onBlur, onChange, value } }) => (
-              <TextInput
-                placeholder="Enter your mobile"
-                style={AuthStyles.inputField}
-                placeholderTextColor={Colors.ash}
-                inputMode="numeric"
-                value={value}
-                onBlur={onBlur}
-                onChangeText={onChange}
-              />
-            )}
-          />
-
           <PhoneInput
             ref={phoneInput}
             defaultValue={value}
-            defaultCode="DM"
+            defaultCode={getUserRegion()}
             layout="first"
             onChangeText={(text) => {
               setValue(text);
@@ -107,19 +79,24 @@ export default function RegisterScreen() {
             onChangeFormattedText={(text) => {
               setFormattedValue(text);
             }}
+            containerStyle={{
+              backgroundColor: Colors.secondaryBackgroundColor,
+              borderRadius: 10,
+            }}
+            textContainerStyle={{
+              backgroundColor: Colors.secondaryBackgroundColor,
+              borderRadius: 10,
+            }}
+            textInputStyle={{ color: "white" }}
+            codeTextStyle={{ color: "white" }}
             withDarkTheme
-            withShadow
             autoFocus
           />
-
-          {errors['mobile'] && (
-            <Text style={AuthStyles.errorMsg}>{errors['mobile'].message}</Text>
-          )}
         </View>
       </View>
 
       <View style={{ marginTop: 60 }}>
-        <Btn text="Send OTP" action={handleSubmit(onSubmit)} />
+        <Btn text="Send OTP" action={onSubmit} disabled={isValidating} />
       </View>
     </View>
   );
@@ -132,7 +109,7 @@ const styles = StyleSheet.create({
 
   desc: {
     fontFamily: Fonts.regular,
-    color: '#A7AFB7',
+    color: "#A7AFB7",
     fontSize: 14,
     lineHeight: 24,
   },

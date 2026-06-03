@@ -3,7 +3,7 @@ import NotificationBar from '@/src/components/NotificationBar';
 import { Fonts } from '@/src/constants/fonts';
 import { NotificationEmptyIcon } from '@/src/constants/images';
 import { Colors } from '@/src/constants/styles';
-import { useFetchNotificationsQuery } from '@/src/store/api/Api';
+import { useFetchNotificationsQuery } from '@/src/store/api/notificationApi';
 import { FlashList } from '@shopify/flash-list';
 import { StyleSheet, Text, View } from 'react-native';
 

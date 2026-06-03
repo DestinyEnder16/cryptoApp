@@ -10,7 +10,7 @@ import {
   isBiometricAvailable,
 } from "../services/biometricAuth";
 import { store } from "../store";
-import { cryptoApi } from "../store/api/Api";
+import { settingsApi } from "../store/api/settingsApi";
 import { useAppDispatch } from "../store/hooks";
 import { setToken } from "../store/slices/authSlice";
 import Toast from "react-native-toast-message";
@@ -92,7 +92,7 @@ function AuthBootstrap({ children }: { children: ReactNode }) {
         try {
           // get biometric requirement from user profile
           const settings = await dispatch(
-            cryptoApi.endpoints.fetchMySettings.initiate(),
+            settingsApi.endpoints.fetchMySettings.initiate(),
           ).unwrap();
           biometricRequired = settings.biometricEnabled;
         } catch (err) {

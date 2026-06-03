@@ -10,23 +10,45 @@ export interface RegisterRequest {
   password: string;
 }
 
+export interface VerificationLimits {
+  depositPerTransactionUsd: number;
+  tradePerTransactionUsd: number;
+  withdrawalPerTransactionUsd: number;
+  dailyWithdrawalUsd: number;
+}
+
+export interface UserVerification {
+  status: string;
+  tier: string;
+  level: number;
+  label: string;
+  limits: VerificationLimits;
+  canTrade: boolean;
+  canWithdraw: boolean;
+  canUseSandboxDeposits: boolean;
+}
+
+export interface UserSettings {
+  language: string;
+  fiatCurrency: string;
+  theme: string;
+  pushNotifications: boolean;
+  biometricEnabled: boolean;
+}
+
 export interface User {
   id: string;
   role: string;
   fullName: string;
   email: string;
+  emailVerified: boolean;
   phone: string;
+  twoFactorEnabled: boolean;
   kycStatus: string;
+  verification: UserVerification;
   avatarUrl: string | null;
   watchlist: string[];
-  settings: {
-    language: string;
-    fiatCurrency: string;
-    theme: string;
-    priceAlerts: boolean;
-    pushNotifications: boolean;
-    biometricEnabled: boolean;
-  };
+  settings: UserSettings;
   createdAt: string;
 }
 
@@ -39,8 +61,34 @@ export interface AuthPayload {
   token: string;
 }
 
-export interface AuthResponse {
-  data: AuthPayload;
+export interface LoginPayload extends AuthPayload {
+  accessToken: string;
+  refreshToken: string;
+  tokenType: string;
+  expiresAt: string;
+  expiresInSeconds: number;
+  refreshTokenExpiresAt: string;
+}
+
+export interface LoginResponse {
+  data: LoginPayload;
+}
+
+export interface OtpRouting {
+  requestPath: string;
+  verifyPath: string;
+  expiresInSeconds: number;
+}
+
+export interface RegisterPayload {
+  user: User;
+  emailVerificationRequired: boolean;
+  nextStep: string;
+  otp: OtpRouting;
+}
+
+export interface RegisterResponse {
+  data: RegisterPayload;
 }
 
 export interface OtpRequest {
@@ -62,7 +110,7 @@ export interface OtpVerificationRequest {
   code: string;
 }
 
-export interface OtpVerificationPayload {
+export interface OtpVerificationPayload extends LoginPayload {
   verified: boolean;
 }
 
@@ -90,31 +138,6 @@ export interface ValidationRequest {
   phone?: string;
 }
 
-/*
-
-{
-  "data": {
-    "email": {
-      "value": "ada@example.com",
-      "normalized": "ada@example.com",
-      "valid": true,
-      "available": true,
-      "code": "AVAILABLE",
-      "message": "Email is available."
-    },
-    "phone": {
-      "value": "+2348010000001",
-      "normalized": "+2348010000001",
-      "valid": true,
-      "available": false,
-      "code": "PHONE_EXISTS",
-      "message": "A user with this phone number already exists."
-    },
-    "canRegister": false
-  }
-}
-
-*/
 
 interface ValidationEmailDetails {
   value: string;

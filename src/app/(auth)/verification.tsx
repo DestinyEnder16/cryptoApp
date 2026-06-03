@@ -1,15 +1,15 @@
-import { getApiErrorMessage } from "@/src/helpers/getApiErrorMessage";
 import BackHeader from "@/src/components/BackHeader";
 import Btn from "@/src/components/Btn";
 import NumInputField from "@/src/components/NumInputField";
 import { AuthStyles } from "@/src/components/SignInView";
 import { Fonts } from "@/src/constants/fonts";
 import { Colors } from "@/src/constants/styles";
+import { getApiErrorMessage } from "@/src/helpers/getApiErrorMessage";
+import { useSignupMutation } from "@/src/store/api/authApi";
 import {
   useOtpMutation,
   useOtpVerificationMutation,
-  useSignupMutation,
-} from "@/src/store/api/Api";
+} from "@/src/store/api/verificationApi";
 import { useAppDispatch, useAppSelector } from "@/src/store/hooks";
 import { setAuth } from "@/src/store/slices/authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -99,6 +99,8 @@ export default function Verification() {
     try {
       const result = await verifyOtp({ email, code: otp }).unwrap();
       // Server returned 200 but the code didn't match — bail without signing up.
+      //
+      console.log(result);
       if (!result.verified) return;
 
       const auth = await signup({

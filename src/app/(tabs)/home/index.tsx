@@ -7,7 +7,7 @@ import TrendingCoinStrip from "@/src/components/HomeTrendingCoinStrip";
 
 import { Fonts } from "@/src/constants/fonts";
 import { Colors } from "@/src/constants/styles";
-import { useFetchTrendingAssetsQuery } from "@/src/store/api/Api";
+import { useFetchTrendingAssetsQuery } from "@/src/store/api/marketApi";
 import { setTrendingCoins } from "@/src/store/slices/coinSlice";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { Image } from "expo-image";

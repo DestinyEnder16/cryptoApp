@@ -48,11 +48,15 @@ export default function RegisterScreen() {
 
       dispatch(addUserMobile(formattedValue));
 
+      if (!user?.email || !user?.name || !user?.mobile) {
+        throw new Error('Missing account details. Please restart sign up.');
+      }
+
       // IMPORTANT creating an account
       const register = await signup({
-        email: user ? user?.email : '',
-        password: user ? user.password : '',
-        fullName: user ? user?.name : '',
+        email: user?.email,
+        password: user.password,
+        fullName: user?.name,
         phone: formattedValue,
       });
 

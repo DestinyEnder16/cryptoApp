@@ -93,7 +93,7 @@ function SignInView({ showFingerprintIcon = true }: AuthProps) {
       dispatch(setAuth(result));
 
       // PROBLEM: The user must login with email - logging in with phone for number would break the app
-      setCredentials({ email: data.email, password: data.password });
+      setCredentials({ email: data.email, token: result.token });
       showToast({
         type: 'success',
         title: 'Success',

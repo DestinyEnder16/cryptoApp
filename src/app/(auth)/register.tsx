@@ -1,51 +1,74 @@
-import BackHeader from "@/src/components/BackHeader";
-import Btn from "@/src/components/Btn";
-import { AuthStyles } from "@/src/components/SignInView";
-import { Fonts } from "@/src/constants/fonts";
-import { Colors } from "@/src/constants/styles";
-import { getUserRegion } from "@/src/helpers/getUserLocale";
-import { showToast } from "@/src/helpers/showToast";
-import { useValidateSignUpDetailsMutation } from "@/src/store/api/verificationApi";
-import PhoneInput from "@perttu/react-native-phone-number-input";
-import { router } from "expo-router";
-import { useRef, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import BackHeader from '@/src/components/BackHeader';
+import Btn from '@/src/components/Btn';
+import { AuthStyles } from '@/src/components/SignInView';
+import { Fonts } from '@/src/constants/fonts';
+import { Colors } from '@/src/constants/styles';
+import { getUserRegion } from '@/src/helpers/getUserLocale';
+import { showToast } from '@/src/helpers/showToast';
+import { useSignupMutation } from '@/src/store/api/authApi';
+import { useValidateSignUpDetailsMutation } from '@/src/store/api/verificationApi';
+import { useAppDispatch, useAppSelector } from '@/src/store/hooks';
+import { addUserMobile } from '@/src/store/slices/userSlice';
+import PhoneInput from '@perttu/react-native-phone-number-input';
+import { router } from 'expo-router';
+import { useRef, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function RegisterScreen() {
   const insets = useSafeAreaInsets();
   const [validateSignup, { isLoading: isValidating }] =
     useValidateSignUpDetailsMutation();
 
-  const [value, setValue] = useState("");
-  const [formattedValue, setFormattedValue] = useState("");
+  const [value, setValue] = useState('');
+  const [formattedValue, setFormattedValue] = useState('');
+
+  const [signup, { error: signUpError, isLoading: signingUp }] =
+    useSignupMutation();
+
   const phoneInput = useRef<PhoneInput>(null);
 
   function reset() {
-    setValue("");
-    setFormattedValue("");
+    setValue('');
+    setFormattedValue('');
   }
+
+  const dispatch = useAppDispatch();
+
+  const user = useAppSelector((state) => state.user);
 
   const onSubmit = async () => {
     try {
       // IMPORTANT checking number validity
       const checkValid = phoneInput.current?.isValidNumber(value);
-      console.log(formattedValue, value);
-      if (!checkValid) throw new Error("Phone number is not valid");
+      if (!checkValid) throw new Error('Phone number is not valid');
       const res = await validateSignup({ phone: formattedValue });
       if (res.data?.canRegister === false)
-        throw new Error("This number is already linked to an email");
+        throw new Error('This number is already linked to an email');
+
+      dispatch(addUserMobile(formattedValue));
+
+      // IMPORTANT creating an account
+      const register = await signup({
+        email: user ? user?.email : '',
+        password: user ? user.password : '',
+        fullName: user ? user?.name : '',
+        phone: formattedValue,
+      });
 
       reset();
-      router.navigate("/verification");
+      if (register.data?.emailVerificationRequired) {
+        router.navigate('/verification');
+      } else {
+        router.navigate('/success');
+      }
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Something went wrong";
-      console.log(message);
+        error instanceof Error ? error.message : 'Something went wrong';
       showToast({
-        type: "error",
-        position: "top",
-        title: "Sign up error",
+        type: 'error',
+        position: 'top',
+        title: 'Sign up error',
         message,
       });
     }
@@ -87,8 +110,8 @@ export default function RegisterScreen() {
               backgroundColor: Colors.secondaryBackgroundColor,
               borderRadius: 10,
             }}
-            textInputStyle={{ color: "white" }}
-            codeTextStyle={{ color: "white" }}
+            textInputStyle={{ color: 'white' }}
+            codeTextStyle={{ color: 'white' }}
             withDarkTheme
             autoFocus
           />
@@ -96,7 +119,11 @@ export default function RegisterScreen() {
       </View>
 
       <View style={{ marginTop: 60 }}>
-        <Btn text="Send OTP" action={onSubmit} disabled={isValidating} />
+        <Btn
+          text={signingUp ? 'Creating account...' : 'Send OTP'}
+          action={onSubmit}
+          disabled={isValidating}
+        />
       </View>
     </View>
   );
@@ -109,7 +136,7 @@ const styles = StyleSheet.create({
 
   desc: {
     fontFamily: Fonts.regular,
-    color: "#A7AFB7",
+    color: '#A7AFB7',
     fontSize: 14,
     lineHeight: 24,
   },

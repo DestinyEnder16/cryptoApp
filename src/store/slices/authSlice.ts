@@ -1,6 +1,6 @@
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { RootState } from "..";
-import type { AuthPayload, SettingDetails, User } from "@/src/types/auth/types";
+import type { AuthPayload, SettingDetails, User } from '@/src/types/auth/types';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import type { RootState } from '..';
 
 interface AuthState {
   user: User | null;
@@ -15,7 +15,7 @@ const initialState: AuthState = {
 };
 
 const authSlice = createSlice({
-  name: "auth",
+  name: 'auth',
   initialState,
   reducers: {
     setAuth(state, action: PayloadAction<AuthPayload>) {

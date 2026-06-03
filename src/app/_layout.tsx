@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFonts } from 'expo-font';
 import { router, SplashScreen, Stack } from 'expo-router';
 import { ReactNode, useEffect, useRef, useState } from 'react';
@@ -6,15 +5,12 @@ import Toast from 'react-native-toast-message';
 import { Provider } from 'react-redux';
 import { Colors } from '../constants/styles';
 import { completeAuth, isAuthError, signOut } from '../services/auth';
-import {
-  authenticateWithBiometrics,
-  isBiometricAvailable,
-} from '../services/biometricAuth';
 import { getCredentials } from '../services/nativeKeychain';
 import { store } from '../store';
 import { settingsApi } from '../store/api/settingsApi';
 import { useAppDispatch } from '../store/hooks';
-import { setToken } from '../store/slices/authSlice';
+import { profileApi } from '../store/api/profileApi';
+import { setToken, setUser } from '../store/slices/authSlice';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -66,7 +62,8 @@ type Route =
   | '/(auth)/auth'
   | '/(tabs)/home'
   | '/retryAuth'
-  | '/userLogin';
+  | '/userLogin'
+  | '/welcome';
 
 function AuthBootstrap({ children }: { children: ReactNode }) {
   const dispatch = useAppDispatch();
@@ -77,21 +74,27 @@ function AuthBootstrap({ children }: { children: ReactNode }) {
     async function bootstrap() {
       let target: Route = '/';
       try {
-        await getCredentials();
         // check if a token exists
-        const token = await AsyncStorage.getItem('token');
+        const credentials = await getCredentials();
 
         // if no token, redirect to onboarding
-        if (!token) {
+        if (!credentials) {
           target = '/onboarding';
           return;
         }
 
         // token exists: proceed with authentication - add the token to the store
+        const token = credentials.password;
         dispatch(setToken(token));
 
         let biometricRequired = false;
         try {
+          // fetch the current user and store it
+          const user = await dispatch(
+            profileApi.endpoints.fetchMe.initiate()
+          ).unwrap();
+          dispatch(setUser(user));
+
           // get biometric requirement from user profile
           const settings = await dispatch(
             settingsApi.endpoints.fetchMySettings.initiate()
@@ -109,18 +112,8 @@ function AuthBootstrap({ children }: { children: ReactNode }) {
           console.warn('fetchMySettings failed; skipping biometric gate', err);
         }
 
-        if (biometricRequired) {
-          const biometricAvailable = await isBiometricAvailable();
-          if (!biometricAvailable) {
-            await signOut(dispatch);
-            target = '/userLogin';
-            return;
-          }
-          const ok = await authenticateWithBiometrics();
-          if (!ok) {
-            target = '/retryAuth';
-            return;
-          }
+        if (!biometricRequired) {
+          target = '/welcome';
         }
 
         const next = await completeAuth(dispatch, token);

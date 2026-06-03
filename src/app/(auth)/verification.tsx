@@ -5,6 +5,7 @@ import { AuthStyles } from '@/src/components/SignInView';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
 import { getApiErrorMessage } from '@/src/helpers/getApiErrorMessage';
+import { setCredentials } from '@/src/services/nativeKeychain';
 import {
   useOtpMutation,
   useOtpVerificationMutation,
@@ -38,6 +39,7 @@ export default function Verification() {
   const insets = useSafeAreaInsets();
   const mobile = useAppSelector((state) => state.user.mobile);
   const email = useAppSelector((state) => state.user.email);
+  const password = useAppSelector((state) => state.user.password);
 
   const [timer, setTimer] = useState(RESEND_INTERVAL);
   const [otp, setOtp] = useState('');
@@ -93,6 +95,8 @@ export default function Verification() {
       // Server returned 200 but the code didn't match — bail without signing up.
       //
       if (!result.verified) return;
+
+      setCredentials({ email, token: result.token });
 
       router.replace('/success');
     } catch {

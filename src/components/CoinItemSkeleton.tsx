@@ -1,12 +1,15 @@
-import { LinearGradient } from "expo-linear-gradient";
-import { memo, useEffect, useRef } from "react";
-import { Animated, Easing, StyleSheet, View } from "react-native";
-import { Colors } from "../constants/styles";
+import { LinearGradient } from 'expo-linear-gradient';
+import { memo, useEffect, useRef } from 'react';
+import { Animated, Easing, StyleSheet, View } from 'react-native';
 
 const AnimatedLG = Animated.createAnimatedComponent(LinearGradient);
 const CARD_WIDTH = 165;
-const SKELETON_COLOR = Colors.dotInactive;
-const SHIMMER_COLORS = ["transparent", "rgba(255,255,255,0.04)", "transparent"] as const;
+const SKELETON_COLOR = '#EDF0F3 ';
+const SHIMMER_COLORS = [
+  'transparent',
+  'rgba(0,0,0,0.04)',
+  'transparent',
+] as const;
 const SHIMMER_START = { x: 0, y: 0 };
 const SHIMMER_END = { x: 1, y: 0 };
 
@@ -28,7 +31,7 @@ function CoinItemSkeleton() {
         duration: 1000,
         easing: Easing.linear,
         useNativeDriver: true,
-      }),
+      })
     );
     loop.start();
     return () => loop.stop();
@@ -66,12 +69,12 @@ const styles = StyleSheet.create({
     width: CARD_WIDTH,
     marginRight: 10,
     gap: 10,
-    overflow: "hidden",
+    overflow: 'hidden',
   },
   row: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   coinIcon: {
     width: 28,
@@ -88,7 +91,7 @@ const styles = StyleSheet.create({
   bar50: { width: 50 },
   bar70: { width: 70 },
   chart: {
-    width: "100%",
+    width: '100%',
     height: 70,
     borderRadius: 4,
     backgroundColor: SKELETON_COLOR,

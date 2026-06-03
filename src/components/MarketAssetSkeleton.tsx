@@ -5,7 +5,8 @@ import { Colors } from "../constants/styles";
 
 const AnimatedLG = Animated.createAnimatedComponent(LinearGradient);
 const { width } = Dimensions.get("window");
-const SHIMMER_COLORS = ["transparent", Colors.grey, "transparent"] as const;
+const SKELETON_COLOR = Colors.dotInactive;
+const SHIMMER_COLORS = ["transparent", "rgba(255,255,255,0.04)", "transparent"] as const;
 const SHIMMER_START = { x: 0, y: 0 };
 const SHIMMER_END = { x: 1, y: 0 };
 
@@ -81,7 +82,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: Colors.grey,
+    backgroundColor: SKELETON_COLOR,
   },
   left: { gap: 10 },
   right: { alignItems: "flex-end" },
@@ -89,7 +90,7 @@ const styles = StyleSheet.create({
   bar: {
     height: 12,
     borderRadius: 4,
-    backgroundColor: Colors.grey,
+    backgroundColor: SKELETON_COLOR,
   },
   bar40: { width: 40 },
   bar50: { width: 50 },
@@ -99,6 +100,6 @@ const styles = StyleSheet.create({
     width: 130,
     height: 70,
     borderRadius: 4,
-    backgroundColor: Colors.grey,
+    backgroundColor: SKELETON_COLOR,
   },
 });

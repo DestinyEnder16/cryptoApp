@@ -8,7 +8,6 @@ import { completeAuth, isAuthError, signOut } from '../services/auth';
 import { getCredentials } from '../services/nativeKeychain';
 import { store } from '../store';
 import { profileApi } from '../store/api/profileApi';
-import { settingsApi } from '../store/api/settingsApi';
 import { useAppDispatch } from '../store/hooks';
 import { setToken, setUser } from '../store/slices/authSlice';
 
@@ -94,12 +93,7 @@ function AuthBootstrap({ children }: { children: ReactNode }) {
             profileApi.endpoints.fetchMe.initiate()
           ).unwrap();
           dispatch(setUser(user));
-
-          // get biometric requirement from user profile
-          const settings = await dispatch(
-            settingsApi.endpoints.fetchMySettings.initiate()
-          ).unwrap();
-          biometricRequired = settings.biometricEnabled;
+          biometricRequired = user.settings.biometricEnabled;
         } catch (err) {
           if (isAuthError(err)) {
             console.warn('auth error');
@@ -108,8 +102,7 @@ function AuthBootstrap({ children }: { children: ReactNode }) {
             return;
           }
           // Transient/network failure: proceed without biometric gate
-          // so the user isn't kicked out for a flaky connection.
-          console.warn('fetchMySettings failed; skipping biometric gate', err);
+          console.warn('fetchMe failed; skipping biometric gate', err);
         }
 
         if (biometricRequired) {
@@ -124,7 +117,8 @@ function AuthBootstrap({ children }: { children: ReactNode }) {
         target = next ?? '/(tabs)/home';
       } finally {
         targetRef.current = target;
-        setReady(true);
+        //
+        setReady(false);
       }
     }
     bootstrap();

@@ -33,7 +33,7 @@ export default function NumInputField({ num, marginTop, onFill }: InputProps) {
   );
 }
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'space-around',

@@ -18,6 +18,7 @@ export default function RootLayout() {
       <Stack.Screen name="verification" />
       <Stack.Screen name="success" />
       <Stack.Screen name="welcome" />
+      <Stack.Screen name="verify-otp" />
     </Stack>
   );
 }

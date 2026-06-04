@@ -118,7 +118,7 @@ function AuthBootstrap({ children }: { children: ReactNode }) {
       } finally {
         targetRef.current = target;
         //
-        setReady(false);
+        setReady(true);
       }
     }
     bootstrap();

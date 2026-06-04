@@ -7,9 +7,9 @@ import { Colors } from '../constants/styles';
 import { completeAuth, isAuthError, signOut } from '../services/auth';
 import { getCredentials } from '../services/nativeKeychain';
 import { store } from '../store';
+import { profileApi } from '../store/api/profileApi';
 import { settingsApi } from '../store/api/settingsApi';
 import { useAppDispatch } from '../store/hooks';
-import { profileApi } from '../store/api/profileApi';
 import { setToken, setUser } from '../store/slices/authSlice';
 
 SplashScreen.preventAutoHideAsync();
@@ -112,8 +112,9 @@ function AuthBootstrap({ children }: { children: ReactNode }) {
           console.warn('fetchMySettings failed; skipping biometric gate', err);
         }
 
-        if (!biometricRequired) {
+        if (biometricRequired) {
           target = '/welcome';
+          return;
         }
 
         const next = await completeAuth(dispatch, token);

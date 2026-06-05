@@ -5,7 +5,6 @@ import { Colors } from '@/src/constants/styles';
 import { useFetchTrendingAssetsQuery } from '@/src/store/api/marketApi';
 import { useAppSelector } from '@/src/store/hooks';
 import { selectUser } from '@/src/store/slices/authSlice';
-import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -41,7 +40,7 @@ export default function KycIncomplete() {
 
         <Pressable
           style={styles.verifyCard}
-          onPress={() => router.push('/verification')}
+          onPress={() => console.log('verify!!!')}
         >
           <View style={styles.warningIcon}>
             <Text style={styles.warningIconText}>!</Text>

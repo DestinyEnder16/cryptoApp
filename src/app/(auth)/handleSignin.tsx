@@ -22,11 +22,11 @@ export default function HandleSignin() {
   useEffect(() => {
     async function attemptSignIn() {
       const identifier = email || mobile;
+      // Biometric flow: no creds are stashed in the slice because the user
+      // didn't type a password. The keychain token has already been validated
+      // by /me during bootstrap, so just go to /home.
       if (!identifier || !password) {
-        console.log('handleSignin: missing credentials', {
-          hasIdentifier: !!identifier,
-          hasPassword: !!password,
-        });
+        router.replace('/home');
         return;
       }
       try {

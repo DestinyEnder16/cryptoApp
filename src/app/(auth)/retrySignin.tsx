@@ -7,11 +7,6 @@ import { setCredentials } from '@/src/services/nativeKeychain';
 import { useLoginMutation } from '@/src/store/api/authApi';
 import { useAppDispatch, useAppSelector } from '@/src/store/hooks';
 import { setAuth } from '@/src/store/slices/authSlice';
-import {
-  addUserEmail,
-  addUserMobile,
-  addUserPassword,
-} from '@/src/store/slices/userSlice';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
@@ -45,12 +40,6 @@ export default function RetrySignin() {
         password,
       }).unwrap();
       dispatch(setAuth(result));
-      if (isEmail) {
-        dispatch(addUserEmail(identifier));
-      } else {
-        dispatch(addUserMobile(identifier));
-      }
-      dispatch(addUserPassword(password));
       await setCredentials({
         email: isEmail ? identifier : storedEmail,
         token: result.accessToken,

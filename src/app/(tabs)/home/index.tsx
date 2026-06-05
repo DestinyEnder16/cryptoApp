@@ -1,28 +1,16 @@
+import AppBackground from '@/src/components/AppBackground';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
-import { useFetchTrendingAssetsQuery } from '@/src/store/api/marketApi';
-import { setTrendingCoins } from '@/src/store/slices/coinSlice';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useDispatch } from 'react-redux';
 
 export default function HomeIndex() {
-  const dispatch = useDispatch();
-  const insets = useSafeAreaInsets();
-  const tabBarHeight = useBottomTabBarHeight();
-  const { data, isLoading } = useFetchTrendingAssetsQuery();
-
-  useEffect(() => {
-    if (!data) return;
-    dispatch(setTrendingCoins(data.map((datum) => datum.symbol)));
-  }, [data, dispatch]);
-
   return (
-    <View>
-      <Text>Home</Text>
-    </View>
+    <AppBackground>
+      <View>
+        <Text>Home</Text>
+        <Text>Welcome back, </Text>
+      </View>
+    </AppBackground>
   );
 }
 

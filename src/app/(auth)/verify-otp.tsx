@@ -11,7 +11,7 @@ import {
 import { useAppSelector } from '@/src/store/hooks';
 import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 
 // Persists across mounts so back-navigating into this screen doesn't
@@ -25,40 +25,47 @@ export default function VerifyOtp() {
   const [getOtp, { error: otpError, isLoading, isSuccess }] = useOtpMutation();
   const [verifyOtp, { isLoading: isVerifying }] = useOtpVerificationMutation();
 
-  // Runs on mount and again whenever retryNum changes (i.e. the user resends).
-
   const email = useAppSelector((state) => state.auth.user?.email!);
+  const [requested, setRequested] = useState(() => otpRequestedFor.has(email));
+
+  const requestOtp = useCallback(async () => {
+    otpRequestedFor.add(email);
+    setRequested(true);
+    try {
+      const result = await getOtp({ email }).unwrap();
+
+      const { status } = await Notifications.requestPermissionsAsync();
+      if (status !== 'granted') return;
+
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: 'Your verification code',
+          body: `Your code is ${result.demoCode}`,
+        },
+        trigger: null,
+      });
+    } catch {
+      otpRequestedFor.delete(email);
+      setRequested(false);
+      showToast({
+        type: 'error',
+        title: 'Error',
+        message: 'Otp could not be retrieved',
+      });
+    }
+  }, [email, getOtp]);
 
   useEffect(() => {
-    // SOLUTION: Guard clause to ensure that emails that have requested OTP do not get a new one except when re-requested
+    // Guard so emails that have already requested OTP don't get a new one
+    // on remount — only when the user explicitly resends.
     if (otpRequestedFor.has(email)) return;
-    otpRequestedFor.add(email);
-
-    async function requestOtp() {
-      try {
-        const result = await getOtp({ email }).unwrap();
-
-        const { status } = await Notifications.requestPermissionsAsync();
-        if (status !== 'granted') return;
-
-        await Notifications.scheduleNotificationAsync({
-          content: {
-            title: 'Your verification code',
-            body: `Your code is ${result.demoCode}`,
-          },
-          trigger: null,
-        });
-      } catch {
-        otpRequestedFor.delete(email);
-        showToast({
-          type: 'error',
-          title: 'Error',
-          message: 'Otp could not be retrieved',
-        });
-      }
-    }
     requestOtp();
-  }, [getOtp, email]);
+  }, [email, requestOtp]);
+
+  function handleResend() {
+    otpRequestedFor.delete(email);
+    requestOtp();
+  }
 
   async function handleVerification() {
     try {
@@ -102,13 +109,21 @@ export default function VerifyOtp() {
             bottom: 100,
             width: '100%',
             alignSelf: 'center',
+            gap: 12,
           }}
         >
           {isSuccess && (
             <Btn
               text={isVerifying ? 'Processing...' : 'Continue'}
-              disabled={isLoading}
+              disabled={isLoading || isVerifying}
               action={() => handleVerification()}
+            />
+          )}
+          {requested && (
+            <Btn
+              text={isLoading ? 'Sending...' : 'Resend Code'}
+              disabled={isLoading}
+              action={handleResend}
             />
           )}
         </View>

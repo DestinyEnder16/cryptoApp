@@ -4,7 +4,7 @@ import { ReactNode, useEffect, useRef, useState } from 'react';
 import Toast from 'react-native-toast-message';
 import { Provider } from 'react-redux';
 import { Colors } from '../constants/styles';
-import { completeAuth, isAuthError } from '../services/auth';
+import { isAuthError } from '../services/auth';
 import { getCredentials } from '../services/nativeKeychain';
 import { store } from '../store';
 import { profileApi } from '../store/api/profileApi';
@@ -75,14 +75,15 @@ function AuthBootstrap({ children }: { children: ReactNode }) {
         const token = credentials.password;
         dispatch(setToken(token));
 
-        let biometricRequired = false;
         try {
           // fetch the current user and store it
           const user = await dispatch(
             profileApi.endpoints.fetchMe.initiate()
           ).unwrap();
           dispatch(setUser(user));
-          biometricRequired = user.settings.biometricEnabled;
+          // User loaded from the stored token — send them through /welcome
+          // so they can re-verify before landing in the app.
+          target = '/welcome';
         } catch (err) {
           if (isAuthError(err)) {
             // Token rejected by /me — send the user to sign in again, but
@@ -91,18 +92,11 @@ function AuthBootstrap({ children }: { children: ReactNode }) {
             target = '/(auth)/auth';
             return;
           }
-          // Transient/network failure: proceed without biometric gate
-          console.warn('fetchMe failed; skipping biometric gate', err);
+          // Transient/network failure: nothing to verify against — route
+          // back to the auth screen rather than landing in a half-loaded app.
+          console.warn('fetchMe failed', err);
+          target = '/(auth)/auth';
         }
-
-        if (biometricRequired) {
-          target = '/welcome';
-          return;
-        }
-
-        const next = await completeAuth(dispatch, token);
-
-        target = next ?? '/(tabs)/home';
       } finally {
         targetRef.current = target;
         //

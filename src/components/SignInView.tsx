@@ -1,5 +1,4 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -93,13 +92,12 @@ function SignInView({ showFingerprintIcon = true }: AuthProps) {
       dispatch(setAuth(result));
 
       // PROBLEM: The user must login with email - logging in with phone for number would break the app
-      setCredentials({ email: data.email, token: result.token });
+      setCredentials({ email: data.email, token: result.accessToken });
       showToast({
         type: 'success',
         title: 'Success',
         message: 'You have been signed in successfully.',
       });
-      await AsyncStorage.setItem('token', result.token);
 
       reset();
 

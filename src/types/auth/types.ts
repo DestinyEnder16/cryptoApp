@@ -110,8 +110,12 @@ export interface OtpVerificationRequest {
   code: string;
 }
 
-export interface OtpVerificationPayload extends LoginPayload {
+export interface OtpVerificationPayload extends Omit<LoginPayload, 'user'> {
   verified: boolean;
+  user: Pick<
+    User,
+    'id' | 'role' | 'fullName' | 'email' | 'emailVerified' | 'phone'
+  >;
 }
 
 export interface OtpVerificationResponse {

@@ -2,7 +2,6 @@ import Btn from "@/src/components/Btn";
 import { Fonts } from "@/src/constants/fonts";
 import { Fingerprint } from "@/src/constants/images";
 import { Colors } from "@/src/constants/styles";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -11,6 +10,7 @@ import {
   authenticateWithBiometrics,
   isBiometricAvailable,
 } from "../services/biometricAuth";
+import { resetCredentials } from "../services/nativeKeychain";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { logout } from "../store/slices/authSlice";
 
@@ -26,7 +26,7 @@ export default function RetryAuthScreen() {
     }
 
     if (!(await isBiometricAvailable())) {
-      await AsyncStorage.removeItem("token");
+      await resetCredentials();
       dispatch(logout());
       router.replace("/(auth)/auth");
       return;

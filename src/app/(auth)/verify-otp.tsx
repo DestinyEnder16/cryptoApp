@@ -2,6 +2,7 @@ import LoginTemplate from '@/src/components/LoginTemplate';
 
 import AppBackground from '@/src/components/AppBackground';
 import Btn from '@/src/components/Btn';
+import { LoadingIcon } from '@/src/components/LoadingSpinner';
 import NumInputField from '@/src/components/NumInputField';
 import { showToast } from '@/src/helpers/showToast';
 import {
@@ -103,6 +104,12 @@ export default function VerifyOtp() {
           isDisabled={!isSuccess}
         />
 
+        {isLoading && (
+          <View style={{ alignSelf: 'center', marginTop: 200 }}>
+            <LoadingIcon />
+          </View>
+        )}
+
         <View
           style={{
             position: 'absolute',
@@ -119,7 +126,7 @@ export default function VerifyOtp() {
               action={() => handleVerification()}
             />
           )}
-          {requested && (
+          {requested && isSuccess && (
             <Btn
               text={isLoading ? 'Sending...' : 'Resend Code'}
               disabled={isLoading}

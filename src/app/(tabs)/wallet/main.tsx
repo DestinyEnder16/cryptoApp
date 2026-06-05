@@ -1,66 +1,71 @@
-import Loader from '@/src/components/Loader';
-import TrendingAssetItem from '@/src/components/TrendingAssetItem';
-import WalletHeader from '@/src/components/WalletHeader';
+import AppBackground from '@/src/components/AppBackground';
+import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
-import { useFetchTrendingAssetsQuery } from '@/src/store/api/marketApi';
-import { setTrendingCoins } from '@/src/store/slices/coinSlice';
-import { FlashList } from '@shopify/flash-list';
-import { useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { useDispatch } from 'react-redux';
+import { StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function Wallet() {
-  const dispatch = useDispatch();
-  const { data } = useFetchTrendingAssetsQuery(undefined, {
-    pollingInterval: 30000,
-    skipPollingIfUnfocused: true,
-  });
-
-  useEffect(() => {
-    if (data) {
-      dispatch(setTrendingCoins(data));
-    }
-  }, [data, dispatch]);
+  const insets = useSafeAreaInsets();
 
   return (
-    <View style={styles.container}>
-      <WalletHeader />
-      <View style={styles.listWrapper}>
-        <FlashList
-          data={data}
-          keyExtractor={keyExtractor}
-          ListEmptyComponent={<Loader />}
-          renderItem={renderItem}
-          removeClippedSubviews
-        />
+    <AppBackground>
+      <View style={[styles.container, { paddingTop: insets.top + 20 }]}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Wallet</Text>
+          <Text style={styles.subtitle}>
+            Aggregated in USD from active asset balances.
+          </Text>
+        </View>
+
+        <View style={styles.valueCard}>
+          <Text style={styles.valueLabel}>Total portfolio value</Text>
+          <Text style={styles.valueAmount}>$4,892.40</Text>
+          <Text style={styles.valueChange}>+3.8% today</Text>
+        </View>
       </View>
-    </View>
+    </AppBackground>
   );
 }
-
-const keyExtractor = (item: { id: string }) => item.id;
-
-const renderItem = ({
-  item,
-}: {
-  item: { name: string; symbol: string; priceUsd: number; iconUrl: string };
-}) => (
-  <TrendingAssetItem
-    iconUrl={item.iconUrl}
-    name={item.name}
-    symbol={item.symbol}
-    priceUsd={item.priceUsd}
-  />
-);
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.primaryBackgroundColor,
+    paddingHorizontal: 20,
+    gap: 24,
   },
-  listWrapper: {
-    flex: 1,
-    paddingHorizontal: 15,
-    marginTop: 20,
+  header: {
+    gap: 6,
+  },
+  title: {
+    color: Colors.text,
+    fontFamily: Fonts.bold,
+    fontSize: 24,
+  },
+  subtitle: {
+    color: Colors.ash,
+    fontFamily: Fonts.regular,
+    fontSize: 12,
+    lineHeight: 18,
+  },
+  valueCard: {
+    backgroundColor: Colors.lime,
+    borderRadius: 20,
+    padding: 24,
+    gap: 10,
+  },
+  valueLabel: {
+    color: Colors.ash,
+    fontFamily: Fonts.regular,
+    fontSize: 13,
+  },
+  valueAmount: {
+    color: Colors.text,
+    fontFamily: Fonts.bold,
+    fontSize: 36,
+  },
+  valueChange: {
+    color: Colors.green,
+    fontFamily: Fonts.medium,
+    fontSize: 13,
   },
 });

@@ -14,6 +14,7 @@ import { addUserEmail, addUserPassword } from '@/src/store/slices/userSlice';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
@@ -142,6 +143,24 @@ export default function Welcome() {
               />
             )}
           </View>
+        </View>
+
+        <View
+          style={{
+            flexDirection: 'row',
+            gap: 10,
+            alignSelf: 'center',
+            marginTop: 100,
+          }}
+        >
+          <Text style={{ fontFamily: Fonts.regular, color: Colors.text }}>
+            Not you?
+          </Text>
+          <Pressable onPress={() => router.navigate('/(auth)/auth')}>
+            <Text style={{ fontFamily: Fonts.regular, color: Colors.green }}>
+              Sign in with a different account
+            </Text>
+          </Pressable>
         </View>
       </LoginTemplate>
     </AppBackground>

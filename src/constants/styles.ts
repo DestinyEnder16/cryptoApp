@@ -12,4 +12,6 @@ export const Colors = {
   error: '#F87171',
   red: '#DD4B4B',
   lime: '#083D2B',
+  brown: '#DB9E3859',
+  orangeBrown: '#DB9E38',
 };

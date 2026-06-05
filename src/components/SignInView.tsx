@@ -85,13 +85,13 @@ function SignInView({ showFingerprintIcon = true }: AuthProps) {
 
     try {
       const result = await login({
-        email: data.email!,
+        loginType: mode === 'email' ? 'email' : 'phone',
+        identifier: (mode === 'email' ? data.email : data.mobile)!,
         password: data.password,
       }).unwrap();
 
       dispatch(setAuth(result));
 
-      // PROBLEM: The user must login with email - logging in with phone for number would break the app
       setCredentials({ email: data.email, token: result.accessToken });
       showToast({
         type: 'success',

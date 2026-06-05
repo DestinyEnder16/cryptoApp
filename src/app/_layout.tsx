@@ -61,7 +61,6 @@ type Route =
   | '/(auth)/auth'
   | '/(tabs)/home'
   | '/retryAuth'
-  | '/userLogin'
   | '/welcome';
 
 function AuthBootstrap({ children }: { children: ReactNode }) {

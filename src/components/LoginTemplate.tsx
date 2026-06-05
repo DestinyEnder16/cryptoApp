@@ -18,7 +18,9 @@ export default function LoginTemplate({
 }: TemplateProps) {
   const insets = useSafeAreaInsets();
   return (
-    <View style={{ paddingTop: insets.top + 50, paddingHorizontal: 20 }}>
+    <View
+      style={{ paddingTop: insets.top + 50, paddingHorizontal: 20, flex: 1 }}
+    >
       <View style={{ gap: 15 }}>
         <Text style={styles.header}>{headerTxt}</Text>
         {headerDesc && <Text style={styles.desc}>{headerDesc}</Text>}

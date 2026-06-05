@@ -96,7 +96,7 @@ export default function Verification() {
       //
       if (!result.verified) return;
 
-      setCredentials({ email, token: result.token });
+      setCredentials({ email, token: result.accessToken });
 
       router.replace('/success');
     } catch {

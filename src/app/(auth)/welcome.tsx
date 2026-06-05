@@ -1,14 +1,18 @@
+import AppBackground from '@/src/components/AppBackground';
 import LoginTemplate from '@/src/components/LoginTemplate';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
 import { showToast } from '@/src/helpers/showToast';
-import { authenticateWithBiometrics } from '@/src/services/biometricAuth';
-import { setCredentials } from '@/src/services/nativeKeychain';
+import {
+  authenticateWithBiometrics,
+  isBiometricAvailable,
+} from '@/src/services/biometricAuth';
 import { useLoginMutation } from '@/src/store/api/authApi';
 import { useAppDispatch, useAppSelector } from '@/src/store/hooks';
-import { selectUser, setAuth } from '@/src/store/slices/authSlice';
+import { selectUser } from '@/src/store/slices/authSlice';
+import { addUserEmail, addUserPassword } from '@/src/store/slices/userSlice';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -48,18 +52,27 @@ export default function Welcome() {
   const dispatch = useAppDispatch();
   const [password, setPassword] = useState('');
   const [login, { isLoading }] = useLoginMutation();
+  const [hasSavedBiometrics, setHasSavedBiometrics] = useState(false);
+
+  useEffect(() => {
+    async function checkBiometrics() {
+      const available = await isBiometricAvailable();
+      setHasSavedBiometrics(available);
+    }
+    checkBiometrics();
+  }, []);
 
   if (!user) return null;
 
   const handleSignup = async () => {
     try {
       if (password.length === 0) throw new Error();
-      const result = await login({
-        email: user.email,
-        password,
-      }).unwrap();
+      // Verify credentials only. The session returned here is discarded —
+      // HandleSignin re-logs in after OTP to establish the real session.
+      await login({ email: user.email, password }).unwrap();
 
-      dispatch(setAuth(result));
+      dispatch(addUserEmail(user.email));
+      dispatch(addUserPassword(password));
 
       setPassword('');
       router.replace('/verify-otp');
@@ -89,47 +102,51 @@ export default function Welcome() {
   };
 
   return (
-    <LoginTemplate headerTxt="Welcome Back">
-      <View style={{ alignItems: 'center', gap: 20 }}>
-        <View style={styles.profile}>
-          <Text style={styles.profileInitial}>{user.fullName.charAt(0)}</Text>
-        </View>
-        <Text style={styles.name}>{user.fullName}</Text>
-        <Text style={styles.desc}>
-          Use password or Face ID approved on this device.
-        </Text>
-      </View>
-
-      <View style={{ marginTop: 50 }}>
-        <View style={styles.passwordField}>
-          <Text style={styles.passwordLabel}>Password</Text>
-          <TextInput
-            style={styles.passwordInput}
-            secureTextEntry
-            placeholderTextColor={Colors.grey}
-            value={password}
-            onChangeText={setPassword}
-            editable={!isLoading}
-          />
+    <AppBackground>
+      <LoginTemplate headerTxt="Welcome Back">
+        <View style={{ alignItems: 'center', gap: 20 }}>
+          <View style={styles.profile}>
+            <Text style={styles.profileInitial}>{user.fullName.charAt(0)}</Text>
+          </View>
+          <Text style={styles.name}>{user.fullName}</Text>
+          <Text style={styles.desc}>
+            Use password or Face ID approved on this device.
+          </Text>
         </View>
 
-        <View style={{ gap: 15 }}>
-          <Btn
-            text={isLoading ? 'Signing up...' : 'Sign Up'}
-            bgColor={Colors.green}
-            txtColor={Colors.dark}
-            onClick={() => handleSignup()}
-            disabled={isLoading}
-          />
-          <Btn
-            text="Use Face ID"
-            bgColor={Colors.secondaryBackgroundColor}
-            txtColor={Colors.text}
-            onClick={() => handleAuth()}
-          />
+        <View style={{ marginTop: 50 }}>
+          <View style={styles.passwordField}>
+            <Text style={styles.passwordLabel}>Password</Text>
+            <TextInput
+              style={styles.passwordInput}
+              secureTextEntry
+              placeholderTextColor={Colors.grey}
+              value={password}
+              onChangeText={setPassword}
+              editable={!isLoading}
+            />
+          </View>
+
+          <View style={{ gap: 15 }}>
+            <Btn
+              text={isLoading ? 'Signing up...' : 'Sign Up'}
+              bgColor={Colors.green}
+              txtColor={Colors.dark}
+              onClick={() => handleSignup()}
+              disabled={isLoading}
+            />
+            {hasSavedBiometrics && (
+              <Btn
+                text="Use Biometrics"
+                bgColor={Colors.secondaryBackgroundColor}
+                txtColor={Colors.text}
+                onClick={() => handleAuth()}
+              />
+            )}
+          </View>
         </View>
-      </View>
-    </LoginTemplate>
+      </LoginTemplate>
+    </AppBackground>
   );
 }
 

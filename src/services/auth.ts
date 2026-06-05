@@ -1,8 +1,8 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import type { AppDispatch } from '../store';
 import { profileApi } from '../store/api/profileApi';
 import { logout, setUser } from '../store/slices/authSlice';
+import { resetCredentials } from './nativeKeychain';
 
 export function isAuthError(err: unknown): boolean {
   if (typeof err !== 'object' || err === null) return false;
@@ -11,7 +11,7 @@ export function isAuthError(err: unknown): boolean {
 }
 
 export async function signOut(dispatch: AppDispatch): Promise<void> {
-  await AsyncStorage.removeItem('token');
+  await resetCredentials();
   dispatch(logout());
 }
 

@@ -7,14 +7,21 @@ interface InputProps {
   num: number;
   marginTop: number;
   onFill: React.Dispatch<React.SetStateAction<string>>;
+  isDisabled?: boolean;
 }
 
-export default function NumInputField({ num, marginTop, onFill }: InputProps) {
+export default function NumInputField({
+  num,
+  marginTop,
+  onFill,
+  isDisabled = false,
+}: InputProps) {
   return (
     <View style={[styles.container, { marginTop }]}>
       <OtpInput
         placeholder={'*'.repeat(num)}
         numberOfDigits={num}
+        disabled={isDisabled}
         focusColor={Colors.green}
         focusStickBlinkingDuration={1000}
         onFilled={(text) => onFill(text)}

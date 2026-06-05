@@ -1,16 +1,17 @@
 import LoginTemplate from '@/src/components/LoginTemplate';
 import { Colors } from '@/src/constants/styles';
 
+import AppBackground from '@/src/components/AppBackground';
 import Btn from '@/src/components/Btn';
 import NumInputField from '@/src/components/NumInputField';
 import { showToast } from '@/src/helpers/showToast';
-import { setCredentials } from '@/src/services/nativeKeychain';
 import {
   useOtpMutation,
   useOtpVerificationMutation,
 } from '@/src/store/api/verificationApi';
 import { useAppSelector } from '@/src/store/hooks';
 import * as Notifications from 'expo-notifications';
+import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -30,7 +31,7 @@ export default function VerifyOtp() {
   const [otp, setOtp] = useState('');
 
   const [getOtp, { error: otpError, isLoading, isSuccess }] = useOtpMutation();
-  const [verifyOtp] = useOtpVerificationMutation();
+  const [verifyOtp, { isLoading: isVerifying }] = useOtpVerificationMutation();
 
   // Runs on mount and again whenever retryNum changes (i.e. the user resends).
 
@@ -38,8 +39,8 @@ export default function VerifyOtp() {
 
   useEffect(() => {
     // SOLUTION: Guard clause to ensure that emails that have requested OTP do not get a new one except when re-requested
-    // if (otpRequestedFor.has(email)) return;
-    // otpRequestedFor.add(email);
+    if (otpRequestedFor.has(email)) return;
+    otpRequestedFor.add(email);
 
     async function requestOtp() {
       try {
@@ -56,7 +57,7 @@ export default function VerifyOtp() {
           trigger: null,
         });
       } catch {
-        // NOTE: otpRequestedFor.delete(email);
+        otpRequestedFor.delete(email);
         showToast({
           type: 'error',
           title: 'Error',
@@ -69,33 +70,55 @@ export default function VerifyOtp() {
 
   async function handleVerification() {
     try {
+      if (otp.length < 6) throw new Error('Kindly fill out the fields');
       const result = await verifyOtp({ email, code: otp }).unwrap();
       // Server returned 200 but the code didn't match — bail without signing up.
-      //
-      if (!result.verified) return;
-
-      await setCredentials({ email, token: result.token });
-    } catch {
-      // Thrown failures surface via verificationError / signUpError in the UI.
+      if (!result.verified) throw new Error('Invalid OTP');
+      // The verify endpoint returns no session token. HandleSignin runs the
+      // login mutation and stores the resulting token in the keychain.
+      router.replace('/handleSignin');
+    } catch (e) {
+      const message =
+        e instanceof Error ? e.message : 'Check the code sent and try again';
+      console.log(message);
+      showToast({
+        type: 'error',
+        title: 'OTP Error',
+        message,
+      });
     }
   }
 
   return (
-    <LoginTemplate
-      headerTxt="Verify OTP"
-      headerDesc="Enter the six digit code we sent to your email"
-    >
-      <NumInputField num={num} marginTop={50} onFill={setOtp} />
+    <AppBackground>
+      <LoginTemplate
+        headerTxt="Verify OTP"
+        headerDesc="Enter the six digit code we sent to your email"
+      >
+        <NumInputField
+          num={num}
+          marginTop={50}
+          onFill={setOtp}
+          isDisabled={!isSuccess}
+        />
 
-      <View style={{ position: 'absolute', bottom: 100 }}>
-        {isSuccess && (
-          <Btn
-            text="Continue"
-            disabled={isLoading}
-            action={() => handleVerification()}
-          />
-        )}
-      </View>
-    </LoginTemplate>
+        <View
+          style={{
+            position: 'absolute',
+            bottom: 100,
+            width: '100%',
+            alignSelf: 'center',
+          }}
+        >
+          {isSuccess && (
+            <Btn
+              text={isVerifying ? 'Processing...' : 'Continue'}
+              disabled={isLoading}
+              action={() => handleVerification()}
+            />
+          )}
+        </View>
+      </LoginTemplate>
+    </AppBackground>
   );
 }

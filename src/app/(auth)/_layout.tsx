@@ -20,6 +20,7 @@ export default function RootLayout() {
       <Stack.Screen name="welcome" />
       <Stack.Screen name="verify-otp" />
       <Stack.Screen name="handleSignin" />
+      <Stack.Screen name="retrySignin" />
     </Stack>
   );
 }

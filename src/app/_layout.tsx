@@ -4,7 +4,7 @@ import { ReactNode, useEffect, useRef, useState } from 'react';
 import Toast from 'react-native-toast-message';
 import { Provider } from 'react-redux';
 import { Colors } from '../constants/styles';
-import { completeAuth, isAuthError, signOut } from '../services/auth';
+import { completeAuth, isAuthError } from '../services/auth';
 import { getCredentials } from '../services/nativeKeychain';
 import { store } from '../store';
 import { profileApi } from '../store/api/profileApi';
@@ -42,11 +42,7 @@ export default function RootLayout() {
             name="settings"
             options={{ animation: 'fade_from_bottom' }}
           />
-          <Stack.Screen
-            name="retryAuth"
-            options={{ animation: 'fade_from_bottom' }}
-          />
-          <Stack.Screen name="userLogin" />
+
           <Stack.Screen name="UserPreferenceSetting" />
         </Stack>
       </AuthBootstrap>
@@ -55,13 +51,7 @@ export default function RootLayout() {
   );
 }
 
-type Route =
-  | '/'
-  | '/onboarding'
-  | '/(auth)/auth'
-  | '/(tabs)/home'
-  | '/retryAuth'
-  | '/welcome';
+type Route = '/' | '/onboarding' | '/(auth)/auth' | '/(tabs)/home' | '/welcome';
 
 function AuthBootstrap({ children }: { children: ReactNode }) {
   const dispatch = useAppDispatch();
@@ -95,8 +85,9 @@ function AuthBootstrap({ children }: { children: ReactNode }) {
           biometricRequired = user.settings.biometricEnabled;
         } catch (err) {
           if (isAuthError(err)) {
-            console.warn('auth error');
-            await signOut(dispatch);
+            // Token rejected by /me — send the user to sign in again, but
+            // keep the keychain intact so a successful sign-in can overwrite
+            // it rather than starting from a wiped state.
             target = '/(auth)/auth';
             return;
           }
@@ -110,9 +101,7 @@ function AuthBootstrap({ children }: { children: ReactNode }) {
         }
 
         const next = await completeAuth(dispatch, token);
-        // Fallback when /me fails for non-auth reasons: send to home and let
-        // the destination surface its own error state. Don't use /retryAuth —
-        // that screen is for biometric retries, not network errors.
+
         target = next ?? '/(tabs)/home';
       } finally {
         targetRef.current = target;

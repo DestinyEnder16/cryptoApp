@@ -1,5 +1,4 @@
 import LoginTemplate from '@/src/components/LoginTemplate';
-import { Colors } from '@/src/constants/styles';
 
 import AppBackground from '@/src/components/AppBackground';
 import Btn from '@/src/components/Btn';
@@ -13,14 +12,7 @@ import { useAppSelector } from '@/src/store/hooks';
 import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-
-const styles = StyleSheet.create({
-  inputField: {
-    backgroundColor: Colors.secondaryBackgroundColor,
-    borderColor: Colors.secondaryBackgroundColor,
-  },
-});
+import { View } from 'react-native';
 
 // Persists across mounts so back-navigating into this screen doesn't
 // resend an OTP for an email we've already requested one for this session.
@@ -73,10 +65,12 @@ export default function VerifyOtp() {
       if (otp.length < 6) throw new Error('Kindly fill out the fields');
       const result = await verifyOtp({ email, code: otp }).unwrap();
       // Server returned 200 but the code didn't match — bail without signing up.
-      if (!result.verified) throw new Error('Invalid OTP');
+      if (otpError) throw new Error('Invalid OTP');
       // The verify endpoint returns no session token. HandleSignin runs the
       // login mutation and stores the resulting token in the keychain.
-      router.replace('/handleSignin');
+      if (result.verified) {
+        router.replace('/handleSignin');
+      }
     } catch (e) {
       const message =
         e instanceof Error ? e.message : 'Check the code sent and try again';

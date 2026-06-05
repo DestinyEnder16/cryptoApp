@@ -66,10 +66,8 @@ export default function Welcome() {
 
   const handleSignup = async () => {
     try {
-      if (password.length === 0) throw new Error();
-      // Verify credentials only. The session returned here is discarded —
-      // HandleSignin re-logs in after OTP to establish the real session.
-      await login({ email: user.email, password }).unwrap();
+      if (password.length === 0)
+        throw new Error('Password field must be filled');
 
       dispatch(addUserEmail(user.email));
       dispatch(addUserPassword(password));
@@ -77,11 +75,11 @@ export default function Welcome() {
       setPassword('');
       router.replace('/verify-otp');
     } catch (err) {
-      console.log('login failed', err);
+      const message = err instanceof Error ? err.message : 'Unknown error';
       showToast({
         type: 'error',
         title: 'Error',
-        message: 'Invalid credentials. Please try again.',
+        message,
       });
     }
   };

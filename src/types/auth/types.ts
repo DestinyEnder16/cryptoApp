@@ -1,5 +1,6 @@
 export interface LoginRequest {
-  email: string;
+  loginType: 'email' | 'phone';
+  identifier: string;
   password: string;
 }
 
@@ -141,7 +142,6 @@ export interface ValidationRequest {
   email?: string;
   phone?: string;
 }
-
 
 interface ValidationEmailDetails {
   value: string;

@@ -15,28 +15,34 @@ export default function HandleSignin() {
   const [login, { isLoading }] = useLoginMutation();
   const dispatch = useAppDispatch();
   const email = useAppSelector((state) => state.user.email);
+  const mobile = useAppSelector((state) => state.user.mobile);
   const password = useAppSelector((state) => state.user.password);
   const insets = useSafeAreaInsets();
 
   useEffect(() => {
     async function attemptSignIn() {
-      if (!email || !password) {
+      const identifier = email || mobile;
+      if (!identifier || !password) {
         console.log('handleSignin: missing credentials', {
-          hasEmail: !!email,
+          hasIdentifier: !!identifier,
           hasPassword: !!password,
         });
         return;
       }
       try {
-        const result = await login({ email, password }).unwrap();
+        const result = await login({
+          loginType: email ? 'email' : 'phone',
+          identifier,
+          password,
+        }).unwrap();
         dispatch(setAuth(result));
         router.replace('/home');
       } catch (err) {
-        console.log('handleSignin: login failed', err);
+        router.replace('/retrySignin');
       }
     }
     attemptSignIn();
-  }, [email, login, password, dispatch]);
+  }, [email, mobile, login, password, dispatch]);
 
   return (
     <AppBackground>

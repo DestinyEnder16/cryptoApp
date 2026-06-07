@@ -37,7 +37,6 @@ export default function RootLayout() {
           }}
         >
           <Stack.Screen name="(tabs)" options={{ animation: 'none' }} />
-          <Stack.Screen name="profile" options={{ animation: 'none' }} />
           <Stack.Screen
             name="settings"
             options={{ animation: 'fade_from_bottom' }}

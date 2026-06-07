@@ -7,6 +7,7 @@ import './api/notificationApi';
 import './api/profileApi';
 import './api/settingsApi';
 import './api/verificationApi';
+import './api/watchListApi';
 import authReducer from './slices/authSlice';
 import coinReducer from './slices/coinSlice';
 import userReducer from './slices/userSlice';

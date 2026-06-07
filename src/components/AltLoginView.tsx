@@ -1,7 +1,14 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { router } from 'expo-router';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Fonts } from '../constants/fonts';
 import { FaceBookIcon, Fingerprint, GoogleIcon } from '../constants/images';
 import { Colors } from '../constants/styles';
+import { showToast } from '../helpers/showToast';
+import { completeAuth } from '../services/auth';
+import { authenticateWithBiometrics } from '../services/biometricAuth';
+import { getCredentials } from '../services/nativeKeychain';
+import { useAppDispatch } from '../store/hooks';
+import { setToken } from '../store/slices/authSlice';
 import ActionBtn from './ActionBtn';
 
 interface ViewProps {
@@ -9,6 +16,32 @@ interface ViewProps {
 }
 
 function AltLoginView({ showFingerPrintOption = true }: ViewProps) {
+  const dispatch = useAppDispatch();
+
+  async function handleBiometricAuth() {
+    const ok = await authenticateWithBiometrics();
+    if (!ok) return;
+
+    try {
+      const credentials = await getCredentials();
+      if (!credentials) {
+        throw new Error('No saved credentials found. Please sign in again.');
+      }
+
+      dispatch(setToken(credentials.password));
+
+      const target = await completeAuth(dispatch, credentials.password);
+      if (target) router.replace(target);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      showToast({
+        title: 'Login error',
+        type: 'error',
+        message,
+      });
+    }
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Or login with</Text>
@@ -37,7 +70,9 @@ function AltLoginView({ showFingerPrintOption = true }: ViewProps) {
             marginTop: 50,
           }}
         >
-          <Fingerprint />
+          <Pressable onPress={() => handleBiometricAuth()} hitSlop={20}>
+            <Fingerprint />
+          </Pressable>
           <Text style={styles.txt}>Use fingerprint instead?</Text>
         </View>
       )}

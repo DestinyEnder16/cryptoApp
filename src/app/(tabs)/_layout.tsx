@@ -66,17 +66,17 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="profile"
-          options={{
-            title: 'Profile',
-            tabBarIcon: ({ color }) => <ProfileIcon color={color} />,
-          }}
-        />
-        <Tabs.Screen
           name="wallet"
           options={{
             title: 'Wallets',
             tabBarIcon: ({ color }) => <WalletIcon color={color} />,
+          }}
+        />
+        <Tabs.Screen
+          name="profile"
+          options={{
+            title: 'Profile',
+            tabBarIcon: ({ color }) => <ProfileIcon color={color} />,
           }}
         />
       </Tabs>

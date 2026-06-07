@@ -8,10 +8,7 @@ export default function ProfileIndex() {
   return (
     <AppBackground>
       <View style={{ paddingTop: insets.top + 20, paddingHorizontal: 20 }}>
-        <ScreenIntro
-          title="Profile"
-          description="Manage account security, verification, and preferences."
-        />
+        <ScreenIntro title="Profile" />
       </View>
     </AppBackground>
   );

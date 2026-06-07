@@ -53,4 +53,16 @@ export const selectUsername = (state: RootState) => state.auth.username;
 export const selectIsAuthenticated = (state: RootState) =>
   state.auth.token !== null;
 
+export const selectKycStatus = (state: RootState) => state.auth.user?.kycStatus;
+export const selectIsKycApproved = (state: RootState) =>
+  state.auth.user?.kycStatus === 'approved';
+export const selectVerification = (state: RootState) =>
+  state.auth.user?.verification;
+export const selectVerificationLevel = (state: RootState) =>
+  state.auth.user?.verification.level ?? 0;
+export const selectCanTrade = (state: RootState) =>
+  state.auth.user?.verification.canTrade ?? false;
+export const selectCanWithdraw = (state: RootState) =>
+  state.auth.user?.verification.canWithdraw ?? false;
+
 export default authSlice.reducer;

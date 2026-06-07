@@ -5,7 +5,8 @@ import { Colors } from '../constants/styles';
 interface ProfileStripItemProps {
   title: string;
   subtitle: string;
-  badge?: number;
+  badge?: string | number;
+  danger?: boolean;
   onPress?: () => void;
 }
 
@@ -13,20 +14,24 @@ function ProfileStripItem({
   title,
   subtitle,
   badge,
+  danger = false,
   onPress,
 }: ProfileStripItemProps) {
-  const showBadge = typeof badge === 'number' && badge > 0;
+  const showBadge = Boolean(badge);
+  const accentColor = danger ? Colors.red : Colors.green;
 
   return (
     <Pressable style={styles.row} onPress={onPress}>
-      <View style={styles.dot} />
+      <View style={[styles.dot, { backgroundColor: accentColor }]} />
 
       <View style={styles.text}>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.subtitle}>{subtitle}</Text>
       </View>
 
-      {showBadge && <Text style={styles.badge}>{badge}</Text>}
+      {showBadge && (
+        <Text style={[styles.badge, { color: accentColor }]}>{badge}</Text>
+      )}
     </Pressable>
   );
 }

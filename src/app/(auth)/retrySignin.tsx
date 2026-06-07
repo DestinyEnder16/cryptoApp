@@ -39,6 +39,13 @@ export default function RetrySignin() {
         identifier,
         password,
       }).unwrap();
+      if ('requiresTwoFactor' in result) {
+        router.replace({
+          pathname: '/verify-2fa',
+          params: { challengeId: result.challengeId },
+        });
+        return;
+      }
       dispatch(setToken(result.accessToken));
       await setCredentials({
         email: isEmail ? identifier : storedEmail,

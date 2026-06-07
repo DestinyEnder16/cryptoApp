@@ -9,7 +9,7 @@ import { getCredentials } from '../services/nativeKeychain';
 import { store } from '../store';
 import { profileApi } from '../store/api/profileApi';
 import { useAppDispatch } from '../store/hooks';
-import { setToken, setUser } from '../store/slices/authSlice';
+import { setToken } from '../store/slices/authSlice';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -75,11 +75,10 @@ function AuthBootstrap({ children }: { children: ReactNode }) {
         dispatch(setToken(token));
 
         try {
-          // PROBLEM: fetch the current user and store it
-          const user = await dispatch(
-            profileApi.endpoints.fetchMe.initiate()
-          ).unwrap();
-          dispatch(setUser(user));
+          // Validate the token by hitting /me. The result populates the
+          // RTK Query cache so useFetchMeQuery() across the app reads it
+          // without an extra request.
+          await dispatch(profileApi.endpoints.fetchMe.initiate()).unwrap();
 
           target = '/welcome';
         } catch (err) {

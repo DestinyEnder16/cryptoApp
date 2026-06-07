@@ -3,14 +3,13 @@ import { LoadingIcon } from '@/src/components/LoadingSpinner';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
 import { useFetchTrendingAssetsQuery } from '@/src/store/api/marketApi';
-import { useAppSelector } from '@/src/store/hooks';
-import { selectUser } from '@/src/store/slices/authSlice';
+import { useFetchMeQuery } from '@/src/store/api/profileApi';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function KycIncomplete() {
   const insets = useSafeAreaInsets();
-  const user = useAppSelector(selectUser);
+  const { data: user } = useFetchMeQuery();
   const firstName = user?.fullName?.split(' ')[0] ?? '';
   const tier = user?.verification?.label ?? 'Starter level';
   const { data: trending, isLoading: trendingLoading } =

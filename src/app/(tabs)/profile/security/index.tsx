@@ -4,14 +4,13 @@ import ScreenIntro from '@/src/components/ScreenIntro';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
 import { usePadding } from '@/src/hooks/usePadding';
-import { useAppSelector } from '@/src/store/hooks';
-import { selectUser } from '@/src/store/slices/authSlice';
+import { useFetchMeQuery } from '@/src/store/api/profileApi';
 import { router } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 export default function Index() {
   const paddingTop = usePadding();
-  const user = useAppSelector(selectUser);
+  const { data: user } = useFetchMeQuery();
   const biometricEnabled = user?.settings.biometricEnabled;
   const twoFactorAuthEnabled = user?.twoFactorEnabled;
 

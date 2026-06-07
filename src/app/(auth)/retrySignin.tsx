@@ -6,7 +6,7 @@ import { showToast } from '@/src/helpers/showToast';
 import { setCredentials } from '@/src/services/nativeKeychain';
 import { useLoginMutation } from '@/src/store/api/authApi';
 import { useAppDispatch, useAppSelector } from '@/src/store/hooks';
-import { setAuth } from '@/src/store/slices/authSlice';
+import { setToken } from '@/src/store/slices/authSlice';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
@@ -39,7 +39,7 @@ export default function RetrySignin() {
         identifier,
         password,
       }).unwrap();
-      dispatch(setAuth(result));
+      dispatch(setToken(result.accessToken));
       await setCredentials({
         email: isEmail ? identifier : storedEmail,
         token: result.accessToken,

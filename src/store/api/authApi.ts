@@ -12,6 +12,7 @@ import type {
   TwoFactorSetupResponse,
 } from '@/src/types/auth/types';
 import { baseApi } from './baseApi';
+import { profileApi } from './profileApi';
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
@@ -22,6 +23,16 @@ export const authApi = baseApi.injectEndpoints({
         body: credentials,
       }),
       transformResponse: (response: LoginResponse) => response.data,
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data: payload } = await queryFulfilled;
+          dispatch(
+            profileApi.util.upsertQueryData('fetchMe', undefined, payload.user)
+          );
+        } catch {
+          // Login failed — nothing to seed.
+        }
+      },
     }),
 
     signup: build.mutation<RegisterPayload, RegisterRequest>({
@@ -48,6 +59,7 @@ export const authApi = baseApi.injectEndpoints({
         body,
       }),
       transformResponse: (response: TwoFactorEnableResponse) => response.data,
+      invalidatesTags: ['User'],
     }),
   }),
 });

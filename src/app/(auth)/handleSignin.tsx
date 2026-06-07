@@ -2,7 +2,7 @@ import AppBackground from '@/src/components/AppBackground';
 import { LoadingIcon } from '@/src/components/LoadingSpinner';
 import { useLoginMutation } from '@/src/store/api/authApi';
 import { useAppDispatch, useAppSelector } from '@/src/store/hooks';
-import { setAuth } from '@/src/store/slices/authSlice';
+import { setToken } from '@/src/store/slices/authSlice';
 import { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -35,7 +35,7 @@ export default function HandleSignin() {
           identifier,
           password,
         }).unwrap();
-        dispatch(setAuth(result));
+        dispatch(setToken(result.accessToken));
         router.replace('/home');
       } catch (err) {
         router.replace('/retrySignin');

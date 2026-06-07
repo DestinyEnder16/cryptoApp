@@ -15,6 +15,7 @@ import {
 } from "../constants/images";
 import { Colors } from "../constants/styles";
 import { completeLogout } from "../helpers/completeLogout";
+import { useFetchMeQuery } from "../store/api/profileApi";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import Toast from "react-native-toast-message";
 import { showToast } from "../helpers/showToast";
@@ -27,7 +28,7 @@ type SettingsConfig = {
 
 export default function Settings() {
   const insets = useSafeAreaInsets();
-  const user = useAppSelector((state) => state.auth.user);
+  const { data: user } = useFetchMeQuery();
   const token = useAppSelector((state) => state.auth.token);
   const dispatch = useAppDispatch();
 

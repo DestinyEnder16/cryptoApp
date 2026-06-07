@@ -6,15 +6,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Fonts } from '../constants/fonts';
 import { EyeSlash } from '../constants/images';
 import { Colors } from '../constants/styles';
-import { useAppSelector } from '../store/hooks';
-import { selectUser } from '../store/slices/authSlice';
+import { useFetchMeQuery } from '../store/api/profileApi';
 import { currencyConverter } from '../utils/currencyConverter';
 import ActionBtn from './ActionBtn';
 
 const AMOUNT = 40059.83;
 
 function WalletHeader() {
-  const user = useAppSelector(selectUser);
+  const { data: user } = useFetchMeQuery();
   const currency = user?.settings.fiatCurrency;
   const insets = useSafeAreaInsets();
 

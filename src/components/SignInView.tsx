@@ -17,7 +17,7 @@ import { showToast } from '../helpers/showToast';
 import { setCredentials } from '../services/nativeKeychain';
 import { useLoginMutation } from '../store/api/authApi';
 import { useAppDispatch } from '../store/hooks';
-import { setAuth } from '../store/slices/authSlice';
+import { setToken } from '../store/slices/authSlice';
 import {
   addUserEmail,
   addUserMobile,
@@ -90,7 +90,7 @@ function SignInView({ showFingerprintIcon = true }: AuthProps) {
         password: data.password,
       }).unwrap();
 
-      dispatch(setAuth(result));
+      dispatch(setToken(result.accessToken));
 
       setCredentials({ email: data.email, token: result.accessToken });
       showToast({

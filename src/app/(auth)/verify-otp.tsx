@@ -5,11 +5,11 @@ import Btn from '@/src/components/Btn';
 import { LoadingIcon } from '@/src/components/LoadingSpinner';
 import NumInputField from '@/src/components/NumInputField';
 import { showToast } from '@/src/helpers/showToast';
+import { useFetchMeQuery } from '@/src/store/api/profileApi';
 import {
   useOtpMutation,
   useOtpVerificationMutation,
 } from '@/src/store/api/verificationApi';
-import { useAppSelector } from '@/src/store/hooks';
 import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
@@ -26,7 +26,8 @@ export default function VerifyOtp() {
   const [getOtp, { error: otpError, isLoading, isSuccess }] = useOtpMutation();
   const [verifyOtp, { isLoading: isVerifying }] = useOtpVerificationMutation();
 
-  const email = useAppSelector((state) => state.auth.user?.email!);
+  const { data: user } = useFetchMeQuery();
+  const email = user?.email ?? '';
   const [requested, setRequested] = useState(() => otpRequestedFor.has(email));
 
   const requestOtp = useCallback(async () => {

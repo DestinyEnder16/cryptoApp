@@ -9,8 +9,8 @@ import {
   isBiometricAvailable,
 } from '@/src/services/biometricAuth';
 import { useLoginMutation } from '@/src/store/api/authApi';
-import { useAppDispatch, useAppSelector } from '@/src/store/hooks';
-import { selectUser } from '@/src/store/slices/authSlice';
+import { useFetchMeQuery } from '@/src/store/api/profileApi';
+import { useAppDispatch } from '@/src/store/hooks';
 import { addUserEmail, addUserPassword } from '@/src/store/slices/userSlice';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -50,7 +50,7 @@ function Btn({ text, bgColor, txtColor, onClick, disabled = false }: BtnProps) {
 }
 
 export default function Welcome() {
-  const user = useAppSelector(selectUser);
+  const { data: user } = useFetchMeQuery();
   const dispatch = useAppDispatch();
   const [password, setPassword] = useState('');
   const [login, { isLoading }] = useLoginMutation();

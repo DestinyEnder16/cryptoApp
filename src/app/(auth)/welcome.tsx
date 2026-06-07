@@ -1,5 +1,6 @@
 import AppBackground from '@/src/components/AppBackground';
 import LoginTemplate from '@/src/components/LoginTemplate';
+import ProfileAvatar from '@/src/components/ProfileAvatar';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
 import { showToast } from '@/src/helpers/showToast';
@@ -104,9 +105,7 @@ export default function Welcome() {
     <AppBackground>
       <LoginTemplate headerTxt="Welcome Back">
         <View style={{ alignItems: 'center', gap: 20 }}>
-          <View style={styles.profile}>
-            <Text style={styles.profileInitial}>{user.fullName.charAt(0)}</Text>
-          </View>
+          <ProfileAvatar name={user.fullName} style={{ marginTop: 30 }} />
           <Text style={styles.name}>{user.fullName}</Text>
           <Text style={styles.desc}>
             Use password or Face ID approved on this device.
@@ -167,19 +166,6 @@ export default function Welcome() {
 }
 
 const styles = StyleSheet.create({
-  profile: {
-    backgroundColor: Colors.green,
-    width: 122,
-    height: 122,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 100,
-    marginTop: 30,
-  },
-  profileInitial: {
-    fontFamily: Fonts.bold,
-    fontSize: 42,
-  },
   name: {
     fontFamily: Fonts.bold,
     fontSize: 20,

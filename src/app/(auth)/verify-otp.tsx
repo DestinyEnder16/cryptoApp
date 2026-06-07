@@ -58,7 +58,7 @@ export default function VerifyOtp() {
 
   useEffect(() => {
     // Guard so emails that have already requested OTP don't get a new one
-    // on remount — only when the user explicitly resends.
+    // on remount — only when the user explicitly re-sends.
     if (otpRequestedFor.has(email)) return;
     requestOtp();
   }, [email, requestOtp]);

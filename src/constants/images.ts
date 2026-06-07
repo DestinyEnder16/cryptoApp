@@ -91,6 +91,7 @@ import ProfileCamera from '@/assets/icons/icons/profile/profileCamera.svg';
 import NotificationEmptyIcon from '@/assets/images/NotificationEmptyIcon.svg';
 
 import BtcCoin from '@/assets/btc.svg';
+import ProfileIcon from '@/assets/images/profile.svg';
 import SettingsIcon from '@/assets/images/settings.svg';
 
 export {
@@ -156,6 +157,7 @@ export {
   NotificationIconRain,
   NotifIcon,
   ProfileCamera,
+  ProfileIcon,
   QrcodeIcon,
   ScanIcon,
   SearchIcon,

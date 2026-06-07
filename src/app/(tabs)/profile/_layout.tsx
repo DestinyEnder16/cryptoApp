@@ -6,7 +6,6 @@ export default function Layout() {
       screenOptions={{ headerShown: false, animation: 'fade_from_bottom' }}
     >
       <Stack.Screen name="index" />
-      <Stack.Screen name="edit" />
     </Stack>
   );
 }

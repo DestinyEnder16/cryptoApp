@@ -93,7 +93,6 @@ export default function RetrySignin() {
                 style={styles.input}
                 value={password}
                 onChangeText={setPassword}
-                secureTextEntry
                 editable={!isLoading}
                 placeholderTextColor={Colors.ash}
               />

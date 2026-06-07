@@ -76,19 +76,16 @@ function AuthBootstrap({ children }: { children: ReactNode }) {
         dispatch(setToken(token));
 
         try {
-          // fetch the current user and store it
+          // PROBLEM: fetch the current user and store it
           const user = await dispatch(
             profileApi.endpoints.fetchMe.initiate()
           ).unwrap();
           dispatch(setUser(user));
-          // User loaded from the stored token — send them through /welcome
-          // so they can re-verify before landing in the app.
+
           target = '/welcome';
         } catch (err) {
           if (isAuthError(err)) {
-            // Token rejected by /me — send the user to sign in again, but
-            // keep the keychain intact so a successful sign-in can overwrite
-            // it rather than starting from a wiped state.
+            console.warn('401/403');
             target = '/(auth)/auth';
             return;
           }

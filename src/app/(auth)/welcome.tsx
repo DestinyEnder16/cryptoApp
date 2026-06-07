@@ -118,7 +118,6 @@ export default function Welcome() {
             <Text style={styles.passwordLabel}>Password</Text>
             <TextInput
               style={styles.passwordInput}
-              secureTextEntry
               placeholderTextColor={Colors.grey}
               value={password}
               onChangeText={setPassword}

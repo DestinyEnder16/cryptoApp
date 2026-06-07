@@ -1,7 +1,7 @@
 import {
-  ActivityIcon,
   HomeIcon,
   MarketIcon,
+  ProfileIcon,
   TradeIcon,
   WalletIcon,
 } from '@/src/constants/images';
@@ -66,10 +66,10 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="activity"
+          name="profile"
           options={{
             title: 'Profile',
-            tabBarIcon: ({ color }) => <ActivityIcon color={color} />,
+            tabBarIcon: ({ color }) => <ProfileIcon color={color} />,
           }}
         />
         <Tabs.Screen

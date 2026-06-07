@@ -35,6 +35,13 @@ export default function HandleSignin() {
           identifier,
           password,
         }).unwrap();
+        if ('requiresTwoFactor' in result) {
+          router.replace({
+            pathname: '/verify-2fa',
+            params: { challengeId: result.challengeId },
+          });
+          return;
+        }
         dispatch(setToken(result.accessToken));
         router.replace('/home');
       } catch (err) {

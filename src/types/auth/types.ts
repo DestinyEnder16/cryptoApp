@@ -71,8 +71,17 @@ export interface LoginPayload extends AuthPayload {
   refreshTokenExpiresAt: string;
 }
 
+export interface TwoFactorChallenge {
+  requiresTwoFactor: true;
+  challengeId: string;
+  attemptsRemaining: number;
+  expiresAt: string;
+}
+
+export type LoginResult = LoginPayload | TwoFactorChallenge;
+
 export interface LoginResponse {
-  data: LoginPayload;
+  data: LoginResult;
 }
 
 export interface OtpRouting {
@@ -145,6 +154,18 @@ export interface TwoFactorEnablePayload {
   enabled: boolean;
   recoveryCodes: string[];
   recoveryCodeCount: number;
+}
+
+// 2FA verify (post-login challenge)
+
+export interface TwoFactorVerifyRequest {
+  challengeId: string;
+  code?: string;
+  recoveryCode?: string;
+}
+
+export interface TwoFactorVerifyResponse {
+  data: LoginPayload;
 }
 
 export interface TwoFactorEnableResponse {

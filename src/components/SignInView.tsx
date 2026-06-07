@@ -90,6 +90,15 @@ function SignInView({ showFingerprintIcon = true }: AuthProps) {
         password: data.password,
       }).unwrap();
 
+      if ('requiresTwoFactor' in result) {
+        reset();
+        router.replace({
+          pathname: '/verify-2fa',
+          params: { challengeId: result.challengeId },
+        });
+        return;
+      }
+
       dispatch(setToken(result.accessToken));
 
       setCredentials({ email: data.email, token: result.accessToken });

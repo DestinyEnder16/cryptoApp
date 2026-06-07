@@ -123,6 +123,34 @@ export interface OtpVerificationResponse {
   data: OtpVerificationPayload;
 }
 
+// 2FA setup
+
+export interface TwoFactorSetupPayload {
+  secret: string;
+  otpauthUri: string;
+  enabled: boolean;
+}
+
+export interface TwoFactorSetupResponse {
+  data: TwoFactorSetupPayload;
+}
+
+// 2FA enable
+
+export interface TwoFactorEnableRequest {
+  code: string;
+}
+
+export interface TwoFactorEnablePayload {
+  enabled: boolean;
+  recoveryCodes: string[];
+  recoveryCodeCount: number;
+}
+
+export interface TwoFactorEnableResponse {
+  data: TwoFactorEnablePayload;
+}
+
 export interface SettingDetails {
   language: string;
   fiatCurrency: string;

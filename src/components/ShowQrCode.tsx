@@ -6,7 +6,7 @@ import { CameraIcon, ClipboardIcon } from "../constants/images";
 import { Colors } from "../constants/styles";
 import ActionBtn from "./ActionBtn";
 import CurrencyHeader from "./CurrencyHeader";
-import { useAppSelector } from "../store/hooks";
+import { useFetchMeQuery } from "../store/api/profileApi";
 
 type Mode = "show" | "scan";
 
@@ -15,7 +15,7 @@ type ComponentProps = {
 };
 
 export default function ShowQrCode({ action }: ComponentProps) {
-  const user = useAppSelector((state) => state.auth.user);
+  const { data: user } = useFetchMeQuery();
   const address = user?.id;
 
   const copyToClipboard = async () => {

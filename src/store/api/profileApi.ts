@@ -13,6 +13,7 @@ export const profileApi = baseApi.injectEndpoints({
     fetchMe: build.query<User, void>({
       query: () => '/me',
       transformResponse: (response: UserResponse) => response.data,
+      providesTags: ['User'],
     }),
 
     editProfile: build.mutation<User, ProfileUpdate>({
@@ -22,6 +23,7 @@ export const profileApi = baseApi.injectEndpoints({
         body: profile,
       }),
       transformResponse: (response: UserResponse) => response.data,
+      invalidatesTags: ['User'],
     }),
   }),
 });

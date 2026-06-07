@@ -1,12 +1,11 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Fonts } from '../constants/fonts';
 import { Colors } from '../constants/styles';
-import { useAppSelector } from '../store/hooks';
-import { selectUser } from '../store/slices/authSlice';
+import { useFetchMeQuery } from '../store/api/profileApi';
 import ProfileAvatar from './ProfileAvatar';
 
 export default function ProfileInfoCard() {
-  const user = useAppSelector(selectUser);
+  const { data: user } = useFetchMeQuery();
   const isEmailVerified = user?.emailVerified;
   return (
     <View style={styles.card}>

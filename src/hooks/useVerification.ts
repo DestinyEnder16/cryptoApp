@@ -1,12 +1,9 @@
-import { useAppSelector } from '../store/hooks';
-import {
-  selectKycStatus,
-  selectVerification,
-} from '../store/slices/authSlice';
+import { useFetchMeQuery } from '../store/api/profileApi';
 
 export function useVerification() {
-  const kycStatus = useAppSelector(selectKycStatus);
-  const verification = useAppSelector(selectVerification);
+  const { data: user } = useFetchMeQuery();
+  const kycStatus = user?.kycStatus;
+  const verification = user?.verification;
 
   return {
     kycStatus,

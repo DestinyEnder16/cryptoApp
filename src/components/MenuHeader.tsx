@@ -6,8 +6,7 @@ import {
   ThreeDots,
 } from "@/src/constants/images";
 import { Colors } from "@/src/constants/styles";
-import { useAppSelector } from "@/src/store/hooks";
-import { selectUser } from "@/src/store/slices/authSlice";
+import { useFetchMeQuery } from "@/src/store/api/profileApi";
 import * as Clipboard from "expo-clipboard";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
@@ -22,7 +21,7 @@ const GRADIENT_LOCATIONS = [0, 0.4] as const;
 const goToProfile = () => router.navigate("/profile");
 
 function MenuHeader() {
-  const user = useAppSelector(selectUser);
+  const { data: user } = useFetchMeQuery();
   const name = user?.fullName;
   const userId = user?.id ?? "";
 

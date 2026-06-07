@@ -22,6 +22,7 @@ export const settingsApi = baseApi.injectEndpoints({
         body: settings,
       }),
       transformResponse: (response: SettingsResponse) => response.data,
+      invalidatesTags: ['User'],
     }),
 
     fetchMySettings: build.query<SettingDetails, void>({

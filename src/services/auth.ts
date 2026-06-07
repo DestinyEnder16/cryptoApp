@@ -1,7 +1,8 @@
 import type { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import type { AppDispatch } from '../store';
+import { baseApi } from '../store/api/baseApi';
 import { profileApi } from '../store/api/profileApi';
-import { logout, setUser } from '../store/slices/authSlice';
+import { logout } from '../store/slices/authSlice';
 import { resetCredentials } from './nativeKeychain';
 
 export function isAuthError(err: unknown): boolean {
@@ -13,6 +14,7 @@ export function isAuthError(err: unknown): boolean {
 export async function signOut(dispatch: AppDispatch): Promise<void> {
   await resetCredentials();
   dispatch(logout());
+  dispatch(baseApi.util.resetApiState());
 }
 
 export type CompleteAuthResult = '/(tabs)/home' | '/(auth)/auth' | null;
@@ -22,10 +24,7 @@ export async function completeAuth(
   _token: string
 ): Promise<CompleteAuthResult> {
   try {
-    const user = await dispatch(
-      profileApi.endpoints.fetchMe.initiate()
-    ).unwrap();
-    dispatch(setUser(user));
+    await dispatch(profileApi.endpoints.fetchMe.initiate()).unwrap();
     return '/(tabs)/home';
   } catch (err) {
     if (isAuthError(err)) {

@@ -8,8 +8,7 @@ import {
   useEnableTwoFactorMutation,
   useSetupTwoFactorMutation,
 } from '@/src/store/api/authApi';
-import { useAppSelector } from '@/src/store/hooks';
-import { selectUser } from '@/src/store/slices/authSlice';
+import { useFetchMeQuery } from '@/src/store/api/profileApi';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -113,9 +112,8 @@ function AuthSetup() {
 }
 
 export default function Auth() {
-  const twoFactorEnabled = useAppSelector(
-    (state) => selectUser(state)?.twoFactorEnabled ?? false
-  );
+  const { data: user } = useFetchMeQuery();
+  const twoFactorEnabled = user?.twoFactorEnabled ?? false;
   const paddingTop = usePadding();
   const tabBarHeight = useBottomTabBarHeight();
 

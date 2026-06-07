@@ -2,18 +2,14 @@ import AppBackground from '@/src/components/AppBackground';
 import Btn from '@/src/components/Btn';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
-import { useAppSelector } from '@/src/store/hooks';
-import { selectUser } from '@/src/store/slices/authSlice';
+import { useFetchMeQuery } from '@/src/store/api/profileApi';
 import { StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function HomeIndex() {
   const insets = useSafeAreaInsets();
-  const user = useAppSelector(selectUser);
+  const { data: user } = useFetchMeQuery();
   const firstName = user?.fullName?.split(' ')[0] ?? '';
-
-  const kycVerified = useAppSelector((state) => state.auth.user?.kycStatus);
-  console.log(kycVerified);
 
   return (
     <AppBackground>

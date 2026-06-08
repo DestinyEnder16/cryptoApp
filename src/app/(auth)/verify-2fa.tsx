@@ -1,8 +1,11 @@
+import ActionBtn from '@/src/components/ActionBtn';
 import AppBackground from '@/src/components/AppBackground';
 import Btn from '@/src/components/Btn';
+import InfoField from '@/src/components/InfoField';
 import LoginTemplate from '@/src/components/LoginTemplate';
 import NumInputField from '@/src/components/NumInputField';
 import { Fonts } from '@/src/constants/fonts';
+import { AuthenticationIcon, CheckMarkIcon } from '@/src/constants/images';
 import { Colors } from '@/src/constants/styles';
 import { showToast } from '@/src/helpers/showToast';
 import { setCredentials } from '@/src/services/nativeKeychain';
@@ -11,13 +14,7 @@ import { useAppDispatch } from '@/src/store/hooks';
 import { setToken } from '@/src/store/slices/authSlice';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import {
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 type Mode = 'code' | 'recovery';
 
@@ -49,15 +46,14 @@ export default function VerifyTwoFactor() {
   }
 
   const canSubmit =
-    !isLoading && (mode === 'code' ? code.length === 6 : recoveryCode.length > 0);
+    !isLoading &&
+    (mode === 'code' ? code.length === 6 : recoveryCode.length > 0);
 
   async function handleVerify() {
     if (!challengeId) return;
     try {
       const payload = await verifyTwoFactor(
-        mode === 'code'
-          ? { challengeId, code }
-          : { challengeId, recoveryCode }
+        mode === 'code' ? { challengeId, code } : { challengeId, recoveryCode }
       ).unwrap();
 
       dispatch(setToken(payload.accessToken));
@@ -78,13 +74,26 @@ export default function VerifyTwoFactor() {
   return (
     <AppBackground>
       <LoginTemplate
+        hasBackBtn
         headerTxt="Two-factor authentication"
         headerDesc={
           mode === 'code'
-            ? 'Enter the 6-digit code from your authenticator app.'
+            ? 'Enter the code from your authenticator app.'
             : 'Enter one of your recovery codes.'
         }
       >
+        <View
+          style={{
+            alignSelf: 'center',
+            backgroundColor: Colors.lime,
+            borderRadius: 9999,
+            padding: 25,
+            marginVertical: 30,
+          }}
+        >
+          <AuthenticationIcon />
+        </View>
+
         {mode === 'code' ? (
           <NumInputField num={6} marginTop={50} onFill={setCode} />
         ) : (
@@ -105,22 +114,31 @@ export default function VerifyTwoFactor() {
 
         <View style={styles.actions}>
           <Btn
-            text={isLoading ? 'Verifying…' : 'Verify'}
+            text={isLoading ? 'Verifying…' : 'Continue'}
             action={handleVerify}
             disabled={!canSubmit}
           />
 
-          <Pressable
-            onPress={() => setMode(mode === 'code' ? 'recovery' : 'code')}
-            hitSlop={10}
-          >
-            <Text style={styles.toggle}>
-              {mode === 'code'
+          <ActionBtn
+            text={
+              mode === 'code'
                 ? 'Use a recovery code instead'
-                : 'Use authenticator code instead'}
-            </Text>
-          </Pressable>
+                : 'Use authenticator code instead'
+            }
+            action={() => setMode(mode === 'code' ? 'recovery' : 'code')}
+            styles={{
+              backgroundColor: Colors.secondaryBackgroundColor,
+              txtColor: Colors.text,
+            }}
+            style={{ width: '100%' }}
+          />
         </View>
+
+        <InfoField
+          icon={CheckMarkIcon}
+          header="Protected account"
+          desc="This extra step protects your trading balance and saved devices."
+        />
       </LoginTemplate>
     </AppBackground>
   );
@@ -148,8 +166,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   actions: {
-    position: 'absolute',
-    bottom: 100,
+    marginTop: 50,
     width: '100%',
     alignSelf: 'center',
     gap: 16,
@@ -159,5 +176,8 @@ const styles = StyleSheet.create({
     color: Colors.green,
     fontFamily: Fonts.medium,
     fontSize: 14,
+  },
+  authIcon: {
+    height: 32,
   },
 });

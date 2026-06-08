@@ -6,6 +6,9 @@ import type {
   RegisterPayload,
   RegisterRequest,
   RegisterResponse,
+  TwoFactorDisablePayload,
+  TwoFactorDisableRequest,
+  TwoFactorDisableResponse,
   TwoFactorEnablePayload,
   TwoFactorEnableRequest,
   TwoFactorEnableResponse,
@@ -33,7 +36,11 @@ export const authApi = baseApi.injectEndpoints({
           // 2FA challenges have no user yet — verifyTwoFactor will seed instead.
           if ('user' in payload) {
             dispatch(
-              profileApi.util.upsertQueryData('fetchMe', undefined, payload.user)
+              profileApi.util.upsertQueryData(
+                'fetchMe',
+                undefined,
+                payload.user
+              )
             );
           }
         } catch {
@@ -72,6 +79,19 @@ export const authApi = baseApi.injectEndpoints({
       invalidatesTags: ['User'],
     }),
 
+    disableTwoFactor: build.mutation<
+      TwoFactorDisablePayload,
+      TwoFactorDisableRequest
+    >({
+      query: (body) => ({
+        url: 'auth/2fa/disable',
+        method: 'POST',
+        body,
+      }),
+      transformResponse: (response: TwoFactorDisableResponse) => response.data,
+      invalidatesTags: ['User'],
+    }),
+
     verifyTwoFactor: build.mutation<LoginPayload, TwoFactorVerifyRequest>({
       query: (body) => ({
         url: 'auth/2fa/verify',
@@ -84,7 +104,11 @@ export const authApi = baseApi.injectEndpoints({
           const { data: payload } = await queryFulfilled;
           if (payload?.user) {
             dispatch(
-              profileApi.util.upsertQueryData('fetchMe', undefined, payload.user)
+              profileApi.util.upsertQueryData(
+                'fetchMe',
+                undefined,
+                payload.user
+              )
             );
           }
         } catch {
@@ -100,5 +124,6 @@ export const {
   useSignupMutation,
   useSetupTwoFactorMutation,
   useEnableTwoFactorMutation,
+  useDisableTwoFactorMutation,
   useVerifyTwoFactorMutation,
 } = authApi;

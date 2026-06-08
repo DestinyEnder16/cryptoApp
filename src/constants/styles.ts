@@ -11,6 +11,7 @@ export const Colors = {
   grey: '#A7AFB7',
   error: '#F87171',
   red: '#DD4B4B',
+  disabledRed: '#FF6B6B',
   lime: '#083D2B',
   brown: '#DB9E3859',
   orangeBrown: '#DB9E38',

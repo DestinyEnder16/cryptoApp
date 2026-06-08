@@ -156,6 +156,21 @@ export interface TwoFactorEnablePayload {
   recoveryCodeCount: number;
 }
 
+export interface TwoFactorDisableRequest {
+  password: string;
+  code?: string;
+  recoveryCode?: string;
+}
+
+export interface TwoFactorDisablePayload {
+  enabled: boolean;
+  recoveryCodeCount: number;
+}
+
+export interface TwoFactorDisableResponse {
+  data: TwoFactorDisablePayload;
+}
+
 // 2FA verify (post-login challenge)
 
 export interface TwoFactorVerifyRequest {

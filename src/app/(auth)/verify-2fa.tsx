@@ -134,11 +134,13 @@ export default function VerifyTwoFactor() {
           />
         </View>
 
-        <InfoField
-          icon={CheckMarkIcon}
-          header="Protected account"
-          desc="This extra step protects your trading balance and saved devices."
-        />
+        <View style={{ alignSelf: 'center', marginTop: 50 }}>
+          <InfoField
+            icon={CheckMarkIcon}
+            header="Protected account"
+            desc="This extra step protects your trading balance and saved devices."
+          />
+        </View>
       </LoginTemplate>
     </AppBackground>
   );

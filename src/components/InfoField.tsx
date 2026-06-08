@@ -9,6 +9,7 @@ interface FieldProps {
   icon: React.FC<SvgProps>;
   header: string;
   desc: string;
+  stayAtBottom?: boolean;
 }
 
 export default function InfoField({ icon: Icon, header, desc }: FieldProps) {
@@ -30,8 +31,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.secondaryBackgroundColor,
     borderRadius: 16,
     gap: 20,
-    position: 'absolute',
-    bottom: 30,
+
     marginHorizontal: 20,
     paddingHorizontal: 20,
     paddingVertical: 15,

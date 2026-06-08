@@ -91,6 +91,8 @@ import ProfileCamera from '@/assets/icons/icons/profile/profileCamera.svg';
 import NotificationEmptyIcon from '@/assets/images/NotificationEmptyIcon.svg';
 
 import BtcCoin from '@/assets/btc.svg';
+import AuthenticationIcon from '@/assets/images/authentication-icon.svg';
+import CheckMarkIcon from '@/assets/images/checkmark.svg';
 import ProfileIcon from '@/assets/images/profile.svg';
 import SettingsIcon from '@/assets/images/settings.svg';
 
@@ -100,11 +102,13 @@ export {
   ActivityIcon,
   ActivityWithdrawal,
   AddBtn,
+  AuthenticationIcon,
   AwaitingCamera,
   BackBtn,
   BtcCoin,
   CameraIcon,
   CancelBtn,
+  CheckMarkIcon,
   ClipboardIcon,
   CurrencyIcon,
   CustomizationIcon,

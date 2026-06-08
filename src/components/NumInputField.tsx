@@ -47,8 +47,8 @@ export const styles = StyleSheet.create({
   },
   inputField: {
     borderRadius: 12,
-    width: 50,
-    height: 45,
+    width: 48,
+    height: 58,
     backgroundColor: '#161C22',
     borderWidth: 0,
   },

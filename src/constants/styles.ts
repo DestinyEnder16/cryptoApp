@@ -15,4 +15,5 @@ export const Colors = {
   lime: '#083D2B',
   brown: '#DB9E3859',
   orangeBrown: '#DB9E38',
+  blue: '#29B8C7',
 };

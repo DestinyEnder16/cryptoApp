@@ -2,22 +2,22 @@ import AppBackground from '@/src/components/AppBackground';
 import MarketSpotView from '@/src/components/MarketSpotView';
 import ScreenIntro from '@/src/components/ScreenIntro';
 import { Colors } from '@/src/constants/styles';
+import { usePadding } from '@/src/hooks/usePadding';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export type MarketFilters = 'Convert' | 'Fiat' | 'Spot' | 'Margin';
 
-export default function Markets() {
-  const insets = useSafeAreaInsets();
+export default function MarketIndex() {
   const tabBarHeight = useBottomTabBarHeight();
+  const paddingTop = usePadding();
 
   return (
     <AppBackground>
       <View
         style={[
           styles.container,
-          { paddingTop: insets.top + 10, paddingBottom: tabBarHeight + 20 },
+          { paddingTop, paddingBottom: tabBarHeight + 20 },
         ]}
       >
         <View style={{ paddingHorizontal: 20 }}>

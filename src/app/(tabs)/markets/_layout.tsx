@@ -8,9 +8,8 @@ export default function Layout() {
       }}
     >
       <Stack.Screen name="index" />
-      <Stack.Screen name="auth" />
-      <Stack.Screen name="codes" />
-      <Stack.Screen name="pin" />
+      <Stack.Screen name="trending" />
+      <Stack.Screen name="coin" />
     </Stack>
   );
 }

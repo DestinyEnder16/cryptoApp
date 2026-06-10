@@ -1,34 +1,14 @@
-import React, { useState } from 'react';
-import {
-  FlatList,
-  StyleSheet,
-  TextInput,
-  useWindowDimensions,
-} from 'react-native';
-import { Fonts } from '../constants/fonts';
+import { useState } from 'react';
+import { FlatList, StyleSheet, useWindowDimensions } from 'react-native';
 import { Colors } from '../constants/styles';
 import { useFetchSupportedAssetsQuery } from '../store/api/marketApi';
+import MarketActionsStrip from './MarketActionsStrip';
 import MarketAssetView from './MarketAssetView';
+import SearchMarketCoins from './SearchMarketCoins';
+
 const supportedColors = [Colors.blue, Colors.green, Colors.orangeBrown];
 
-interface SearchProps {
-  text: string;
-  onChangeText: React.Dispatch<React.SetStateAction<string>>;
-}
-
-function SearchMarketCoins({ text, onChangeText }: SearchProps) {
-  return (
-    <TextInput
-      placeholder="Search coin or symbol"
-      style={styles.searchField}
-      placeholderTextColor={Colors.textMuted}
-      value={text}
-      onChangeText={(e) => onChangeText(e)}
-    />
-  );
-}
-
-function MarketSpotView() {
+function MarketsView() {
   const { data: assets } = useFetchSupportedAssetsQuery();
   const { width } = useWindowDimensions();
   const [filterText, setFilterText] = useState('');
@@ -51,8 +31,15 @@ function MarketSpotView() {
       renderItem={renderItem}
       showsVerticalScrollIndicator={false}
       ListHeaderComponent={
-        <SearchMarketCoins text={filterText} onChangeText={setFilterText} />
+        <>
+          <SearchMarketCoins text={filterText} onChangeText={setFilterText} />
+          <MarketActionsStrip />
+        </>
       }
+      ListHeaderComponentStyle={{
+        marginBottom: 30,
+        gap: 20,
+      }}
     />
   );
 }
@@ -67,14 +54,6 @@ const renderItem = ({ item, index }: { item: string; index: number }) => (
 
 const styles = StyleSheet.create({
   content: { paddingTop: 30, paddingHorizontal: 15, gap: 10 },
-  searchField: {
-    backgroundColor: Colors.secondaryBackgroundColor,
-    paddingHorizontal: 30,
-    height: 48,
-    borderRadius: 16,
-    fontFamily: Fonts.regular,
-    color: Colors.text,
-  },
 });
 
-export default MarketSpotView;
+export default MarketsView;

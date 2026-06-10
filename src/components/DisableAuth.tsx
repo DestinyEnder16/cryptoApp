@@ -11,13 +11,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import {
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import ScreenIntro from './ScreenIntro';
 
 export default function DisableAuth() {
@@ -147,8 +141,6 @@ export default function DisableAuth() {
         </Text>
       </View>
 
-      <View style={{ flex: 1 }} />
-
       <Pressable style={styles.keepBtn} onPress={() => router.back()}>
         <Text style={styles.keepBtnText}>Keep 2FA on</Text>
       </Pressable>
@@ -260,7 +252,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingVertical: 18,
     gap: 8,
-    marginTop: 50,
+    marginTop: 30,
+    marginBottom: 20,
   },
   sureHeader: {
     color: Colors.text,

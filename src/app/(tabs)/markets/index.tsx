@@ -1,5 +1,5 @@
 import AppBackground from '@/src/components/AppBackground';
-import MarketSpotView from '@/src/components/MarketSpotView';
+import MarketsView from '@/src/components/MarketsView';
 import ScreenIntro from '@/src/components/ScreenIntro';
 import { Colors } from '@/src/constants/styles';
 import { usePadding } from '@/src/hooks/usePadding';
@@ -28,7 +28,7 @@ export default function MarketIndex() {
         </View>
 
         <View style={styles.marketView}>
-          <MarketSpotView />
+          <MarketsView />
         </View>
       </View>
     </AppBackground>

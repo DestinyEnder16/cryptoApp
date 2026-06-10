@@ -8,7 +8,7 @@ import SearchMarketCoins from './SearchMarketCoins';
 
 const supportedColors = [Colors.blue, Colors.green, Colors.orangeBrown];
 
-function MarketSpotView() {
+function MarketsView() {
   const { data: assets } = useFetchSupportedAssetsQuery();
   const { width } = useWindowDimensions();
   const [filterText, setFilterText] = useState('');
@@ -56,4 +56,4 @@ const styles = StyleSheet.create({
   content: { paddingTop: 30, paddingHorizontal: 15, gap: 10 },
 });
 
-export default MarketSpotView;
+export default MarketsView;

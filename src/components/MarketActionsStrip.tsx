@@ -22,7 +22,7 @@ export default function MarketActionsStrip() {
         text="Watchlist"
         backgroundColor={Colors.secondaryBackgroundColor}
         txtColor={Colors.text}
-        action={() => console.log('hello')}
+        action={() => router.navigate('/markets/watchlist')}
       />
     </View>
   );

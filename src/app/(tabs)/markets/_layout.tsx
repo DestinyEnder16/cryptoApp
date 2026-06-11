@@ -10,6 +10,7 @@ export default function Layout() {
       <Stack.Screen name="index" />
       <Stack.Screen name="trending" />
       <Stack.Screen name="coin" />
+      <Stack.Screen name="watchlist" />
     </Stack>
   );
 }

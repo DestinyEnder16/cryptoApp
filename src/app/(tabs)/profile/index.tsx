@@ -70,6 +70,7 @@ export default function ProfileIndex() {
           <ProfileStripItem
             title="Watchlist"
             subtitle={watchlistSymbols || SUBTITLE_PLACEHOLDER}
+            onPress={() => router.navigate('/(tabs)/markets/watchlist')}
           />
         </ScrollView>
       </View>

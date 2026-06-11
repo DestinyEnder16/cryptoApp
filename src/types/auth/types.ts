@@ -234,3 +234,14 @@ export interface ValidationDetails {
 export interface ValidationResponse {
   data: ValidationDetails;
 }
+
+// Transaction PIN
+
+export interface UpdatePinRequest {
+  currentPin: string;
+  newPin: string;
+}
+
+export interface UpdatePinResponse {
+  data: { updated: boolean };
+}

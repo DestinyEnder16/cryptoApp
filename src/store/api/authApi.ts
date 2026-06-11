@@ -16,6 +16,8 @@ import type {
   TwoFactorSetupResponse,
   TwoFactorVerifyRequest,
   TwoFactorVerifyResponse,
+  UpdatePinRequest,
+  UpdatePinResponse,
 } from '@/src/types/auth/types';
 import { baseApi } from './baseApi';
 import { profileApi } from './profileApi';
@@ -116,6 +118,15 @@ export const authApi = baseApi.injectEndpoints({
         }
       },
     }),
+
+    updateTransactionPin: build.mutation<UpdatePinResponse, UpdatePinRequest>({
+      query: (body) => ({
+        url: '/me/pin',
+        method: 'PATCH',
+        body,
+      }),
+      invalidatesTags: ['User'],
+    }),
   }),
 });
 
@@ -126,4 +137,5 @@ export const {
   useEnableTwoFactorMutation,
   useDisableTwoFactorMutation,
   useVerifyTwoFactorMutation,
+  useUpdateTransactionPinMutation,
 } = authApi;

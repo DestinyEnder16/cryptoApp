@@ -30,6 +30,11 @@ export default function Index() {
             title="Transaction PIN"
             subtitle="Required for trades and withdrawals"
             badge="Set"
+            onPress={() =>
+              router.navigate({
+                pathname: '/(tabs)/profile/security/pin',
+              })
+            }
           />
           <ProfileStripItem
             danger={!twoFactorAuthEnabled}

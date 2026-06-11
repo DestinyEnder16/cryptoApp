@@ -3,6 +3,9 @@ import type {
   LoginRequest,
   LoginResponse,
   LoginResult,
+  RegenerateCodesPayload,
+  RegenerateCodesRequest,
+  RegenerateCodesResponse,
   RegisterPayload,
   RegisterRequest,
   RegisterResponse,
@@ -127,6 +130,19 @@ export const authApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['User'],
     }),
+
+    regenerateCodes: build.mutation<
+      RegenerateCodesPayload,
+      RegenerateCodesRequest
+    >({
+      query: (body) => ({
+        url: '/auth/2fa/recovery-codes/regenerate',
+        method: 'POST',
+        body,
+      }),
+      transformResponse: (response: RegenerateCodesResponse) => response.data,
+      invalidatesTags: ['User'],
+    }),
   }),
 });
 
@@ -138,4 +154,5 @@ export const {
   useDisableTwoFactorMutation,
   useVerifyTwoFactorMutation,
   useUpdateTransactionPinMutation,
+  useRegenerateCodesMutation,
 } = authApi;

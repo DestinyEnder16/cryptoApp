@@ -6,7 +6,6 @@ import { Colors } from '@/src/constants/styles';
 import { showToast } from '@/src/helpers/showToast';
 import { usePadding } from '@/src/hooks/usePadding';
 import { useUpdateTransactionPinMutation } from '@/src/store/api/authApi';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
@@ -22,7 +21,6 @@ const PIN_LENGTH = 4;
 
 export default function Pin() {
   const paddingTop = usePadding();
-  const tabBarHeight = useBottomTabBarHeight();
   const [updatePin, { isLoading }] = useUpdateTransactionPinMutation();
 
   const [currentPin, setCurrentPin] = useState('');
@@ -113,7 +111,7 @@ export default function Pin() {
             </View>
           </View>
 
-          <View style={[styles.footer, { paddingBottom: tabBarHeight + 16 }]}>
+          <View style={styles.footer}>
             <Btn
               text={isLoading ? 'Updating…' : 'Update PIN'}
               action={handleUpdate}
@@ -207,5 +205,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 18,
   },
-  footer: {},
+  footer: {
+    paddingBottom: 16,
+  },
 });

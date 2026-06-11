@@ -3,23 +3,16 @@ import MarketsView from '@/src/components/MarketsView';
 import ScreenIntro from '@/src/components/ScreenIntro';
 import { Colors } from '@/src/constants/styles';
 import { usePadding } from '@/src/hooks/usePadding';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { StyleSheet, View } from 'react-native';
 
 export type MarketFilters = 'Convert' | 'Fiat' | 'Spot' | 'Margin';
 
 export default function MarketIndex() {
-  const tabBarHeight = useBottomTabBarHeight();
   const paddingTop = usePadding();
 
   return (
     <AppBackground>
-      <View
-        style={[
-          styles.container,
-          { paddingTop, paddingBottom: tabBarHeight + 20 },
-        ]}
-      >
+      <View style={[styles.container, { paddingTop }]}>
         <View style={{ paddingHorizontal: 20 }}>
           <ScreenIntro
             title="Markets"

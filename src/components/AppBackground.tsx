@@ -1,3 +1,4 @@
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import React from 'react';
 import { ImageBackground } from 'react-native';
 import { useSafeBottomPadding } from '../hooks/usePadding';
@@ -8,11 +9,12 @@ type Props = {
 
 export default function AppBackground({ children }: Props) {
   const bottomPadding = useSafeBottomPadding();
+  const tabBarHeight = useBottomTabBarHeight();
   return (
     <ImageBackground
       source={require('@/assets/images/new-bg.png')}
       resizeMode="cover"
-      style={{ flex: 1, paddingBottom: bottomPadding }}
+      style={{ flex: 1, paddingBottom: bottomPadding + tabBarHeight + 10 }}
     >
       {children}
     </ImageBackground>

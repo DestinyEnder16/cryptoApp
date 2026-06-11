@@ -53,6 +53,11 @@ export default function Index() {
             title="Recovery codes"
             subtitle="8 backup codes remaining"
             badge="View"
+            onPress={() => {
+              router.navigate({
+                pathname: '/(tabs)/profile/security/codes',
+              });
+            }}
           />
           <ProfileStripItem
             title="Registered devices"

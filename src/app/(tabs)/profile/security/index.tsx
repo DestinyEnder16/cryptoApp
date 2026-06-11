@@ -3,6 +3,7 @@ import ProfileStripItem from '@/src/components/ProfileStripItem';
 import ScreenIntro from '@/src/components/ScreenIntro';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
+import { showToast } from '@/src/helpers/showToast';
 import { usePadding } from '@/src/hooks/usePadding';
 import { useFetchMeQuery } from '@/src/store/api/profileApi';
 import { router } from 'expo-router';
@@ -51,9 +52,22 @@ export default function Index() {
           />
           <ProfileStripItem
             title="Recovery codes"
-            subtitle="8 backup codes remaining"
-            badge="View"
+            danger={!twoFactorAuthEnabled}
+            subtitle={
+              twoFactorAuthEnabled
+                ? '8 backup codes remaining'
+                : 'Set up the authenticator app to use recovery codes'
+            }
+            badge={twoFactorAuthEnabled ? 'View' : 'Locked'}
             onPress={() => {
+              if (!twoFactorAuthEnabled) {
+                showToast({
+                  type: 'info',
+                  title: 'Authenticator required',
+                  message: 'You need to first set up your authenticator app',
+                });
+                return;
+              }
               router.navigate({
                 pathname: '/(tabs)/profile/security/codes',
               });

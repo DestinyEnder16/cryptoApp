@@ -245,3 +245,19 @@ export interface UpdatePinRequest {
 export interface UpdatePinResponse {
   data: { updated: boolean };
 }
+
+// Recovery codes regeneration
+
+export interface RegenerateCodesRequest {
+  password: string;
+  code: string;
+}
+
+export interface RegenerateCodesPayload {
+  recoveryCodes: string[];
+  recoveryCodeCount: number;
+}
+
+export interface RegenerateCodesResponse {
+  data: RegenerateCodesPayload;
+}

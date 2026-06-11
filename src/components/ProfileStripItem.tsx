@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
   badge: {
     color: Colors.green,
     fontFamily: Fonts.medium,
-    fontSize: 16,
+    fontSize: 12,
   },
 });
 

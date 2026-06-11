@@ -41,6 +41,7 @@ export default function ProfileIndex() {
           <ProfileStripItem
             title="Edit profile"
             subtitle="Name, email, phone"
+            onPress={() => router.navigate('/profile/edit')}
           />
           <ProfileStripItem
             title="Security"

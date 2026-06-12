@@ -1,5 +1,6 @@
+import { router } from 'expo-router';
 import { memo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Fonts } from '../constants/fonts';
 import { Colors } from '../constants/styles';
 import { useFetchAssetDetailsQuery } from '../store/api/marketApi';
@@ -23,8 +24,18 @@ function MarketAssetView({ coin, color }: AssetProps) {
 
   const isNegative = data.change24h < 0;
 
+  const openDetail = () =>
+    router.navigate({
+      pathname: '/(tabs)/markets/coin',
+      params: { symbol: coin },
+    });
+
   return (
-    <View style={styles.container}>
+    <Pressable
+      style={styles.container}
+      onPress={openDetail}
+      android_ripple={{ color: Colors.dark }}
+    >
       <View style={{ gap: 10, flexDirection: 'row' }}>
         <View
           style={[
@@ -49,7 +60,7 @@ function MarketAssetView({ coin, color }: AssetProps) {
           {data.change24h}%
         </Text>
       </View>
-    </View>
+    </Pressable>
   );
 }
 

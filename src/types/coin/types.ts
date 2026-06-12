@@ -21,7 +21,31 @@ export interface ChartDatum {
   value: number;
 }
 
+export interface AssetStats {
+  marketCapUsd: number;
+  volume24hUsd: number;
+  circulatingSupply: number;
+  maxSupply: number | null;
+  allTimeHighUsd: number;
+  high24hUsd: number;
+  low24hUsd: number;
+  volumeToMarketCapRatio: number;
+  about: string;
+  websiteUrl: string;
+  explorerUrl: string;
+}
+
 export interface AssetDetails extends CoinData {
+  stats: AssetStats;
   chart: ChartPoint[];
   chartData: ChartDatum[];
+}
+
+export interface Candle {
+  time: string;
+  openUsd: number;
+  highUsd: number;
+  lowUsd: number;
+  closeUsd: number;
+  volume: number;
 }

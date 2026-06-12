@@ -57,6 +57,13 @@ export interface UserResponse {
   data: User;
 }
 
+export interface ProfileUpdate {
+  fullName: string;
+  phone: string;
+  avatarUrl?: string;
+  email: string;
+}
+
 export interface AuthPayload {
   user: User;
   token: string;

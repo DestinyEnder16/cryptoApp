@@ -1,4 +1,4 @@
-import type { AssetDetails, CoinData } from "../coin/types";
+import type { AssetDetails, Candle, CoinData } from "../coin/types";
 
 export interface SupportedAssetsResponse {
   data: CoinData[];
@@ -10,4 +10,13 @@ export interface AssetDetailsResponse {
 
 export interface TrendingAssetsResponse {
   data: CoinData[];
+}
+
+export interface CandlesResponse {
+  data: Candle[];
+  meta: {
+    count: number;
+    symbol: string;
+    interval: string;
+  };
 }

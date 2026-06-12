@@ -1,6 +1,7 @@
-import type { AssetDetails, CoinData } from '@/src/types/coin/types';
+import type { AssetDetails, Candle, CoinData } from '@/src/types/coin/types';
 import type {
   AssetDetailsResponse,
+  CandlesResponse,
   SupportedAssetsResponse,
   TrendingAssetsResponse,
 } from '@/src/types/market/types';
@@ -32,6 +33,12 @@ export const marketApi = baseApi.injectEndpoints({
       transformResponse: (response: TrendingAssetsResponse) => response.data,
       keepUnusedDataFor: 60,
     }),
+
+    fetchCandles: build.query<Candle[], string>({
+      query: (symbol) => `/market/assets/${symbol}/candles`,
+      transformResponse: (response: CandlesResponse) => response.data,
+      keepUnusedDataFor: 60,
+    }),
   }),
 });
 
@@ -39,4 +46,5 @@ export const {
   useFetchSupportedAssetsQuery,
   useFetchAssetDetailsQuery,
   useFetchTrendingAssetsQuery,
+  useFetchCandlesQuery,
 } = marketApi;

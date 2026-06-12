@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
 import { Fonts } from '../constants/fonts';
 import { Colors } from '../constants/styles';
+import { useFetchAssetDetailsQuery } from '../store/api/marketApi';
 
 const CHART_WIDTH = 200;
 const CHART_HEIGHT = 90;
@@ -10,8 +11,8 @@ const CHART_PADDING = 8;
 const STROKE_WIDTH = 2.5;
 const DOT_RADIUS = 5;
 
-// Trending payload doesn't include chart points — keep placeholder values
-// until we either extend the API or fetch details for the top asset.
+// Fallback shape used while /market/assets/{symbol} hasn't resolved yet —
+// keeps the SVG from collapsing on the first render.
 const placeholderChart = [
   120, 124, 121, 128, 126, 134, 132, 142, 138, 148, 145, 152,
 ];
@@ -21,7 +22,12 @@ interface TopGainerCardProps {
 }
 
 export default function TopGainerCard({ asset }: TopGainerCardProps) {
-  const { linePath, lastPoint } = buildChart(placeholderChart);
+  const { data: details } = useFetchAssetDetailsQuery(asset.symbol);
+  const values =
+    details?.chartData && details.chartData.length > 0
+      ? details.chartData.map((p) => p.value)
+      : placeholderChart;
+  const { linePath, lastPoint } = buildChart(values);
   const changeSign = asset.change24h >= 0 ? '+' : '';
   const formattedPrice = `$${asset.priceUsd.toLocaleString('en-US', {
     minimumFractionDigits: 2,

@@ -3,6 +3,7 @@ import type {
   User,
   UserResponse,
 } from '@/src/types/auth/types';
+import { setUser } from '../slices/profileSlice';
 import { baseApi } from './baseApi';
 
 export const profileApi = baseApi.injectEndpoints({
@@ -11,6 +12,15 @@ export const profileApi = baseApi.injectEndpoints({
       query: () => '/me',
       transformResponse: (response: UserResponse) => response.data,
       providesTags: ['User'],
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          dispatch(setUser(data));
+        } catch {
+          // /me failed — leave any persisted user untouched; bootstrap decides
+          // whether to wipe it (auth errors) or keep it (transient failures).
+        }
+      },
     }),
 
     editProfile: build.mutation<User, ProfileUpdate>({
@@ -21,6 +31,14 @@ export const profileApi = baseApi.injectEndpoints({
       }),
       transformResponse: (response: UserResponse) => response.data,
       invalidatesTags: ['User'],
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          dispatch(setUser(data));
+        } catch {
+          // Edit failed — RTK Query keeps the previous cached user.
+        }
+      },
     }),
   }),
 });

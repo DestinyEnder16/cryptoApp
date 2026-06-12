@@ -1,12 +1,9 @@
-import type { User, UserResponse } from '@/src/types/auth/types';
+import type {
+  ProfileUpdate,
+  User,
+  UserResponse,
+} from '@/src/types/auth/types';
 import { baseApi } from './baseApi';
-
-type ProfileUpdate = {
-  fullName: string;
-  phone: string;
-  avatarUrl?: string;
-  email: string;
-};
 
 export const profileApi = baseApi.injectEndpoints({
   endpoints: (build) => ({

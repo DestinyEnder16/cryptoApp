@@ -1,8 +1,9 @@
 import type { FetchBaseQueryError } from '@reduxjs/toolkit/query';
-import type { AppDispatch } from '../store';
+import { persistor, type AppDispatch } from '../store';
 import { baseApi } from '../store/api/baseApi';
 import { profileApi } from '../store/api/profileApi';
 import { logout } from '../store/slices/authSlice';
+import { clearUser } from '../store/slices/profileSlice';
 import { resetCredentials } from './nativeKeychain';
 
 export function isAuthError(err: unknown): boolean {
@@ -14,7 +15,9 @@ export function isAuthError(err: unknown): boolean {
 export async function signOut(dispatch: AppDispatch): Promise<void> {
   await resetCredentials();
   dispatch(logout());
+  dispatch(clearUser());
   dispatch(baseApi.util.resetApiState());
+  await persistor.purge();
 }
 
 export type CompleteAuthResult = '/(tabs)/home' | '/(auth)/auth' | null;

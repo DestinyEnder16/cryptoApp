@@ -22,8 +22,13 @@ import type {
   UpdatePinRequest,
   UpdatePinResponse,
 } from '@/src/types/auth/types';
+import { setUser } from '../slices/profileSlice';
 import { baseApi } from './baseApi';
 import { profileApi } from './profileApi';
+
+interface LogoutResponse {
+  data: { loggedOut: boolean };
+}
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
@@ -47,6 +52,7 @@ export const authApi = baseApi.injectEndpoints({
                 payload.user
               )
             );
+            dispatch(setUser(payload.user));
           }
         } catch {
           // Login failed — nothing to seed.
@@ -61,6 +67,14 @@ export const authApi = baseApi.injectEndpoints({
         body: credentials,
       }),
       transformResponse: (response: RegisterResponse) => response.data,
+    }),
+
+    logout: build.mutation<LogoutResponse, void>({
+      query: (body) => ({
+        url: 'auth/logout',
+        method: 'POST',
+        body,
+      }),
     }),
 
     setupTwoFactor: build.mutation<TwoFactorSetupPayload, void>({
@@ -115,6 +129,7 @@ export const authApi = baseApi.injectEndpoints({
                 payload.user
               )
             );
+            dispatch(setUser(payload.user));
           }
         } catch {
           // Verification failed — nothing to seed.
@@ -149,6 +164,7 @@ export const authApi = baseApi.injectEndpoints({
 export const {
   useLoginMutation,
   useSignupMutation,
+  useLogoutMutation,
   useSetupTwoFactorMutation,
   useEnableTwoFactorMutation,
   useDisableTwoFactorMutation,

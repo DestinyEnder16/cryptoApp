@@ -64,10 +64,7 @@ export default function RetrySignin() {
   return (
     <AppBackground>
       <View
-        style={[
-          styles.container,
-          { paddingTop: insets.top + 50, paddingBottom: insets.bottom + 30 },
-        ]}
+        style={[styles.container, { paddingBottom: insets.bottom + 30 }]}
       >
         <View style={styles.top}>
           <Text style={styles.heading}>Sign in failed</Text>

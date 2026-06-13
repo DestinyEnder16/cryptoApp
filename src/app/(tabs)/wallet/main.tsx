@@ -2,14 +2,11 @@ import AppBackground from '@/src/components/AppBackground';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
 import { StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function Wallet() {
-  const insets = useSafeAreaInsets();
-
   return (
     <AppBackground>
-      <View style={[styles.container, { paddingTop: insets.top + 20 }]}>
+      <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>Wallet</Text>
           <Text style={styles.subtitle}>

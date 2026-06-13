@@ -7,13 +7,10 @@ import { useFetchNotificationsQuery } from '@/src/store/api/notificationApi';
 import { useFetchWatchlistQuery } from '@/src/store/api/watchListApi';
 import { router } from 'expo-router';
 import { ScrollView, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const SUBTITLE_PLACEHOLDER = '—';
 
 export default function ProfileIndex() {
-  const insets = useSafeAreaInsets();
-
   const { data: alertsData } = useFetchPriceAlertsQuery();
   const { data: notificationsData } = useFetchNotificationsQuery();
   const { data: watchlistData } = useFetchWatchlistQuery();
@@ -27,9 +24,7 @@ export default function ProfileIndex() {
 
   return (
     <AppBackground>
-      <View
-        style={{ paddingTop: insets.top + 20, paddingHorizontal: 20, flex: 1 }}
-      >
+      <View style={{ paddingHorizontal: 20, flex: 1 }}>
         <ScreenIntro title="Profile" />
 
         <ProfileInfoCard />

@@ -5,7 +5,6 @@ import MarketAssetView from '@/src/components/MarketAssetView';
 import ScreenIntro from '@/src/components/ScreenIntro';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
-import { usePadding } from '@/src/hooks/usePadding';
 import { useFetchWatchlistQuery } from '@/src/store/api/watchListApi';
 import { router } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -13,7 +12,6 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 const avatarColors = [Colors.orangeBrown, Colors.blue, Colors.green];
 
 export default function WatchList() {
-  const paddingTop = usePadding();
   const { data, isLoading } = useFetchWatchlistQuery();
 
   const assets = data?.data ?? [];
@@ -22,7 +20,7 @@ export default function WatchList() {
 
   return (
     <AppBackground>
-      <View style={[styles.container, { paddingTop }]}>
+      <View style={styles.container}>
         <ScreenIntro
           title="Watchlist"
           description="Assets you follow with row sparklines."

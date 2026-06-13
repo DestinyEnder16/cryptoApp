@@ -4,16 +4,14 @@ import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
 import { useFetchMeQuery } from '@/src/store/api/profileApi';
 import { StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function HomeIndex() {
-  const insets = useSafeAreaInsets();
   const { data: user } = useFetchMeQuery();
   const firstName = user?.fullName?.split(' ')[0] ?? '';
 
   return (
     <AppBackground>
-      <View style={[styles.container, { paddingTop: insets.top + 20 }]}>
+      <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>Home</Text>
           <Text style={styles.welcome}>Welcome back, {firstName}</Text>

@@ -4,7 +4,6 @@ import ScreenIntro from '@/src/components/ScreenIntro';
 import { Fonts } from '@/src/constants/fonts';
 import { CheckMarkIcon } from '@/src/constants/images';
 import { Colors } from '@/src/constants/styles';
-import { usePadding } from '@/src/hooks/usePadding';
 import {
   useFetchNotificationsQuery,
   useReadAllNotificationsMutation,
@@ -14,7 +13,6 @@ import { FlashList } from '@shopify/flash-list';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 export default function Notifications() {
-  const paddingTop = usePadding();
   const { data, isLoading } = useFetchNotificationsQuery();
   const [readAll, { isLoading: isMarking }] = useReadAllNotificationsMutation();
 
@@ -28,7 +26,7 @@ export default function Notifications() {
 
   return (
     <AppBackground>
-      <View style={[styles.container, { paddingTop }]}>
+      <View style={styles.container}>
         <ScreenIntro
           title="Notifications"
           description="Security, KYC, transaction, and alert messages."

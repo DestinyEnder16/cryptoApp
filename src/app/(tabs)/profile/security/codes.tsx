@@ -4,7 +4,6 @@ import { Fonts } from '@/src/constants/fonts';
 import { EyeSlash } from '@/src/constants/images';
 import { Colors } from '@/src/constants/styles';
 import { showToast } from '@/src/helpers/showToast';
-import { usePadding } from '@/src/hooks/usePadding';
 import {
   disable2faSchema,
   type Disable2faFormValues,
@@ -28,7 +27,6 @@ import {
 } from 'react-native';
 
 export default function Codes() {
-  const paddingTop = usePadding();
   const [, { data: enableData }] = useEnableTwoFactorMutation({
     fixedCacheKey: 'enable-2fa',
   });
@@ -41,7 +39,7 @@ export default function Codes() {
 
   return (
     <AppBackground>
-      <View style={{ paddingTop, paddingHorizontal: 20, flex: 1 }}>
+      <View style={{ paddingHorizontal: 20, flex: 1 }}>
         <ScreenIntro
           title="Recovery codes"
           description="Save these once. Each code can only be used one time."

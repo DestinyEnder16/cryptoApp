@@ -2,17 +2,14 @@ import AppBackground from '@/src/components/AppBackground';
 import MarketsView from '@/src/components/MarketsView';
 import ScreenIntro from '@/src/components/ScreenIntro';
 import { Colors } from '@/src/constants/styles';
-import { usePadding } from '@/src/hooks/usePadding';
 import { StyleSheet, View } from 'react-native';
 
 export type MarketFilters = 'Convert' | 'Fiat' | 'Spot' | 'Margin';
 
 export default function MarketIndex() {
-  const paddingTop = usePadding();
-
   return (
     <AppBackground>
-      <View style={[styles.container, { paddingTop }]}>
+      <View style={styles.container}>
         <View style={{ paddingHorizontal: 20 }}>
           <ScreenIntro
             title="Markets"

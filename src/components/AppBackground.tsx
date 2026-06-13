@@ -1,6 +1,7 @@
 import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
 import React, { useContext } from 'react';
 import { ImageBackground } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSafeBottomPadding } from '../hooks/usePadding';
 
 type Props = {
@@ -8,6 +9,7 @@ type Props = {
 };
 
 export default function AppBackground({ children }: Props) {
+  const insets = useSafeAreaInsets();
   const safeBottom = useSafeBottomPadding();
   const tabBarHeight = useContext(BottomTabBarHeightContext);
   // Tab bar floats at `bottom: safeBottom + 10` with height = tabBarHeight,
@@ -20,7 +22,11 @@ export default function AppBackground({ children }: Props) {
     <ImageBackground
       source={require('@/assets/images/new-bg.png')}
       resizeMode="cover"
-      style={{ flex: 1, paddingBottom: bottomPadding }}
+      style={{
+        flex: 1,
+        paddingTop: insets.top + 30,
+        paddingBottom: bottomPadding,
+      }}
     >
       {children}
     </ImageBackground>

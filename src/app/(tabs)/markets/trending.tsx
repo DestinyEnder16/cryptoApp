@@ -6,7 +6,6 @@ import TopGainerCard from '@/src/components/TopGainerCard';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
 import { getSymbolColor } from '@/src/helpers/getSymbolColor';
-import { usePadding } from '@/src/hooks/usePadding';
 import {
   useFetchAssetDetailsQuery,
   useFetchTrendingAssetsQuery,
@@ -26,7 +25,6 @@ type Timeframe = '1H' | '1D' | '1W' | '1M' | '1Y';
 const TIMEFRAMES: Timeframe[] = ['1H', '1D', '1W', '1M', '1Y'];
 
 export default function Trending() {
-  const paddingTop = usePadding();
   const {
     data: trendingAssets,
     isLoading,
@@ -46,7 +44,6 @@ export default function Trending() {
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{
-          paddingTop,
           paddingHorizontal: 20,
           paddingBottom: 40,
           gap: 20,

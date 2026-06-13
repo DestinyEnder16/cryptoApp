@@ -4,7 +4,6 @@ import ScreenIntro from '@/src/components/ScreenIntro';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
 import { showToast } from '@/src/helpers/showToast';
-import { usePadding } from '@/src/hooks/usePadding';
 import { useUpdateTransactionPinMutation } from '@/src/store/api/authApi';
 import { router } from 'expo-router';
 import { useState } from 'react';
@@ -20,7 +19,6 @@ import {
 const PIN_LENGTH = 4;
 
 export default function Pin() {
-  const paddingTop = usePadding();
   const [updatePin, { isLoading }] = useUpdateTransactionPinMutation();
 
   const [currentPin, setCurrentPin] = useState('');
@@ -74,7 +72,7 @@ export default function Pin() {
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <View style={[styles.container, { paddingTop }]}>
+        <View style={styles.container}>
           <ScreenIntro
             title="Transaction PIN"
             description="Update the PIN used for trade and withdrawal confirmations."

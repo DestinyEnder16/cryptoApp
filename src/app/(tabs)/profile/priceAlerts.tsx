@@ -4,7 +4,6 @@ import Loader from '@/src/components/Loader';
 import ScreenIntro from '@/src/components/ScreenIntro';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
-import { usePadding } from '@/src/hooks/usePadding';
 import { useFetchPriceAlertsQuery } from '@/src/store/api/alertsApi';
 import type { PriceAlert } from '@/src/types/alerts/types';
 import { FlashList } from '@shopify/flash-list';
@@ -13,14 +12,13 @@ import { StyleSheet, Text, View } from 'react-native';
 type AlertStatus = 'on' | 'off' | 'triggered';
 
 export default function PriceAlerts() {
-  const paddingTop = usePadding();
   const { data, isLoading } = useFetchPriceAlertsQuery();
 
   const alerts = data?.data ?? [];
 
   return (
     <AppBackground>
-      <View style={[styles.container, { paddingTop }]}>
+      <View style={styles.container}>
         <ScreenIntro
           title="Price alerts"
           description="Create, edit, pause, or delete market alerts."

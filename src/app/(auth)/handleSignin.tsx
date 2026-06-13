@@ -5,7 +5,6 @@ import { useAppDispatch, useAppSelector } from '@/src/store/hooks';
 import { setToken } from '@/src/store/slices/authSlice';
 import { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
@@ -17,7 +16,6 @@ export default function HandleSignin() {
   const email = useAppSelector((state) => state.user.email);
   const mobile = useAppSelector((state) => state.user.mobile);
   const password = useAppSelector((state) => state.user.password);
-  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     async function attemptSignIn() {
@@ -56,7 +54,6 @@ export default function HandleSignin() {
       <View
         style={{
           flex: 1,
-          paddingTop: insets.top + 50,
           paddingHorizontal: 20,
           paddingBottom: 80,
           gap: 300,

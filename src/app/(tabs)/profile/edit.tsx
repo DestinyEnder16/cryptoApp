@@ -6,7 +6,6 @@ import ScreenIntro from '@/src/components/ScreenIntro';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
 import { showToast } from '@/src/helpers/showToast';
-import { usePadding } from '@/src/hooks/usePadding';
 import { emailRule, nameRule } from '@/src/schemas/basicFormSchema';
 import {
   useEditProfileMutation,
@@ -44,7 +43,6 @@ const profileFormSchema = yup.object({
 type ProfileFormValues = yup.InferType<typeof profileFormSchema>;
 
 export default function Edit() {
-  const paddingTop = usePadding();
   const { data: user, isLoading } = useFetchMeQuery();
   const [editProfile, { isLoading: isSaving }] = useEditProfileMutation();
 
@@ -95,7 +93,7 @@ export default function Edit() {
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <View style={[styles.container, { paddingTop }]}>
+        <View style={styles.container}>
           <ScreenIntro
             title="Edit profile"
             description="Update your name, email, and phone number."

@@ -5,10 +5,8 @@ import { Colors } from '@/src/constants/styles';
 import { useFetchTrendingAssetsQuery } from '@/src/store/api/marketApi';
 import { useFetchMeQuery } from '@/src/store/api/profileApi';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function KycIncomplete() {
-  const insets = useSafeAreaInsets();
   const { data: user } = useFetchMeQuery();
   const firstName = user?.fullName?.split(' ')[0] ?? '';
   const tier = user?.verification?.label ?? 'Starter level';
@@ -20,7 +18,7 @@ export default function KycIncomplete() {
 
   return (
     <AppBackground>
-      <View style={[styles.container, { paddingTop: insets.top + 20 }]}>
+      <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>Hello, {firstName}</Text>
           <Text style={styles.subtitle}>

@@ -4,7 +4,6 @@ import ScreenIntro from '@/src/components/ScreenIntro';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
 import { showToast } from '@/src/helpers/showToast';
-import { usePadding } from '@/src/hooks/usePadding';
 import { signOut } from '@/src/services/auth';
 import {
   authenticateWithBiometrics,
@@ -30,7 +29,6 @@ import {
 } from 'react-native';
 
 export default function Index() {
-  const paddingTop = usePadding();
   const dispatch = useAppDispatch();
 
   const { data: user } = useFetchMeQuery();
@@ -98,7 +96,7 @@ export default function Index() {
 
   return (
     <AppBackground>
-      <View style={{ paddingTop, paddingHorizontal: 20, flex: 1 }}>
+      <View style={{ paddingHorizontal: 20, flex: 1 }}>
         <ScreenIntro
           title="Security"
           description="Protect account access and sensitive actions."
@@ -159,6 +157,7 @@ export default function Index() {
             title="Registered devices"
             subtitle="iPhone 15 Pro · push enabled"
             badge={2}
+            onPress={() => router.navigate('/(tabs)/profile/security/devices')}
           />
           <ProfileStripItem
             danger={!biometricEnabled}

@@ -1,6 +1,5 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Fonts } from '../constants/fonts';
 import { Colors } from '../constants/styles';
@@ -18,11 +17,8 @@ export default function LoginTemplate({
   headerDesc,
   hasBackBtn = false,
 }: TemplateProps) {
-  const insets = useSafeAreaInsets();
   return (
-    <View
-      style={{ paddingTop: insets.top + 50, paddingHorizontal: 20, flex: 1 }}
-    >
+    <View style={{ paddingHorizontal: 20, flex: 1 }}>
       {hasBackBtn ? (
         <View style={{ gap: 10, flexDirection: 'row' }}>
           <Pressable style={styles.backBtn}>

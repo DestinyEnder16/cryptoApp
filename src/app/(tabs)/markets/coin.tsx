@@ -5,7 +5,6 @@ import { formatCompact } from '@/src/helpers/formatCompact';
 import { formatPrice } from '@/src/helpers/formatPrice';
 import { getSymbolColor } from '@/src/helpers/getSymbolColor';
 import { showToast } from '@/src/helpers/showToast';
-import { usePadding } from '@/src/hooks/usePadding';
 import {
   useFetchAssetDetailsQuery,
   useFetchCandlesQuery,
@@ -29,7 +28,6 @@ type Timeframe = '1H' | '1D' | '1W' | '1M' | '1Y';
 const TIMEFRAMES: Timeframe[] = ['1H', '1D', '1W', '1M', '1Y'];
 
 export default function Coin() {
-  const paddingTop = usePadding();
   const { symbol } = useLocalSearchParams<{ symbol: string }>();
   const { data, isLoading, isError } = useFetchAssetDetailsQuery(symbol ?? '', {
     skip: !symbol,
@@ -43,7 +41,7 @@ export default function Coin() {
   if (!symbol) {
     return (
       <AppBackground>
-        <CenterMessage text="Missing coin symbol." paddingTop={paddingTop} />
+        <CenterMessage text="Missing coin symbol." />
       </AppBackground>
     );
   }
@@ -51,7 +49,7 @@ export default function Coin() {
   if (isLoading || (!data && !isError)) {
     return (
       <AppBackground>
-        <View style={[styles.center, { paddingTop }]}>
+        <View style={styles.center}>
           <ActivityIndicator color={Colors.green} />
         </View>
       </AppBackground>
@@ -61,10 +59,7 @@ export default function Coin() {
   if (isError || !data) {
     return (
       <AppBackground>
-        <CenterMessage
-          text="Could not load coin details."
-          paddingTop={paddingTop}
-        />
+        <CenterMessage text="Could not load coin details." />
       </AppBackground>
     );
   }
@@ -85,10 +80,7 @@ export default function Coin() {
     <AppBackground>
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={[
-          styles.scrollContent,
-          { paddingTop: paddingTop },
-        ]}
+        contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.headerRow}>
@@ -392,15 +384,9 @@ function StatCell({ label, value }: { label: string; value: string }) {
   );
 }
 
-function CenterMessage({
-  text,
-  paddingTop,
-}: {
-  text: string;
-  paddingTop: number;
-}) {
+function CenterMessage({ text }: { text: string }) {
   return (
-    <View style={[styles.center, { paddingTop }]}>
+    <View style={styles.center}>
       <Text style={styles.errorText}>{text}</Text>
     </View>
   );

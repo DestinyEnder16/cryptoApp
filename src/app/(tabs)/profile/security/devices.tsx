@@ -11,8 +11,8 @@ import {
 import {
   useGetDevicesQuery,
   useRegisterDeviceMutation,
-  type RegisteredDevice,
 } from '@/src/store/api/devicesApi';
+import type { RegisteredDevice } from '@/src/types/devices/types';
 import { useCallback, useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 

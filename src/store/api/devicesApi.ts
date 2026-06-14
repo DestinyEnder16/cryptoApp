@@ -1,28 +1,10 @@
-import type { DevicePlatform } from '@/src/services/expoPushToken';
+import type {
+  GetDevicesResponse,
+  RegisterDeviceBody,
+  RegisterDeviceResponse,
+  RegisteredDevice,
+} from '@/src/types/devices/types';
 import { baseApi } from './baseApi';
-
-export interface RegisteredDevice {
-  id: string;
-  userId: string;
-  expoPushToken: string;
-  platform: DevicePlatform;
-  createdAt: string;
-  lastSeenAt: string;
-}
-
-interface GetDevicesResponse {
-  data: RegisteredDevice[];
-  meta: { count: number; pushNotificationsEnabled: boolean };
-}
-
-interface RegisterDeviceBody {
-  expoPushToken: string;
-  platform: DevicePlatform;
-}
-
-interface RegisterDeviceResponse {
-  data: RegisteredDevice;
-}
 
 export const devicesApi = baseApi.injectEndpoints({
   endpoints: (build) => ({

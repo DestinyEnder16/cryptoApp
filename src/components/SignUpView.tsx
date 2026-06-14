@@ -16,6 +16,7 @@ import {
   addUserPassword,
 } from '../store/slices/userSlice';
 import AltLoginView from './AltLoginView';
+import AppKeyboardScrollView from './AppKeyboardScrollView';
 import Btn from './Btn';
 import { AuthStyles } from './SignInView';
 
@@ -82,8 +83,9 @@ function SignUpView() {
       colors={[Colors.primaryBackgroundColor, Colors.secondaryBackgroundColor]}
       style={{ flex: 1 }}
     >
-      <View style={[AuthStyles.container, { width }]}>
-        <Text style={AuthStyles.heading}>Sign Up</Text>
+      <AppKeyboardScrollView>
+        <View style={[AuthStyles.container, { width }]}>
+          <Text style={AuthStyles.heading}>Sign Up</Text>
         {/* sign-in form fields go here */}
 
         <View style={AuthStyles.formContainer}>
@@ -171,8 +173,9 @@ function SignUpView() {
           />
         </View>
 
-        <AltLoginView showFingerPrintOption={false} />
-      </View>
+          <AltLoginView showFingerPrintOption={false} />
+        </View>
+      </AppKeyboardScrollView>
     </LinearGradient>
   );
 }

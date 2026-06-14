@@ -10,7 +10,8 @@ import {
   useOtpMutation,
   useOtpVerificationMutation,
 } from '@/src/store/api/verificationApi';
-import { useAppSelector } from '@/src/store/hooks';
+import { useAppDispatch, useAppSelector } from '@/src/store/hooks';
+import { setToken } from '@/src/store/slices/authSlice';
 import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
@@ -37,6 +38,7 @@ const RESEND_INTERVAL = 30;
 
 export default function Verification() {
   const insets = useSafeAreaInsets();
+  const dispatch = useAppDispatch();
   const mobile = useAppSelector((state) => state.user.mobile);
   const email = useAppSelector((state) => state.user.email);
   const password = useAppSelector((state) => state.user.password);
@@ -96,6 +98,7 @@ export default function Verification() {
       //
       if (!result.verified) return;
 
+      dispatch(setToken(result.accessToken));
       setCredentials({ email, token: result.accessToken });
 
       router.replace('/success');

@@ -1,5 +1,6 @@
 import ActionBtn from '@/src/components/ActionBtn';
 import AppBackground from '@/src/components/AppBackground';
+import AppKeyboardScrollView from '@/src/components/AppKeyboardScrollView';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
 import { showToast } from '@/src/helpers/showToast';
@@ -63,8 +64,11 @@ export default function RetrySignin() {
 
   return (
     <AppBackground>
-      <View
-        style={[styles.container, { paddingBottom: insets.bottom + 30 }]}
+      <AppKeyboardScrollView
+        contentContainerStyle={[
+          styles.container,
+          { paddingBottom: insets.bottom + 30 },
+        ]}
       >
         <View style={styles.top}>
           <Text style={styles.heading}>Sign in failed</Text>
@@ -109,7 +113,7 @@ export default function RetrySignin() {
           text={isLoading ? 'Signing in...' : 'Try again'}
           action={handleRetry}
         />
-      </View>
+      </AppKeyboardScrollView>
     </AppBackground>
   );
 }

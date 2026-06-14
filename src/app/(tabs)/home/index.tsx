@@ -1,12 +1,15 @@
-import { useVerification } from '@/src/hooks/useVerification';
+import Loader from '@/src/components/Loader';
+import { useFetchMeQuery } from '@/src/store/api/profileApi';
 import { Redirect } from 'expo-router';
 
 export default function HomeIndex() {
-  const { kycStatus, isKycApproved } = useVerification();
+  const { data: user, isLoading } = useFetchMeQuery();
 
-  if (!kycStatus) return null;
+  if (isLoading || !user) return <Loader />;
 
   return (
-    <Redirect href={isKycApproved ? '/home/kycDone' : '/home/kycIncomplete'} />
+    <Redirect
+      href={user.kycStatus === 'approved' ? '/home/kycDone' : '/home/kycIncomplete'}
+    />
   );
 }

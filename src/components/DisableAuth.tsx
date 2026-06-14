@@ -12,6 +12,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import AppKeyboardScrollView from './AppKeyboardScrollView';
 import ScreenIntro from './ScreenIntro';
 
 export default function DisableAuth() {
@@ -52,7 +53,7 @@ export default function DisableAuth() {
   const canSubmit = isValid && !isLoading;
 
   return (
-    <View style={{ flex: 1 }}>
+    <AppKeyboardScrollView>
       <ScreenIntro
         title="Disable 2FA"
         description="Confirm your password and current authenticator code."
@@ -154,7 +155,7 @@ export default function DisableAuth() {
           {isLoading ? 'Disabling…' : 'Disable 2FA'}
         </Text>
       </Pressable>
-    </View>
+    </AppKeyboardScrollView>
   );
 }
 

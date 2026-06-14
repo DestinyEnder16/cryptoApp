@@ -1,6 +1,7 @@
 import { useFonts } from 'expo-font';
 import { router, SplashScreen, Stack } from 'expo-router';
 import { ReactNode, useEffect, useState } from 'react';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 import Toast from 'react-native-toast-message';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
@@ -30,30 +31,32 @@ export default function RootLayout() {
   if (!fontsLoaded && !fontError) return null;
 
   return (
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <AuthBootstrap>
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              contentStyle: {
-                backgroundColor: Colors.primaryBackgroundColor,
-              },
-              animation: 'slide_from_bottom',
-            }}
-          >
-            <Stack.Screen name="(tabs)" options={{ animation: 'none' }} />
-            <Stack.Screen
-              name="settings"
-              options={{ animation: 'fade_from_bottom' }}
-            />
+    <KeyboardProvider>
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <AuthBootstrap>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                contentStyle: {
+                  backgroundColor: Colors.primaryBackgroundColor,
+                },
+                animation: 'slide_from_bottom',
+              }}
+            >
+              <Stack.Screen name="(tabs)" options={{ animation: 'none' }} />
+              <Stack.Screen
+                name="settings"
+                options={{ animation: 'fade_from_bottom' }}
+              />
 
-            <Stack.Screen name="UserPreferenceSetting" />
-          </Stack>
-        </AuthBootstrap>
-        <Toast />
-      </PersistGate>
-    </Provider>
+              <Stack.Screen name="UserPreferenceSetting" />
+            </Stack>
+          </AuthBootstrap>
+          <Toast />
+        </PersistGate>
+      </Provider>
+    </KeyboardProvider>
   );
 }
 
@@ -81,9 +84,7 @@ function AuthBootstrap({ children }: { children: ReactNode }) {
 
       let user;
       try {
-        user = await dispatch(
-          profileApi.endpoints.fetchMe.initiate()
-        ).unwrap();
+        user = await dispatch(profileApi.endpoints.fetchMe.initiate()).unwrap();
       } catch (err) {
         if (isAuthError(err)) {
           // Token is dead — wipe Keychain, Redux, and persisted profile so
@@ -97,10 +98,7 @@ function AuthBootstrap({ children }: { children: ReactNode }) {
 
       // Biometric gate: only prompt when the user opted in AND the device
       // actually has biometrics enrolled. Otherwise trust the validated /me.
-      if (
-        user.settings.biometricEnabled &&
-        (await isBiometricAvailable())
-      ) {
+      if (user.settings.biometricEnabled && (await isBiometricAvailable())) {
         const passed = await authenticateWithBiometrics();
         // Biometric failed/cancelled: hand off to /(auth)/welcome which has
         // a password fallback for this exact case.

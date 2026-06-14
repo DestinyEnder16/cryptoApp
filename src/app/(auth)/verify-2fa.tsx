@@ -1,5 +1,6 @@
 import ActionBtn from '@/src/components/ActionBtn';
 import AppBackground from '@/src/components/AppBackground';
+import AppKeyboardScrollView from '@/src/components/AppKeyboardScrollView';
 import Btn from '@/src/components/Btn';
 import InfoField from '@/src/components/InfoField';
 import LoginTemplate from '@/src/components/LoginTemplate';
@@ -82,6 +83,7 @@ export default function VerifyTwoFactor() {
             : 'Enter one of your recovery codes.'
         }
       >
+        <AppKeyboardScrollView>
         <View
           style={{
             alignSelf: 'center',
@@ -141,6 +143,7 @@ export default function VerifyTwoFactor() {
             desc="This extra step protects your trading balance and saved devices."
           />
         </View>
+        </AppKeyboardScrollView>
       </LoginTemplate>
     </AppBackground>
   );

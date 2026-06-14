@@ -16,6 +16,7 @@ import {
   View,
 } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
+import AppKeyboardScrollView from './AppKeyboardScrollView';
 import ScreenIntro from './ScreenIntro';
 
 const QR_SIZE = 180;
@@ -51,7 +52,7 @@ export default function AuthSetup() {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <AppKeyboardScrollView>
       <ScreenIntro
         title="Set up 2FA"
         description="Scan the code, then enter your authenticator code."
@@ -103,7 +104,7 @@ export default function AuthSetup() {
           {isEnabling ? 'Enabling…' : 'Enable 2FA'}
         </Text>
       </Pressable>
-    </View>
+    </AppKeyboardScrollView>
   );
 }
 

@@ -1,4 +1,5 @@
 import AppBackground from '@/src/components/AppBackground';
+import AppKeyboardScrollView from '@/src/components/AppKeyboardScrollView';
 import Btn from '@/src/components/Btn';
 import Loader from '@/src/components/Loader';
 import ProfileAvatar from '@/src/components/ProfileAvatar';
@@ -15,15 +16,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { router } from 'expo-router';
 import { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 import * as yup from 'yup';
 
 const phoneRule = yup
@@ -89,97 +82,87 @@ export default function Edit() {
 
   return (
     <AppBackground>
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      >
-        <View style={styles.container}>
-          <ScreenIntro
-            title="Edit profile"
-            description="Update your name, email, and phone number."
-            hasBackBtn
-          />
+      <AppKeyboardScrollView contentContainerStyle={styles.container}>
+        <ScreenIntro
+          title="Edit profile"
+          description="Update your name, email, and phone number."
+          hasBackBtn
+        />
 
-          {isLoading || !user ? (
-            <Loader />
-          ) : (
-            <ScrollView
-              style={styles.scroll}
-              contentContainerStyle={styles.scrollContent}
-              showsVerticalScrollIndicator={false}
-              keyboardShouldPersistTaps="handled"
-            >
-              <View style={styles.avatarWrap}>
-                <ProfileAvatar name={user.fullName} size={96} fontSize={36} />
-                <Text style={styles.avatarHint}>
-                  Avatar uploads coming soon
-                </Text>
-              </View>
+        {isLoading || !user ? (
+          <Loader />
+        ) : (
+          <View style={styles.scrollContent}>
+            <View style={styles.avatarWrap}>
+              <ProfileAvatar name={user.fullName} size={96} fontSize={36} />
+              <Text style={styles.avatarHint}>
+                Avatar uploads coming soon
+              </Text>
+            </View>
 
-              <Controller
-                control={control}
-                name="fullName"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <Field
-                    label="Full name"
-                    value={value}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    error={errors.fullName?.message}
-                    placeholder="Your name"
-                    autoCapitalize="words"
-                    editable={!isSaving}
-                  />
-                )}
-              />
+            <Controller
+              control={control}
+              name="fullName"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <Field
+                  label="Full name"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  error={errors.fullName?.message}
+                  placeholder="Your name"
+                  autoCapitalize="words"
+                  editable={!isSaving}
+                />
+              )}
+            />
 
-              <Controller
-                control={control}
-                name="email"
-                render={({ field: { value } }) => (
-                  <Field
-                    label="Email"
-                    value={value}
-                    onChangeText={() => {}}
-                    placeholder="you@example.com"
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    editable={false}
-                    hint="Email changes not yet allowed"
-                  />
-                )}
-              />
+            <Controller
+              control={control}
+              name="email"
+              render={({ field: { value } }) => (
+                <Field
+                  label="Email"
+                  value={value}
+                  onChangeText={() => {}}
+                  placeholder="you@example.com"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  editable={false}
+                  hint="Email changes not yet allowed"
+                />
+              )}
+            />
 
-              <Controller
-                control={control}
-                name="phone"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <Field
-                    label="Phone"
-                    value={value}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    error={errors.phone?.message}
-                    placeholder="+2348012345678"
-                    keyboardType="phone-pad"
-                    autoCapitalize="none"
-                    editable={!isSaving}
-                  />
-                )}
-              />
-            </ScrollView>
-          )}
-
-          <View style={styles.footer}>
-            <Btn
-              text={isSaving ? 'Saving…' : 'Save changes'}
-              action={handleSubmit(onSubmit)}
-              disabled={!canSubmit}
+            <Controller
+              control={control}
+              name="phone"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <Field
+                  label="Phone"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  error={errors.phone?.message}
+                  placeholder="+2348012345678"
+                  keyboardType="phone-pad"
+                  autoCapitalize="none"
+                  editable={!isSaving}
+                />
+              )}
             />
           </View>
+        )}
+
+        <View style={styles.footer}>
+          <Btn
+            text={isSaving ? 'Saving…' : 'Save changes'}
+            action={handleSubmit(onSubmit)}
+            disabled={!canSubmit}
+          />
         </View>
-      </KeyboardAvoidingView>
+      </AppKeyboardScrollView>
     </AppBackground>
   );
 }
@@ -242,12 +225,10 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
   },
-  scroll: {
-    flex: 1,
-    marginTop: 16,
-  },
   scrollContent: {
+    flexGrow: 1,
     gap: 24,
+    marginTop: 16,
     paddingBottom: 16,
   },
   avatarWrap: {

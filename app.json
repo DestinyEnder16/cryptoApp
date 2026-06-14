@@ -40,7 +40,6 @@
         }
       ],
       "expo-notifications",
-      "./plugins/withCustomSplash.js",
       "expo-localization"
     ],
     "experiments": {

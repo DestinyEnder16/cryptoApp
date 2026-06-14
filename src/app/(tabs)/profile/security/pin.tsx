@@ -1,4 +1,5 @@
 import AppBackground from '@/src/components/AppBackground';
+import AppKeyboardScrollView from '@/src/components/AppKeyboardScrollView';
 import Btn from '@/src/components/Btn';
 import ScreenIntro from '@/src/components/ScreenIntro';
 import { Fonts } from '@/src/constants/fonts';
@@ -7,14 +8,7 @@ import { showToast } from '@/src/helpers/showToast';
 import { useUpdateTransactionPinMutation } from '@/src/store/api/authApi';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 const PIN_LENGTH = 4;
 
@@ -68,10 +62,7 @@ export default function Pin() {
 
   return (
     <AppBackground>
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      >
+      <AppKeyboardScrollView>
         <View style={styles.container}>
           <ScreenIntro
             title="Transaction PIN"
@@ -117,7 +108,7 @@ export default function Pin() {
             />
           </View>
         </View>
-      </KeyboardAvoidingView>
+      </AppKeyboardScrollView>
     </AppBackground>
   );
 }

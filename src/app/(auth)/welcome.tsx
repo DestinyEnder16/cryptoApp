@@ -1,4 +1,5 @@
 import AppBackground from '@/src/components/AppBackground';
+import AppKeyboardScrollView from '@/src/components/AppKeyboardScrollView';
 import LoginTemplate from '@/src/components/LoginTemplate';
 import ProfileAvatar from '@/src/components/ProfileAvatar';
 import { Fonts } from '@/src/constants/fonts';
@@ -104,6 +105,7 @@ export default function Welcome() {
   return (
     <AppBackground>
       <LoginTemplate headerTxt="Welcome Back">
+        <AppKeyboardScrollView>
         <View style={{ alignItems: 'center', gap: 20 }}>
           <ProfileAvatar name={user.fullName} style={{ marginTop: 30 }} />
           <Text style={styles.name}>{user.fullName}</Text>
@@ -160,6 +162,7 @@ export default function Welcome() {
             </Text>
           </Pressable>
         </View>
+        </AppKeyboardScrollView>
       </LoginTemplate>
     </AppBackground>
   );

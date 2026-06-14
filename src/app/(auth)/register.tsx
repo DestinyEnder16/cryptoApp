@@ -1,3 +1,4 @@
+import AppKeyboardScrollView from '@/src/components/AppKeyboardScrollView';
 import BackHeader from '@/src/components/BackHeader';
 import Btn from '@/src/components/Btn';
 import { AuthStyles } from '@/src/components/SignInView';
@@ -64,7 +65,7 @@ export default function RegisterScreen() {
       if (register.data?.emailVerificationRequired) {
         router.navigate('/verification');
       } else {
-        router.navigate('/success');
+        router.navigate('/handleSignin');
       }
     } catch (error) {
       const message =
@@ -79,57 +80,61 @@ export default function RegisterScreen() {
   };
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top + 10 }]}>
-      <BackHeader txt="Sign Up" marginBottom={30} />
+    <AppKeyboardScrollView
+      contentContainerStyle={{ paddingTop: insets.top + 10 }}
+    >
+      <View style={styles.container}>
+        <BackHeader txt="Sign Up" marginBottom={30} />
 
-      <Text style={[AuthStyles.heading, { marginBottom: 10 }]}>
-        Register with mobile
-      </Text>
+        <Text style={[AuthStyles.heading, { marginBottom: 10 }]}>
+          Register with mobile
+        </Text>
 
-      <Text style={styles.desc}>
-        Please type your number, then we’ll send a verification code for
-        authentication.
-      </Text>
+        <Text style={styles.desc}>
+          Please type your number, then we’ll send a verification code for
+          authentication.
+        </Text>
 
-      <View style={AuthStyles.formContainer}>
-        <View style={AuthStyles.field}>
-          <Text style={AuthStyles.label}>Mobile Number</Text>
+        <View style={AuthStyles.formContainer}>
+          <View style={AuthStyles.field}>
+            <Text style={AuthStyles.label}>Mobile Number</Text>
 
-          <PhoneInput
-            ref={phoneInput}
-            defaultValue={value}
-            defaultCode={getUserRegion()}
-            layout="first"
-            onChangeText={(text) => {
-              setValue(text);
-            }}
-            onChangeFormattedText={(text) => {
-              setFormattedValue(text);
-            }}
-            containerStyle={{
-              backgroundColor: Colors.secondaryBackgroundColor,
-              borderRadius: 10,
-            }}
-            textContainerStyle={{
-              backgroundColor: Colors.secondaryBackgroundColor,
-              borderRadius: 10,
-            }}
-            textInputStyle={{ color: 'white' }}
-            codeTextStyle={{ color: 'white' }}
-            withDarkTheme
-            autoFocus
+            <PhoneInput
+              ref={phoneInput}
+              defaultValue={value}
+              defaultCode={getUserRegion()}
+              layout="first"
+              onChangeText={(text) => {
+                setValue(text);
+              }}
+              onChangeFormattedText={(text) => {
+                setFormattedValue(text);
+              }}
+              containerStyle={{
+                backgroundColor: Colors.secondaryBackgroundColor,
+                borderRadius: 10,
+              }}
+              textContainerStyle={{
+                backgroundColor: Colors.secondaryBackgroundColor,
+                borderRadius: 10,
+              }}
+              textInputStyle={{ color: 'white' }}
+              codeTextStyle={{ color: 'white' }}
+              withDarkTheme
+              autoFocus
+            />
+          </View>
+        </View>
+
+        <View style={{ marginTop: 60 }}>
+          <Btn
+            text={signingUp ? 'Creating account...' : 'Send OTP'}
+            action={onSubmit}
+            disabled={isValidating}
           />
         </View>
       </View>
-
-      <View style={{ marginTop: 60 }}>
-        <Btn
-          text={signingUp ? 'Creating account...' : 'Send OTP'}
-          action={onSubmit}
-          disabled={isValidating}
-        />
-      </View>
-    </View>
+    </AppKeyboardScrollView>
   );
 }
 

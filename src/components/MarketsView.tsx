@@ -24,7 +24,6 @@ function MarketsView() {
 
   return (
     <FlatList
-      style={{ width }}
       contentContainerStyle={styles.content}
       data={data}
       keyExtractor={keyExtractor}
@@ -53,7 +52,7 @@ const renderItem = ({ item, index }: { item: string; index: number }) => (
 );
 
 const styles = StyleSheet.create({
-  content: { paddingTop: 30, paddingHorizontal: 15, gap: 10 },
+  content: { paddingTop: 30, gap: 10 },
 });
 
 export default MarketsView;

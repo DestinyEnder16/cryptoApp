@@ -39,7 +39,7 @@ export default function Codes() {
 
   return (
     <AppBackground>
-      <View style={{ paddingHorizontal: 20, flex: 1 }}>
+      <View style={{ flex: 1 }}>
         <ScreenIntro
           title="Recovery codes"
           description="Save these once. Each code can only be used one time."

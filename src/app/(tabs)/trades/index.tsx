@@ -1,16 +1,10 @@
-import AppBackground from '@/src/components/AppBackground';
-import ScreenIntro from '@/src/components/ScreenIntro';
-import { View } from 'react-native';
+import { useVerification } from '@/src/hooks/useVerification';
+import { Redirect } from 'expo-router';
 
-export default function Trades() {
+export default function Index() {
+  const { isKycApproved } = useVerification();
+
   return (
-    <AppBackground>
-      <View style={{ paddingHorizontal: 20 }}>
-        <ScreenIntro
-          title="Trade"
-          description="Buy, sell, or swap with quotes that expire before execution."
-        />
-      </View>
-    </AppBackground>
+    <Redirect href={isKycApproved ? '/trades/trades' : '/trades/locked'} />
   );
 }

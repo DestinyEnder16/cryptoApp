@@ -425,7 +425,6 @@ function timeframeLabel(tf: Timeframe): string {
 
 const styles = StyleSheet.create({
   scrollContent: {
-    paddingHorizontal: 20,
     paddingBottom: 40,
   },
   center: {

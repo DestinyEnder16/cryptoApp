@@ -131,7 +131,6 @@ function formatTriggeredAt(iso: string) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 20,
   },
   createBtn: {
     marginTop: 24,

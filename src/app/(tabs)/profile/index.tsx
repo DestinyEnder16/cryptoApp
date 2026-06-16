@@ -24,7 +24,7 @@ export default function ProfileIndex() {
 
   return (
     <AppBackground>
-      <View style={{ paddingHorizontal: 20, flex: 1 }}>
+      <View style={{ flex: 1 }}>
         <ScreenIntro title="Profile" />
 
         <ProfileInfoCard />

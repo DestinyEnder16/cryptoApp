@@ -18,7 +18,7 @@ export default function LoginTemplate({
   hasBackBtn = false,
 }: TemplateProps) {
   return (
-    <View style={{ paddingHorizontal: 20, flex: 1 }}>
+    <View style={{ flex: 1 }}>
       {hasBackBtn ? (
         <View style={{ gap: 10, flexDirection: 'row' }}>
           <Pressable style={styles.backBtn}>

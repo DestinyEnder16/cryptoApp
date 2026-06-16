@@ -7,16 +7,24 @@ interface BtnProps {
   action?: () => void;
   styles?: { backgroundColor: string; txtColor: string };
   disabled?: boolean;
+  fontSize?: number;
 }
 
-export default function Btn({ text, action, disabled = false }: BtnProps) {
+export default function Btn({
+  text,
+  action,
+  disabled = false,
+  fontSize,
+}: BtnProps) {
   return (
     <Pressable
       disabled={disabled}
       onPress={action}
       style={[btnStyles.container, disabled && { backgroundColor: '#669080' }]}
     >
-      <Text style={btnStyles.text}>{text}</Text>
+      <Text style={[btnStyles.text, fontSize !== undefined && { fontSize }]}>
+        {text}
+      </Text>
     </Pressable>
   );
 }

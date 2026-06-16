@@ -1,16 +1,16 @@
-import { Stack } from "expo-router";
+import { Stack } from 'expo-router';
 
 export default function WalletLayout() {
   return (
     <Stack
       screenOptions={{
         headerShown: false,
-        animation: "none",
+        animation: 'none',
       }}
-      initialRouteName="main"
     >
-      <Stack.Screen name="qrcode" />
+      <Stack.Screen name="index" />
       <Stack.Screen name="main" />
+      <Stack.Screen name="locked" />
     </Stack>
   );
 }

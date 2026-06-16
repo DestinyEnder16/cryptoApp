@@ -14,7 +14,6 @@ export default function Auth() {
     <AppBackground>
       <View
         style={{
-          paddingHorizontal: 20,
           flex: 1,
           paddingBottom: tabBarHeight,
         }}

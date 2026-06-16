@@ -54,7 +54,6 @@ export default function HandleSignin() {
       <View
         style={{
           flex: 1,
-          paddingHorizontal: 20,
           paddingBottom: 80,
           gap: 300,
         }}

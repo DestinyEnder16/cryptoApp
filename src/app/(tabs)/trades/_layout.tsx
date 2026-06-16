@@ -12,7 +12,7 @@ export default function TradesLayout() {
       <Stack.Screen name="buy" />
       <Stack.Screen name="sell" />
       <Stack.Screen name="locked" />
-      <Stack.Screen name="trades" />
+      <Stack.Screen name="main" />
     </Stack>
   );
 }

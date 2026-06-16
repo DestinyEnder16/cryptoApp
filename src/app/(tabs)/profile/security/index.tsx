@@ -96,7 +96,7 @@ export default function Index() {
 
   return (
     <AppBackground>
-      <View style={{ paddingHorizontal: 20, flex: 1 }}>
+      <View style={{ flex: 1 }}>
         <ScreenIntro
           title="Security"
           description="Protect account access and sensitive actions."

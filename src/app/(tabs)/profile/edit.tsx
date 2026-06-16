@@ -223,7 +223,6 @@ function Field({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 20,
   },
   scrollContent: {
     flexGrow: 1,

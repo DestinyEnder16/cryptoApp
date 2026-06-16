@@ -26,6 +26,7 @@ export default function AppBackground({ children }: Props) {
         flex: 1,
         paddingTop: insets.top + 30,
         paddingBottom: bottomPadding,
+        paddingHorizontal: 20,
       }}
     >
       {children}

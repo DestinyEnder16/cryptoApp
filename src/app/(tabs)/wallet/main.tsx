@@ -27,7 +27,6 @@ export default function Wallet() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 20,
     gap: 24,
   },
   header: {

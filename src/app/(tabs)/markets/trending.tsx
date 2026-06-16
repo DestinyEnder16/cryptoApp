@@ -44,7 +44,6 @@ export default function Trending() {
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{
-          paddingHorizontal: 20,
           paddingBottom: 40,
           gap: 20,
         }}

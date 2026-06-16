@@ -10,12 +10,10 @@ export default function MarketIndex() {
   return (
     <AppBackground>
       <View style={styles.container}>
-        <View style={{ paddingHorizontal: 20 }}>
-          <ScreenIntro
-            title="Markets"
-            description="Search assets, view live prices, and open a coin detail screen."
-          />
-        </View>
+        <ScreenIntro
+          title="Markets"
+          description="Search assets, view live prices, and open a coin detail screen."
+        />
 
         <View style={styles.marketView}>
           <MarketsView />

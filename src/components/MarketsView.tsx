@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FlatList, StyleSheet, useWindowDimensions } from 'react-native';
+import { FlatList, StyleSheet } from 'react-native';
 import { Colors } from '../constants/styles';
 import { useFetchSupportedAssetsQuery } from '../store/api/marketApi';
 import MarketActionsStrip from './MarketActionsStrip';
@@ -10,7 +10,6 @@ const supportedColors = [Colors.blue, Colors.green, Colors.orangeBrown];
 
 function MarketsView() {
   const { data: assets } = useFetchSupportedAssetsQuery();
-  const { width } = useWindowDimensions();
   const [filterText, setFilterText] = useState('');
 
   // NOTE PROBLEM - The search field can only search using the symbols
@@ -24,7 +23,6 @@ function MarketsView() {
 
   return (
     <FlatList
-      style={{ width }}
       contentContainerStyle={styles.content}
       data={data}
       keyExtractor={keyExtractor}
@@ -53,7 +51,7 @@ const renderItem = ({ item, index }: { item: string; index: number }) => (
 );
 
 const styles = StyleSheet.create({
-  content: { paddingTop: 30, paddingHorizontal: 15, gap: 10 },
+  content: { paddingTop: 30, gap: 10 },
 });
 
 export default MarketsView;

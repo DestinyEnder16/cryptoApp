@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FlatList, StyleSheet, useWindowDimensions } from 'react-native';
+import { FlatList, StyleSheet } from 'react-native';
 import { Colors } from '../constants/styles';
 import { useFetchSupportedAssetsQuery } from '../store/api/marketApi';
 import MarketActionsStrip from './MarketActionsStrip';
@@ -10,7 +10,6 @@ const supportedColors = [Colors.blue, Colors.green, Colors.orangeBrown];
 
 function MarketsView() {
   const { data: assets } = useFetchSupportedAssetsQuery();
-  const { width } = useWindowDimensions();
   const [filterText, setFilterText] = useState('');
 
   // NOTE PROBLEM - The search field can only search using the symbols

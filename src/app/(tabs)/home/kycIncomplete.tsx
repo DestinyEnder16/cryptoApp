@@ -4,6 +4,7 @@ import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
 import { useFetchTrendingAssetsQuery } from '@/src/store/api/marketApi';
 import { useFetchMeQuery } from '@/src/store/api/profileApi';
+import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 export default function KycIncomplete() {
@@ -43,13 +44,16 @@ export default function KycIncomplete() {
             <Text style={styles.warningIconText}>!</Text>
           </View>
 
-          <View style={styles.verifyContent}>
+          <Pressable
+            style={styles.verifyContent}
+            onPress={() => router.navigate('/kyc')}
+          >
             <Text style={styles.verifyTitle}>Verify to trade</Text>
             <Text style={styles.verifyDesc}>
               Trading and withdrawals are locked until your identity is
               approved.
             </Text>
-          </View>
+          </Pressable>
 
           <Text style={styles.verifyAction}>Start</Text>
         </Pressable>

@@ -41,7 +41,6 @@ export default function Verification() {
   const dispatch = useAppDispatch();
   const mobile = useAppSelector((state) => state.user.mobile);
   const email = useAppSelector((state) => state.user.email);
-  const password = useAppSelector((state) => state.user.password);
 
   const [timer, setTimer] = useState(RESEND_INTERVAL);
   const [otp, setOtp] = useState('');

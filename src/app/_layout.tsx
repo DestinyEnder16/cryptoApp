@@ -49,8 +49,6 @@ export default function RootLayout() {
                 name="settings"
                 options={{ animation: 'fade_from_bottom' }}
               />
-
-              <Stack.Screen name="UserPreferenceSetting" />
             </Stack>
           </AuthBootstrap>
           <Toast />

@@ -2,16 +2,29 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { Fonts } from '../constants/fonts';
 import { Colors } from '../constants/styles';
+import { useFetchAssetDetailsQuery } from '../store/api/marketApi';
+import { LoadingIcon } from './LoadingSpinner';
 
 export default function LockedKycTrade() {
+  const { data, isLoading } = useFetchAssetDetailsQuery('BTC');
+
+  // No data yet (initial fetch or refetch) — show placeholders, not blanks.
+  const loading = isLoading || !data;
+
   return (
     <View style={styles.wrapper}>
       <View style={styles.card}>
         <Text style={styles.pair}>BTC / USDT</Text>
 
         <View style={styles.priceRow}>
-          <Text style={styles.price}>64,200.50</Text>
-          <Text style={styles.change}>+2.1%</Text>
+          {loading ? (
+            <LoadingIcon />
+          ) : (
+            <>
+              <Text style={styles.price}>{data.priceUsd}</Text>
+              <Text style={styles.change}>{data.change24h}%</Text>
+            </>
+          )}
         </View>
 
         <View style={styles.chartBar} />

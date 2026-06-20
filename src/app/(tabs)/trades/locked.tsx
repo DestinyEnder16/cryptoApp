@@ -2,6 +2,7 @@ import AppBackground from '@/src/components/AppBackground';
 import Btn from '@/src/components/Btn';
 import LockedKycTrade from '@/src/components/LockedKycTrade';
 import ScreenIntro from '@/src/components/ScreenIntro';
+import { useFetchAssetDetailsQuery } from '@/src/store/api/marketApi';
 import { router } from 'expo-router';
 import { View } from 'react-native';
 
@@ -16,7 +17,11 @@ export default function Locked() {
       <LockedKycTrade />
 
       <View style={{ marginTop: 50 }}>
-        <Btn action={() => router.navigate('/kyc')} text="Verify Identity" />
+        <Btn
+          action={() => router.navigate('/kyc')}
+          text="Verify Identity"
+          fontSize={13}
+        />
       </View>
     </AppBackground>
   );

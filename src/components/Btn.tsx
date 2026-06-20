@@ -31,7 +31,7 @@ export default function Btn({
 const btnStyles = StyleSheet.create({
   container: {
     width: '100%',
-    backgroundColor: Colors.green,
+    backgroundColor: Colors.lightGreen,
     alignItems: 'center',
     paddingVertical: 20,
     borderRadius: 16,

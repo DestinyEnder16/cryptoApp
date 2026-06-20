@@ -4,7 +4,5 @@ import { Redirect } from 'expo-router';
 export default function Index() {
   const { isKycApproved } = useVerification();
 
-  return (
-    <Redirect href={isKycApproved ? '/trades/trades' : '/trades/locked'} />
-  );
+  return <Redirect href={isKycApproved ? '/trades/main' : '/trades/locked'} />;
 }

@@ -4,6 +4,7 @@ import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
 import { useFetchTrendingAssetsQuery } from '@/src/store/api/marketApi';
 import { useFetchMeQuery } from '@/src/store/api/profileApi';
+import { useIsFocused } from '@react-navigation/native';
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -11,9 +12,12 @@ export default function KycIncomplete() {
   const { data: user } = useFetchMeQuery();
   const firstName = user?.fullName?.split(' ')[0] ?? '';
   const tier = user?.verification?.label ?? 'Starter level';
+
+  const isFocused = useIsFocused();
+
   const { data: trending, isLoading: trendingLoading } =
     useFetchTrendingAssetsQuery(undefined, {
-      pollingInterval: 10000,
+      pollingInterval: isFocused ? 10000 : 0,
     });
   const topTrending = trending?.slice(0, 3) ?? [];
 

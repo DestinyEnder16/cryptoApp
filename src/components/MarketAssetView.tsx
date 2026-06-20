@@ -6,6 +6,7 @@ import { Colors } from '../constants/styles';
 import { useFetchAssetDetailsQuery } from '../store/api/marketApi';
 import LineChartView from './LineChartView';
 import MarketAssetSkeleton from './MarketAssetSkeleton';
+import { useIsFocused } from '@react-navigation/native';
 
 interface AssetProps {
   coin: string;
@@ -13,8 +14,9 @@ interface AssetProps {
 }
 
 function MarketAssetView({ coin, color }: AssetProps) {
+  const isFocused = useIsFocused();
   const { isLoading, data } = useFetchAssetDetailsQuery(coin, {
-    pollingInterval: 20000,
+    pollingInterval: isFocused ? 20000 : 0,
     skipPollingIfUnfocused: true,
   });
 

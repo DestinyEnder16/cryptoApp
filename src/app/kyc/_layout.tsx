@@ -10,6 +10,7 @@ export default function Layout() {
       <Stack.Screen name="index" />
       <Stack.Screen name="limits" />
       <Stack.Screen name="process" />
+      <Stack.Screen name="status" />
     </Stack>
   );
 }

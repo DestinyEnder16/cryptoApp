@@ -41,9 +41,7 @@ export default function KycStart() {
         hasBackBtn
         description="Complete identity verification from inside the app before high-value trading or withdrawals."
       />
-      <View style={{ marginTop: 20, paddingHorizontal: 40 }}>
-        <KycStepper currentStep={0} />
-      </View>
+      <KycStepper currentStep={0} />
 
       <View style={{ marginVertical: 40 }}>
         <KycLevelCard

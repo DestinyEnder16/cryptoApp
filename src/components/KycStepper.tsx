@@ -1,5 +1,12 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  Pressable,
+  StyleProp,
+  StyleSheet,
+  Text,
+  View,
+  ViewStyle,
+} from 'react-native';
 
 import { Fonts } from '../constants/fonts';
 import { Colors } from '../constants/styles';
@@ -8,11 +15,13 @@ const steps = ['identity', 'document', 'review'];
 
 interface Step {
   currentStep: 0 | 1 | 2 | 3;
+  // Optional override for the default spacing baked into the container.
+  style?: StyleProp<ViewStyle>;
 }
 
-export default function KycStepper({ currentStep }: Step) {
+export default function KycStepper({ currentStep, style }: Step) {
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]}>
       <View style={styles.stepper}>
         {steps.map((step, index) => {
           const isActive = Number(currentStep) > index;
@@ -57,7 +66,8 @@ export default function KycStepper({ currentStep }: Step) {
 const styles = StyleSheet.create({
   container: {
     gap: 8,
-    // paddingHorizontal: 10,
+    marginTop: 20,
+    paddingHorizontal: 40,
   },
   stepper: {
     flexDirection: 'row',

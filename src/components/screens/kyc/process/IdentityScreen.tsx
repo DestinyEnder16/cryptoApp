@@ -6,6 +6,7 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import AppBackground from '../../../AppBackground';
 
 import WarningField from '@/src/components/WarningField';
+import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
 
 interface InputProps {
@@ -60,12 +61,14 @@ const styles = StyleSheet.create({
   inputField: {
     backgroundColor: Colors.secondaryBackgroundColor,
     height: 52,
-    paddingVertical: 30,
     borderRadius: 14,
     color: Colors.text,
-    paddingLeft: 20,
+    paddingHorizontal: 20,
+    justifyContent: 'center',
   },
+
   txt: {
-    color: Colors.red,
+    color: Colors.textMuted,
+    fontFamily: Fonts.regular,
   },
 });

@@ -33,6 +33,7 @@ const styles = StyleSheet.create({
     paddingVertical: 32,
     alignItems: 'center',
     gap: 10,
+    marginBottom: 30,
   },
   badge: {
     width: 92,

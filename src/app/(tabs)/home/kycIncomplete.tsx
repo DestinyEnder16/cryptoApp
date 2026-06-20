@@ -38,22 +38,21 @@ export default function KycIncomplete() {
 
         <Pressable
           style={styles.verifyCard}
-          onPress={() => console.log('verify!!!')}
+          onPress={() => router.navigate('/kyc')}
         >
           <View style={styles.warningIcon}>
             <Text style={styles.warningIconText}>!</Text>
           </View>
 
-          <Pressable
-            style={styles.verifyContent}
-            onPress={() => router.navigate('/kyc')}
-          >
-            <Text style={styles.verifyTitle}>Verify to trade</Text>
+          <View style={styles.verifyContent}>
+            <View>
+              <Text style={styles.verifyTitle}>Verify to trade</Text>
+            </View>
             <Text style={styles.verifyDesc}>
               Trading and withdrawals are locked until your identity is
               approved.
             </Text>
-          </Pressable>
+          </View>
 
           <Text style={styles.verifyAction}>Start</Text>
         </Pressable>

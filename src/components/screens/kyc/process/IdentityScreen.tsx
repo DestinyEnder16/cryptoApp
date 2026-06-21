@@ -8,16 +8,21 @@ import AppBackground from '../../../AppBackground';
 import WarningField from '@/src/components/WarningField';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
-import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
+import BottomSheet, {
+  BottomSheetBackdrop,
+  BottomSheetView,
+} from '@gorhom/bottom-sheet';
 
+import AppKeyboardScrollView from '@/src/components/AppKeyboardScrollView';
 import BottomSheetContent from '@/src/components/BottomSheetContent';
 import { useAppDispatch, useAppSelector } from '@/src/store/hooks';
+import { kycIdentitySchema } from '@/src/schemas/kycIdentitySchema';
 import {
   addCountry,
   addDocumentNumber,
   addName,
 } from '@/src/store/slices/kycSlice';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 interface InputProps {
   placeholder: string;
   value: string;
@@ -32,6 +37,7 @@ function InputField({ placeholder, value, onChangeText }: InputProps) {
       placeholderTextColor={Colors.textMuted}
       value={value}
       onChangeText={onChangeText}
+      autoCapitalize="characters"
     />
   );
 }
@@ -49,55 +55,82 @@ export default function IdentityScreen() {
 
   const dispatch = useAppDispatch();
   const { name, country, documentType, documentNumber } = useAppSelector(
-    (state) => state.kyc,
+    (state) => state.kyc
+  );
+
+  const isValid = useMemo(
+    () =>
+      kycIdentitySchema.isValidSync({
+        name,
+        country,
+        documentType,
+        documentNumber,
+      }),
+    [name, country, documentType, documentNumber]
+  );
+
+  const renderBackdrop = useCallback(
+    (props: React.ComponentProps<typeof BottomSheetBackdrop>) => (
+      <BottomSheetBackdrop
+        {...props}
+        appearsOnIndex={0}
+        disappearsOnIndex={-1}
+        opacity={0.6}
+        pressBehavior="close"
+      />
+    ),
+    []
   );
 
   return (
     <View style={styles.root}>
       <AppBackground>
-        <ScreenIntro
-          title="Identity details"
-          description="Enter details exactly as they appear on your document."
-          hasBackBtn
-        />
-
-        <KycStepper currentStep={1} />
-
-        <View style={{ gap: 20, marginVertical: 50 }}>
-          <InputField
-            placeholder="Legal name"
-            value={name}
-            onChangeText={(text) => dispatch(addName(text))}
+        <AppKeyboardScrollView>
+          <ScreenIntro
+            title="Identity details"
+            description="Enter details exactly as they appear on your document."
+            hasBackBtn
           />
-          <InputField
-            placeholder="Country"
-            value={country}
-            onChangeText={(text) => dispatch(addCountry(text))}
-          />
-          <Pressable
-            style={styles.inputField}
-            onPress={() => handleSnapPress(0)}
-          >
-            <Text style={styles.txt}>
-              {documentType.length === 0 ? 'Document Type' : documentType}
-            </Text>
-          </Pressable>
-          <InputField
-            placeholder="Document number"
-            value={documentNumber}
-            onChangeText={(text) => dispatch(addDocumentNumber(text))}
-          />
-        </View>
 
-        <View style={{ marginTop: 30, marginBottom: 100 }}>
-          <WarningField message="Mismatched details can delay approval or require resubmission." />
-        </View>
+          <KycStepper currentStep={1} />
 
-        <Btn
-          text="Continue"
-          fontSize={13}
-          action={() => router.navigate('/kyc/process/document/upload')}
-        />
+          <View style={{ gap: 20, marginVertical: 50 }}>
+            <InputField
+              placeholder="Legal name"
+              value={name}
+              onChangeText={(text) => dispatch(addName(text))}
+            />
+            <InputField
+              placeholder="Country"
+              value={country}
+              onChangeText={(text) => dispatch(addCountry(text))}
+            />
+            <Pressable
+              style={styles.inputField}
+              onPress={() => handleSnapPress(0)}
+            >
+              <Text style={styles.txt}>
+                {documentType.length === 0 ? 'Document Type' : documentType}
+              </Text>
+            </Pressable>
+            <InputField
+              placeholder="Document number"
+              value={documentNumber}
+              onChangeText={(text) => dispatch(addDocumentNumber(text))}
+            />
+          </View>
+
+          <View style={{ marginTop: 30, marginBottom: 100 }}>
+            <WarningField message="Mismatched details can delay approval or require resubmission." />
+          </View>
+
+          <Btn
+            text="Continue"
+            fontSize={13}
+            disabled={!isValid}
+            action={() => router.navigate('/kyc/process/document/upload')}
+          />
+        </AppKeyboardScrollView>
       </AppBackground>
 
       <BottomSheet
@@ -107,6 +140,7 @@ export default function IdentityScreen() {
         enablePanDownToClose
         enableDynamicSizing={false}
         onClose={() => setIsOpen(false)}
+        backdropComponent={renderBackdrop}
         backgroundStyle={styles.sheetBackground}
         handleIndicatorStyle={styles.sheetHandle}
       >

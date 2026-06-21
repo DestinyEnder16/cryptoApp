@@ -2,18 +2,94 @@ import KycStepper from '@/src/components/KycStepper';
 import ScreenIntro from '@/src/components/ScreenIntro';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
+import { showToast } from '@/src/helpers/showToast';
+import { useUploadKycDocumentMutation } from '@/src/store/api/kycApi';
+import type { DocumentKind } from '@/src/types/kyc/types';
+import * as DocumentPicker from 'expo-document-picker';
 import { router } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import AppBackground from '../../../AppBackground';
 import Btn from '../../../Btn';
 
-const PARTS = [
-  { label: 'Front required', active: true },
-  { label: 'Back optional', active: false },
-  { label: 'Passport page', active: false },
+const PARTS: { label: string; documentKind: DocumentKind }[] = [
+  { label: 'Front required', documentKind: 'document_front' },
+  { label: 'Back optional', documentKind: 'document_back' },
+  { label: 'Passport page', documentKind: 'document_front' },
+];
+
+const DOC_INSTRUCTIONS = [
+  'Upload document front',
+  'Upload the back of the document',
+  'Upload government issued passport',
 ];
 
 export default function UploadScreen() {
+  const [activePart, setActivePart] = useState(0);
+  const [document, setDocument] =
+    useState<DocumentPicker.DocumentPickerAsset | null>(null);
+  const [uploadKycDocument, { isLoading: isUploading }] =
+    useUploadKycDocumentMutation();
+
+  const pickDocument = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: 'image/*', // JPG / PNG, matching the accepted files note
+        copyToCacheDirectory: true,
+      });
+
+      if (!result.canceled) {
+        const file = result.assets[0];
+        setDocument(file);
+        console.log('picked', file.name, file.uri);
+      } else {
+        throw new Error();
+      }
+    } catch {
+      showToast({
+        type: 'error',
+        title: 'Upload error',
+        message: 'No image was selected',
+      });
+    }
+  };
+
+  const handleUpload = async function () {
+    if (!document) {
+      showToast({
+        type: 'error',
+        title: 'No document',
+        message: 'Select an image to upload first',
+      });
+      return;
+    }
+
+    try {
+      await uploadKycDocument({
+        file: {
+          uri: document.uri,
+          name: document.name,
+          type: document.mimeType ?? 'image/jpeg',
+        },
+        documentKind: PARTS[activePart].documentKind,
+      }).unwrap();
+
+      showToast({
+        type: 'success',
+        title: 'Uploaded',
+        message: `${PARTS[activePart].label} uploaded`,
+      });
+      router.navigate('/kyc/process/document/selfie');
+    } catch (e) {
+      console.error(e);
+      showToast({
+        type: 'error',
+        title: 'Upload error',
+        message: 'Image could not be uploaded. Try again',
+      });
+    }
+  };
+
   return (
     <AppBackground>
       <ScreenIntro
@@ -26,33 +102,39 @@ export default function UploadScreen() {
 
       <View style={styles.content}>
         <View style={styles.partRow}>
-          {PARTS.map((part) => (
-            <View
+          {PARTS.map((part, index) => (
+            <Pressable
               key={part.label}
-              style={[styles.partCard, part.active && styles.partCardActive]}
+              onPress={() => setActivePart(index)}
+              style={[
+                styles.partCard,
+                index === activePart && styles.partCardActive,
+              ]}
             >
               <View
                 style={[
                   styles.partCircle,
-                  part.active && styles.partCircleActive,
+                  index === activePart && styles.partCircleActive,
                 ]}
               />
               <Text
                 style={[
                   styles.partLabel,
-                  part.active && styles.partLabelActive,
+                  index === activePart && styles.partLabelActive,
                 ]}
               >
                 {part.label}
               </Text>
-            </View>
+            </Pressable>
           ))}
         </View>
 
-        <View style={styles.dropzone}>
+        <Pressable style={styles.dropzone} onPress={pickDocument}>
           <View style={styles.dropCircle} />
-          <Text style={styles.dropTxt}>Upload document front</Text>
-        </View>
+          <Text style={styles.dropTxt}>
+            {document ? document.name : DOC_INSTRUCTIONS[activePart]}
+          </Text>
+        </Pressable>
 
         <View style={styles.acceptedRow}>
           <Text style={styles.acceptedLabel}>Accepted files</Text>
@@ -61,9 +143,10 @@ export default function UploadScreen() {
       </View>
 
       <Btn
-        text="Upload and continue"
+        text={isUploading ? 'Uploading…' : 'Upload and continue'}
         fontSize={13}
-        action={() => router.navigate('/kyc/process/document/selfie')}
+        disabled={isUploading || !document}
+        action={() => handleUpload()}
       />
     </AppBackground>
   );

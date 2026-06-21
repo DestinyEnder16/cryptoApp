@@ -5,12 +5,15 @@ export default function WalletLayout() {
     <Stack
       screenOptions={{
         headerShown: false,
-        animation: 'none',
+        animation: 'slide_from_right',
       }}
     >
-      <Stack.Screen name="index" />
-      <Stack.Screen name="main" />
-      <Stack.Screen name="locked" />
+      {/* index redirects to main/locked based on KYC; no push animation. */}
+      <Stack.Screen name="index" options={{ animation: 'none' }} />
+      <Stack.Screen name="main" options={{ animation: 'none' }} />
+      <Stack.Screen name="locked" options={{ animation: 'none' }} />
+      {/* portfolio, deposit/*, withdraw/*, transactions/* auto-register and
+          inherit the slide animation from screenOptions above. */}
     </Stack>
   );
 }

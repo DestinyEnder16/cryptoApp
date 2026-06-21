@@ -2,7 +2,8 @@ import AppBackground from '@/src/components/AppBackground';
 import { LoadingIcon } from '@/src/components/LoadingSpinner';
 import { useLoginMutation } from '@/src/store/api/authApi';
 import { useAppDispatch, useAppSelector } from '@/src/store/hooks';
-import { setToken } from '@/src/store/slices/authSlice';
+import { saveRefreshToken } from '@/src/services/nativeKeychain';
+import { setRefreshToken, setToken } from '@/src/store/slices/authSlice';
 import { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -41,6 +42,8 @@ export default function HandleSignin() {
           return;
         }
         dispatch(setToken(result.accessToken));
+        dispatch(setRefreshToken(result.refreshToken));
+        await saveRefreshToken(result.refreshToken);
         router.replace('/home');
       } catch (err) {
         router.replace('/retrySignin');

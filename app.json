@@ -41,7 +41,8 @@
         }
       ],
       "expo-notifications",
-      "expo-localization"
+      "expo-localization",
+      "expo-document-picker"
     ],
     "experiments": {
       "typedRoutes": true,

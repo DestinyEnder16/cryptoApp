@@ -45,7 +45,7 @@ export interface User {
   emailVerified: boolean;
   phone: string;
   twoFactorEnabled: boolean;
-  kycStatus: 'approved' | 'not_started';
+  kycStatus: 'not_started' | 'pending' | 'approved' | 'rejected';
   verification: UserVerification;
   avatarUrl: string | null;
   watchlist: string[];

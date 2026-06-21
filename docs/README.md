@@ -8,6 +8,7 @@ Plain-language explanations of the trickier areas of this app — the kind of th
 |---|---|
 | [token-refresh.md](token-refresh.md) | How expired access tokens are refreshed automatically so requests don't fail mid-session |
 | [kyc-upload.md](kyc-upload.md) | How a KYC document photo is picked and uploaded to the server (Cloudinary) |
+| [kyc-status.md](kyc-status.md) | How the pending/approved/rejected screens are picked from the user's real KYC status |
 | [device-registration.md](device-registration.md) | How the current device auto-registers for push notifications |
 
 ## Adding a new doc

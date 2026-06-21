@@ -1,14 +1,31 @@
+import { LoadingIcon } from '@/src/components/LoadingSpinner';
 import KycStart from '@/src/components/screens/kyc/kycStart';
-import { useVerification } from '@/src/hooks/useVerification';
+import { useFetchMeQuery } from '@/src/store/api/profileApi';
 import { Redirect } from 'expo-router';
+import { View } from 'react-native';
 
 export default function Index() {
-  const { isKycApproved } = useVerification();
+  const { data: user, isLoading } = useFetchMeQuery();
 
-  // Already verified users skip the intro and land in the process flow.
-  if (isKycApproved) {
-    return <Redirect href="/kyc/process" />;
+  // Wait for /me before deciding which screen to show.
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <LoadingIcon size={48} />
+      </View>
+    );
   }
 
-  return <KycStart />;
+  // Render the screen that matches the user's real KYC status.
+  switch (user?.kycStatus) {
+    case 'pending':
+      return <Redirect href="/kyc/status/pending" />;
+    case 'approved':
+      return <Redirect href="/kyc/status/approved" />;
+    case 'rejected':
+      return <Redirect href="/kyc/status/rejected" />;
+    default:
+      // 'not_started' or unknown — start the intro flow.
+      return <KycStart />;
+  }
 }

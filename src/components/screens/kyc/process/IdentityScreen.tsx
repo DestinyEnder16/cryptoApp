@@ -31,7 +31,7 @@ export default function IdentityScreen() {
   const sheetRef = useRef<BottomSheet>(null);
   const [isOpen, setIsOpen] = useState(true);
 
-  const snapPoints = ['40%'];
+  const snapPoints = ['48%'];
   const handleSnapPress = useCallback((index: number) => {
     sheetRef.current?.snapToIndex(index);
     setIsOpen(true);

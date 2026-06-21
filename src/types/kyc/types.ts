@@ -28,3 +28,37 @@ export interface KycUploadPayload {
 export interface KycUploadResponse {
   data: KycUploadPayload;
 }
+
+// KYC submission ----------------------------------------------------------
+
+export type DocumentTypeValue = 'national_id' | 'passport' | 'drivers_license';
+
+export interface KycSubmitRequest {
+  legalName: string;
+  country: string;
+  documentType: DocumentTypeValue;
+  documentNumber: string;
+  selfieImageUrl: string;
+  documentImageUrl: string;
+  documentBackImageUrl?: string | null;
+}
+
+export interface KycSubmission {
+  id: string;
+  userId: string;
+  legalName: string;
+  country: string;
+  documentType: string;
+  documentNumber: string;
+  selfieImageUrl: string;
+  documentImageUrl: string;
+  documentBackImageUrl: string | null;
+  status: string;
+  submittedAt: string;
+  reviewedAt: string | null;
+  reviewerNote: string | null;
+}
+
+export interface KycSubmitResponse {
+  data: KycSubmission;
+}

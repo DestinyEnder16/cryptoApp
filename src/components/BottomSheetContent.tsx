@@ -3,35 +3,13 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
+import {
+  DOCUMENT_OPTIONS,
+  type DocOption,
+} from '../constants/documentTypes';
 import { Fonts } from '../constants/fonts';
 import { Colors } from '../constants/styles';
 import { addDocumentType } from '../store/slices/kycSlice';
-
-type IconName = React.ComponentProps<typeof Ionicons>['name'];
-
-interface DocOption {
-  label: string;
-  description: string;
-  icon: IconName;
-}
-
-const OPTIONS: DocOption[] = [
-  {
-    label: 'National ID',
-    description: 'Government-issued identity card',
-    icon: 'card-outline',
-  },
-  {
-    label: 'Passport',
-    description: 'International travel document',
-    icon: 'airplane-outline',
-  },
-  {
-    label: 'Drivers License',
-    description: 'Valid driving permit',
-    icon: 'car-outline',
-  },
-];
 
 interface OptionProps {
   option: DocOption;
@@ -90,7 +68,7 @@ export default function BottomSheetContent() {
       </View>
 
       <View style={{ gap: 12 }}>
-        {OPTIONS.map((option, index) => (
+        {DOCUMENT_OPTIONS.map((option, index) => (
           <Option
             option={option}
             key={index}

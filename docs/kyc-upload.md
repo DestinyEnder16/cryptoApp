@@ -75,6 +75,63 @@ The API uploads the bytes to Cloudinary and returns a `publicUrl` plus metadata 
 
 On success, a toast confirms the upload and the app navigates to the selfie step. On failure, an error toast is shown. While in flight, the button reads "Uploading…" and is disabled.
 
+## Variant: the live selfie
+
+`SelfieScreen.tsx` reuses the **exact same upload mutation** — only the *source* of the image differs. Instead of picking a file, it captures a live photo from the camera:
+
+```ts
+await ImagePicker.requestCameraPermissionsAsync();   // camera, not gallery
+const result = await ImagePicker.launchCameraAsync({
+  cameraType: ImagePicker.CameraType.front,          // selfie = front camera
+  mediaTypes: ['images'],
+  quality: 0.7,
+});
+```
+
+Then it uploads with `documentKind: 'selfie'`. The camera ring is the capture button; once a photo is taken it shows a preview and the label changes to "Tap to retake".
+
+Why the camera and not a file picker? A KYC selfie must be a **live capture** — letting the user pick any image from their gallery would defeat the identity check.
+
+> Uses `expo-image-picker` (camera permission comes from the existing `expo-camera` plugin in `app.json`). Adding this native module means the dev/EAS build must be rebuilt before it runs.
+
+## Submitting the whole thing for review
+
+Uploading a file just gets you a **hosted URL**. The actual KYC application is a separate, final step: `POST /auth/kyc` with all the collected data.
+
+### How the URLs get there
+
+Each upload screen saves its returned `publicUrl` into the `kyc` Redux slice:
+
+| Screen | Saves to slice field |
+|---|---|
+| Upload (front / passport) | `documentImageUrl` |
+| Upload (back) | `documentBackImageUrl` |
+| Selfie | `selfieImageUrl` |
+
+So by the time the user reaches **ReviewScreen**, the slice holds everything: text fields (entered earlier) + the three image URLs.
+
+### The document-type translation
+
+The slice stores the human label (`"National ID"`) because that's what the UI displays. The API wants the enum value (`national_id`). `documentTypeValueFromLabel()` in `src/constants/documentTypes.ts` converts it — and `documentTypes.ts` is the single source of truth shared by the bottom sheet and the review screen, so the label and value can never drift apart.
+
+### ⚠️ Gotcha: never send `documentBackImageUrl: null`
+
+The back image is optional. The intuitive thing is to send `documentBackImageUrl: null` when there's no back. **The API rejects that** with `400 INVALID_KYC_IMAGE_URL` — it tries to validate `null` as a URL.
+
+The fix: **omit the field entirely** when there's no back image.
+
+```ts
+await submitKyc({
+  legalName, country, documentType, documentNumber,
+  selfieImageUrl, documentImageUrl,
+  ...(documentBackImageUrl ? { documentBackImageUrl } : {}), // omit, don't null
+});
+```
+
+(Another cause of the same error: passing made-up URLs like `example.com/...`. The URL has to be one the upload step actually returned.)
+
+On success the slice is cleared (`resetKyc`) and the user goes to the pending-status screen.
+
 ## A couple of React Native quirks
 
 - **The file object isn't a real `File`.** React Native's `FormData` accepts a plain `{ uri, name, type }` object. TypeScript doesn't know this, hence the `as unknown as Blob` cast and our own `UploadFile` type.

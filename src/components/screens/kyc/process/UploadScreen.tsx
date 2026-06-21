@@ -4,6 +4,11 @@ import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
 import { showToast } from '@/src/helpers/showToast';
 import { useUploadKycDocumentMutation } from '@/src/store/api/kycApi';
+import { useAppDispatch } from '@/src/store/hooks';
+import {
+  addDocumentBackImageUrl,
+  addDocumentImageUrl,
+} from '@/src/store/slices/kycSlice';
 import type { DocumentKind } from '@/src/types/kyc/types';
 import * as DocumentPicker from 'expo-document-picker';
 import { router } from 'expo-router';
@@ -30,6 +35,7 @@ export default function UploadScreen() {
     useState<DocumentPicker.DocumentPickerAsset | null>(null);
   const [uploadKycDocument, { isLoading: isUploading }] =
     useUploadKycDocumentMutation();
+  const dispatch = useAppDispatch();
 
   const pickDocument = async () => {
     try {
@@ -64,15 +70,24 @@ export default function UploadScreen() {
       return;
     }
 
+    const documentKind = PARTS[activePart].documentKind;
+
     try {
-      await uploadKycDocument({
+      const result = await uploadKycDocument({
         file: {
           uri: document.uri,
           name: document.name,
           type: document.mimeType ?? 'image/jpeg',
         },
-        documentKind: PARTS[activePart].documentKind,
+        documentKind,
       }).unwrap();
+
+      // Persist the hosted URL so the Review screen can submit it.
+      if (documentKind === 'document_back') {
+        dispatch(addDocumentBackImageUrl(result.publicUrl));
+      } else {
+        dispatch(addDocumentImageUrl(result.publicUrl));
+      }
 
       showToast({
         type: 'success',

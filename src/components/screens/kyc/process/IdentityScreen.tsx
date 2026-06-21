@@ -2,7 +2,14 @@ import Btn from '@/src/components/Btn';
 import KycStepper from '@/src/components/KycStepper';
 import ScreenIntro from '@/src/components/ScreenIntro';
 import { router } from 'expo-router';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  Keyboard,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import AppBackground from '../../../AppBackground';
 
 import WarningField from '@/src/components/WarningField';
@@ -49,6 +56,8 @@ export default function IdentityScreen() {
 
   const snapPoints = ['40%'];
   const handleSnapPress = useCallback((index: number) => {
+    // Close the keyboard first so it doesn't overlap the opening sheet.
+    Keyboard.dismiss();
     sheetRef.current?.snapToIndex(index);
     setIsOpen(true);
   }, []);

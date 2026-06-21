@@ -1,4 +1,7 @@
 import type {
+  KycSubmission,
+  KycSubmitRequest,
+  KycSubmitResponse,
   KycUploadPayload,
   KycUploadRequest,
   KycUploadResponse,
@@ -22,7 +25,18 @@ export const kycApi = baseApi.injectEndpoints({
       },
       transformResponse: (response: KycUploadResponse) => response.data,
     }),
+
+    submitKyc: build.mutation<KycSubmission, KycSubmitRequest>({
+      query: (body) => ({
+        url: 'auth/kyc',
+        method: 'POST',
+        body,
+      }),
+      transformResponse: (response: KycSubmitResponse) => response.data,
+      // Submitting changes the user's kycStatus → refresh /me.
+      invalidatesTags: ['User'],
+    }),
   }),
 });
 
-export const { useUploadKycDocumentMutation } = kycApi;
+export const { useUploadKycDocumentMutation, useSubmitKycMutation } = kycApi;

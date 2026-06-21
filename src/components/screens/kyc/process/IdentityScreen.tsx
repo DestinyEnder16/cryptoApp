@@ -10,6 +10,7 @@ import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 
+import BottomSheetContent from '@/src/components/BottomSheetContent';
 import { useCallback, useRef, useState } from 'react';
 interface InputProps {
   placeholder: string;
@@ -81,7 +82,7 @@ export default function IdentityScreen() {
         handleIndicatorStyle={styles.sheetHandle}
       >
         <BottomSheetView style={styles.sheetContent}>
-          <Text style={styles.sheetTxt}>hello</Text>
+          <BottomSheetContent />
         </BottomSheetView>
       </BottomSheet>
     </View>

@@ -15,8 +15,8 @@ import BottomSheet, {
 
 import AppKeyboardScrollView from '@/src/components/AppKeyboardScrollView';
 import BottomSheetContent from '@/src/components/BottomSheetContent';
-import { useAppDispatch, useAppSelector } from '@/src/store/hooks';
 import { kycIdentitySchema } from '@/src/schemas/kycIdentitySchema';
+import { useAppDispatch, useAppSelector } from '@/src/store/hooks';
 import {
   addCountry,
   addDocumentNumber,
@@ -45,7 +45,7 @@ function InputField({ placeholder, value, onChangeText }: InputProps) {
 // Layout stub — UI to be designed.
 export default function IdentityScreen() {
   const sheetRef = useRef<BottomSheet>(null);
-  const [isOpen, setIsOpen] = useState(true);
+  const [, setIsOpen] = useState(true);
 
   const snapPoints = ['40%'];
   const handleSnapPress = useCallback((index: number) => {

@@ -1,6 +1,7 @@
 import { useFonts } from 'expo-font';
 import { router, SplashScreen, Stack } from 'expo-router';
 import { ReactNode, useEffect, useState } from 'react';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import Toast from 'react-native-toast-message';
 import { Provider } from 'react-redux';
@@ -31,30 +32,32 @@ export default function RootLayout() {
   if (!fontsLoaded && !fontError) return null;
 
   return (
-    <KeyboardProvider>
-      <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <AuthBootstrap>
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                contentStyle: {
-                  backgroundColor: Colors.primaryBackgroundColor,
-                },
-                animation: 'slide_from_bottom',
-              }}
-            >
-              <Stack.Screen name="(tabs)" options={{ animation: 'none' }} />
-              <Stack.Screen
-                name="settings"
-                options={{ animation: 'fade_from_bottom' }}
-              />
-            </Stack>
-          </AuthBootstrap>
-          <Toast />
-        </PersistGate>
-      </Provider>
-    </KeyboardProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <KeyboardProvider>
+        <Provider store={store}>
+          <PersistGate loading={null} persistor={persistor}>
+            <AuthBootstrap>
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                  contentStyle: {
+                    backgroundColor: Colors.primaryBackgroundColor,
+                  },
+                  animation: 'slide_from_bottom',
+                }}
+              >
+                <Stack.Screen name="(tabs)" options={{ animation: 'none' }} />
+                <Stack.Screen
+                  name="settings"
+                  options={{ animation: 'fade_from_bottom' }}
+                />
+              </Stack>
+            </AuthBootstrap>
+            <Toast />
+          </PersistGate>
+        </Provider>
+      </KeyboardProvider>
+    </GestureHandlerRootView>
   );
 }
 

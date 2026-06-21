@@ -24,6 +24,7 @@ import authReducer from './slices/authSlice';
 import coinReducer from './slices/coinSlice';
 import profileReducer from './slices/profileSlice';
 import userReducer from './slices/userSlice';
+import kycReducer from './slices/kycSlice';
 
 const profilePersistConfig = {
   key: 'profile',
@@ -34,6 +35,7 @@ const rootReducer = combineReducers({
   user: userReducer,
   auth: authReducer,
   coin: coinReducer,
+  kyc: kycReducer,
   profile: persistReducer(profilePersistConfig, profileReducer),
   [baseApi.reducerPath]: baseApi.reducer,
 });

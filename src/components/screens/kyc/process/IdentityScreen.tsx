@@ -11,17 +11,27 @@ import { Colors } from '@/src/constants/styles';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 
 import BottomSheetContent from '@/src/components/BottomSheetContent';
+import { useAppDispatch, useAppSelector } from '@/src/store/hooks';
+import {
+  addCountry,
+  addDocumentNumber,
+  addName,
+} from '@/src/store/slices/kycSlice';
 import { useCallback, useRef, useState } from 'react';
 interface InputProps {
   placeholder: string;
+  value: string;
+  onChangeText: (text: string) => void;
 }
 
-function InputField({ placeholder }: InputProps) {
+function InputField({ placeholder, value, onChangeText }: InputProps) {
   return (
     <TextInput
       placeholder={placeholder}
       style={styles.inputField}
       placeholderTextColor={Colors.textMuted}
+      value={value}
+      onChangeText={onChangeText}
     />
   );
 }
@@ -31,11 +41,16 @@ export default function IdentityScreen() {
   const sheetRef = useRef<BottomSheet>(null);
   const [isOpen, setIsOpen] = useState(true);
 
-  const snapPoints = ['48%'];
+  const snapPoints = ['40%'];
   const handleSnapPress = useCallback((index: number) => {
     sheetRef.current?.snapToIndex(index);
     setIsOpen(true);
   }, []);
+
+  const dispatch = useAppDispatch();
+  const { name, country, documentType, documentNumber } = useAppSelector(
+    (state) => state.kyc,
+  );
 
   return (
     <View style={styles.root}>
@@ -49,15 +64,29 @@ export default function IdentityScreen() {
         <KycStepper currentStep={1} />
 
         <View style={{ gap: 20, marginVertical: 50 }}>
-          <InputField placeholder="Legal name" />
-          <InputField placeholder="Country" />
+          <InputField
+            placeholder="Legal name"
+            value={name}
+            onChangeText={(text) => dispatch(addName(text))}
+          />
+          <InputField
+            placeholder="Country"
+            value={country}
+            onChangeText={(text) => dispatch(addCountry(text))}
+          />
           <Pressable
             style={styles.inputField}
             onPress={() => handleSnapPress(0)}
           >
-            <Text style={styles.txt}>Document Type</Text>
+            <Text style={styles.txt}>
+              {documentType.length === 0 ? 'Document Type' : documentType}
+            </Text>
           </Pressable>
-          <InputField placeholder="Document number" />
+          <InputField
+            placeholder="Document number"
+            value={documentNumber}
+            onChangeText={(text) => dispatch(addDocumentNumber(text))}
+          />
         </View>
 
         <View style={{ marginTop: 30, marginBottom: 100 }}>

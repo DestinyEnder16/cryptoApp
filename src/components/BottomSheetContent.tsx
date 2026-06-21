@@ -2,8 +2,10 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { Fonts } from '../constants/fonts';
 import { Colors } from '../constants/styles';
+import { addDocumentType } from '../store/slices/kycSlice';
 
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
 
@@ -39,10 +41,14 @@ interface OptionProps {
 }
 
 function Option({ option, setOptionId, id, isActive }: OptionProps) {
+  const dispatch = useDispatch();
   return (
     <Pressable
       style={[styles.pressable, isActive && styles.pressableActive]}
-      onPress={() => setOptionId(id)}
+      onPress={() => {
+        setOptionId(id);
+        dispatch(addDocumentType(option.label));
+      }}
     >
       <View style={[styles.iconWrap, isActive && styles.iconWrapActive]}>
         <Ionicons
@@ -61,7 +67,11 @@ function Option({ option, setOptionId, id, isActive }: OptionProps) {
 
       <View style={[styles.radio, isActive && styles.radioActive]}>
         {isActive && (
-          <Ionicons name="checkmark" size={14} color={Colors.primaryBackgroundColor} />
+          <Ionicons
+            name="checkmark"
+            size={14}
+            color={Colors.primaryBackgroundColor}
+          />
         )}
       </View>
     </Pressable>

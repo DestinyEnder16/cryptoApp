@@ -11,7 +11,7 @@ import {
   useOtpVerificationMutation,
 } from '@/src/store/api/verificationApi';
 import { useAppDispatch, useAppSelector } from '@/src/store/hooks';
-import { setToken } from '@/src/store/slices/authSlice';
+import { setRefreshToken, setToken } from '@/src/store/slices/authSlice';
 import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
@@ -98,7 +98,12 @@ export default function Verification() {
       if (!result.verified) return;
 
       dispatch(setToken(result.accessToken));
-      setCredentials({ email, token: result.accessToken });
+      dispatch(setRefreshToken(result.refreshToken));
+      setCredentials({
+        email,
+        token: result.accessToken,
+        refreshToken: result.refreshToken,
+      });
 
       router.replace('/success');
     } catch {

@@ -12,7 +12,7 @@ import { showToast } from '@/src/helpers/showToast';
 import { setCredentials } from '@/src/services/nativeKeychain';
 import { useVerifyTwoFactorMutation } from '@/src/store/api/authApi';
 import { useAppDispatch } from '@/src/store/hooks';
-import { setToken } from '@/src/store/slices/authSlice';
+import { setRefreshToken, setToken } from '@/src/store/slices/authSlice';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
@@ -58,9 +58,11 @@ export default function VerifyTwoFactor() {
       ).unwrap();
 
       dispatch(setToken(payload.accessToken));
+      dispatch(setRefreshToken(payload.refreshToken));
       await setCredentials({
         email: payload.user.email,
         token: payload.accessToken,
+        refreshToken: payload.refreshToken,
       });
       router.replace('/home');
     } catch {

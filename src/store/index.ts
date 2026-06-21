@@ -14,6 +14,7 @@ import {
 import { baseApi } from './api/baseApi';
 import './api/alertsApi';
 import './api/authApi';
+import './api/kycApi';
 import './api/marketApi';
 import './api/notificationApi';
 import './api/profileApi';

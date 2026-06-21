@@ -12,11 +12,11 @@ import {
   authenticateWithBiometrics,
   isBiometricAvailable,
 } from '../services/biometricAuth';
-import { getCredentials } from '../services/nativeKeychain';
+import { getCredentials, getRefreshToken } from '../services/nativeKeychain';
 import { persistor, store } from '../store';
 import { profileApi } from '../store/api/profileApi';
 import { useAppDispatch } from '../store/hooks';
-import { setToken } from '../store/slices/authSlice';
+import { setRefreshToken, setToken } from '../store/slices/authSlice';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -82,6 +82,11 @@ function AuthBootstrap({ children }: { children: ReactNode }) {
       // Token exists: hydrate Redux so /me carries the Bearer header.
       const token = credentials.password;
       dispatch(setToken(token));
+
+      // Restore the refresh token too, so an expired access token can be
+      // rotated transparently instead of forcing a re-login.
+      const refreshToken = await getRefreshToken();
+      if (refreshToken) dispatch(setRefreshToken(refreshToken));
 
       let user;
       try {

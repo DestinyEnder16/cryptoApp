@@ -7,7 +7,7 @@ import { showToast } from '@/src/helpers/showToast';
 import { setCredentials } from '@/src/services/nativeKeychain';
 import { useLoginMutation } from '@/src/store/api/authApi';
 import { useAppDispatch, useAppSelector } from '@/src/store/hooks';
-import { setToken } from '@/src/store/slices/authSlice';
+import { setRefreshToken, setToken } from '@/src/store/slices/authSlice';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
@@ -48,9 +48,11 @@ export default function RetrySignin() {
         return;
       }
       dispatch(setToken(result.accessToken));
+      dispatch(setRefreshToken(result.refreshToken));
       await setCredentials({
         email: isEmail ? identifier : storedEmail,
         token: result.accessToken,
+        refreshToken: result.refreshToken,
       });
       router.replace('/home');
     } catch {

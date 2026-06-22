@@ -32,7 +32,9 @@ export default function WithdrawScreen() {
         hasBackBtn
       />
 
-      <AppKeyboardScrollView contentContainerStyle={{ paddingTop: 20, gap: 16 }}>
+      <AppKeyboardScrollView
+        contentContainerStyle={{ paddingTop: 20, gap: 16 }}
+      >
         <WalletField
           label="Asset"
           value={`${asset.symbol} · Available ${asset.units}`}
@@ -62,15 +64,23 @@ export default function WithdrawScreen() {
 
         <WalletField label="Network" value={NETWORK} />
 
-        <View style={styles.limitCard}>
+        <View style={[styles.limitCard, { backgroundColor: Colors.lime }]}>
           <Text style={styles.limitLabel}>Verified limit</Text>
           <Text style={styles.limitValue}>
-            {formatPrice(perTxLimit, 0)} per request · {formatPrice(dailyLimit, 0)}{' '}
-            daily
+            {formatPrice(perTxLimit, 0)} per request ·{' '}
+            {formatPrice(dailyLimit, 0)} daily
           </Text>
         </View>
 
-        <View style={{ marginTop: 12 }}>
+        <View
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            right: 0,
+            left: 0,
+            marginBottom: 10,
+          }}
+        >
           <Btn
             text="Preview withdrawal"
             fontSize={13}

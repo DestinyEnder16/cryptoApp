@@ -11,7 +11,6 @@ import {
   totalPortfolioUsd,
 } from '@/src/data/sandboxWallet';
 import { formatPrice } from '@/src/helpers/formatPrice';
-import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -53,15 +52,11 @@ export default function WalletHomeScreen() {
               style={styles.action}
               onPress={() => router.navigate(action.route)}
             >
-              <View style={styles.actionIcon}>
-                <Ionicons name={action.icon} size={20} color={Colors.dark} />
-              </View>
               <Text style={styles.actionLabel}>{action.label}</Text>
             </Pressable>
           ))}
         </View>
 
-        <Text style={styles.sectionTitle}>Assets</Text>
         {sandboxAssets.map((asset) => (
           <WalletAssetRow key={asset.symbol} asset={asset} />
         ))}
@@ -119,14 +114,6 @@ const styles = StyleSheet.create({
     paddingVertical: 18,
     alignItems: 'center',
     gap: 10,
-  },
-  actionIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: Colors.green,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   actionLabel: {
     color: Colors.text,

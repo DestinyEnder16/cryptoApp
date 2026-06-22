@@ -1,16 +1,28 @@
 import AppBackground from '@/src/components/AppBackground';
 import Btn from '@/src/components/Btn';
 import ScreenIntro from '@/src/components/ScreenIntro';
-import { StatusRow } from '@/src/components/screens/kyc/status/StatusRow';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
-import { WITHDRAWAL_FEE_USDT } from '@/src/data/sandboxWallet';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useLocalSearchParams } from 'expo-router';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 const REFERENCE = 'wd_8392';
-const RELATED_TX = 'txw_8392';
+// const RELATED_TX = 'txw_8392';
+
+interface RowProps {
+  label: string;
+  value: string;
+}
+
+export function Row({ label, value }: RowProps) {
+  return (
+    <View style={styles.row}>
+      <Text style={styles.rowLabel}>{label}</Text>
+      <Text style={styles.rowValue}>{value}</Text>
+    </View>
+  );
+}
 
 export default function WithdrawalSubmittedScreen() {
   const params = useLocalSearchParams<{ amount?: string; asset?: string }>();
@@ -34,21 +46,26 @@ export default function WithdrawalSubmittedScreen() {
         </View>
 
         <View style={styles.rows}>
-          <StatusRow label="Status" value="Pending review" />
+          {/* <StatusRow label="Status" value="Pending review" />
           <StatusRow label="Amount" value={`${amount} ${symbol}`} />
           <StatusRow
             label="Fee"
             value={`${WITHDRAWAL_FEE_USDT.toFixed(2)} ${symbol}`}
           />
           <StatusRow label="Reference" value={REFERENCE} />
-          <StatusRow label="Created" value="May 27, 2026" />
+          <StatusRow label="Created" value="May 27, 2026" /> */}
+          <Row label="Status" value="Pending review" />
+          <Row label="Amount" value={`${amount} ${symbol}`} />
+          <Row label="Fee" value={`${10000} ${symbol}`} />
+          <Row label="Reference" value={REFERENCE} />
+          <Row label="Created" value="May 27, 2026" />
         </View>
       </ScrollView>
 
       <Btn
-        text="View transaction"
+        text="View transactions"
         fontSize={13}
-        action={() => router.navigate(`/wallet/transactions/${RELATED_TX}`)}
+        action={() => router.navigate(`/wallet/transactions`)}
       />
     </AppBackground>
   );
@@ -63,8 +80,30 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
+    marginVertical: 30,
+    outlineColor: Colors.creditGreen,
+    outlineWidth: 30,
   },
   rows: {
-    gap: 12,
+    backgroundColor: '#141820',
+    paddingHorizontal: 20,
+    gap: 20,
+    borderRadius: 14,
+    paddingTop: 30,
+    paddingBottom: 60,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  rowValue: {
+    color: Colors.text,
+    fontSize: 12,
+    fontFamily: Fonts.bold,
+  },
+  rowLabel: {
+    color: Colors.textMuted,
+    fontSize: 12,
+    fontFamily: Fonts.regular,
   },
 });

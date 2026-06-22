@@ -67,12 +67,12 @@ export default function TransactionsScreen() {
 const styles = StyleSheet.create({
   filterRow: {
     flexDirection: 'row',
-    gap: 8,
-    marginTop: 16,
+    gap: 20,
+    marginVertical: 32,
   },
   filter: {
     paddingVertical: 8,
-    paddingHorizontal: 16,
+    paddingHorizontal: 32,
     borderRadius: 999,
     backgroundColor: Colors.secondaryBackgroundColor,
   },

@@ -17,4 +17,5 @@ export const Colors = {
   orangeBrown: '#DB9E38',
   blue: '#29B8C7',
   lightGreen: '#5CD6A5',
+  creditGreen: '#14231F',
 };

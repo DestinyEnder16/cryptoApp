@@ -77,7 +77,7 @@ export const sandboxTransactions: SandboxTransaction[] = [
   {
     id: 'txu_392e43e9',
     type: 'deposit',
-    title: 'USDT deposit',
+    title: 'Sandbox USDT deposit',
     amountLabel: '+$250.00',
     direction: 'credit',
     status: 'completed',
@@ -91,7 +91,7 @@ export const sandboxTransactions: SandboxTransaction[] = [
   {
     id: 'txb_18a0c7d2',
     type: 'buy',
-    title: 'BTC buy',
+    title: 'BTC Purchase',
     amountLabel: '-$100.00',
     direction: 'debit',
     status: 'completed',

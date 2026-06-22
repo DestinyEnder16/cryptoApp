@@ -1,12 +1,12 @@
 import AppBackground from '@/src/components/AppBackground';
 import Btn from '@/src/components/Btn';
 import ScreenIntro from '@/src/components/ScreenIntro';
-import { StatusRow } from '@/src/components/screens/kyc/status/StatusRow';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
 import { getTransactionById } from '@/src/data/sandboxWallet';
 import { router, useLocalSearchParams } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Row } from './WithdrawalSubmittedScreen';
 
 const CREATED = 'May 27, 2026';
 
@@ -21,6 +21,9 @@ export default function TransactionDetailsScreen() {
       ? Colors.red
       : Colors.text;
 
+  const isPositive = tx?.direction === 'credit';
+  const isNeutral = tx?.direction === 'neutral';
+
   return (
     <AppBackground>
       <ScreenIntro
@@ -33,24 +36,46 @@ export default function TransactionDetailsScreen() {
         <>
           <ScrollView
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingTop: 20, paddingBottom: 30, gap: 20 }}
+            contentContainerStyle={{
+              paddingTop: 20,
+              paddingBottom: 30,
+              gap: 20,
+            }}
           >
-            <View style={styles.headline}>
+            <View
+              style={[
+                styles.headline,
+                isPositive
+                  ? { backgroundColor: Colors.creditGreen }
+                  : isNeutral
+                  ? { backgroundColor: Colors.secondaryBackgroundColor }
+                  : { backgroundColor: Colors.dotInactive },
+              ]}
+            >
+              <Text style={styles.headlineTitle}>{tx.title}</Text>
+
               <Text style={[styles.amount, { color: amountColor }]}>
                 {tx.detailAmount}
               </Text>
-              <Text style={styles.status}>
+              <Text
+                style={[
+                  styles.status,
+                  tx.status === 'completed'
+                    ? { color: Colors.text }
+                    : { color: Colors.textMuted },
+                ]}
+              >
                 {tx.status === 'pending' ? 'Pending review' : 'Completed'}
               </Text>
             </View>
 
             <View style={styles.rows}>
-              <StatusRow label="Reference" value={tx.reference} />
-              <StatusRow label="Asset" value={tx.asset} />
-              <StatusRow label="Network" value={tx.network} />
-              <StatusRow label="Rate" value={tx.rate} />
-              <StatusRow label="Created" value={CREATED} />
-              <StatusRow
+              <Row label="Reference" value={tx.reference} />
+              <Row label="Asset" value={tx.asset} />
+              <Row label="Network" value={tx.network} />
+              <Row label="Rate" value={tx.rate} />
+              <Row label="Created" value={CREATED} />
+              <Row
                 label="Completed"
                 value={tx.status === 'completed' ? CREATED : '—'}
               />
@@ -74,22 +99,31 @@ export default function TransactionDetailsScreen() {
 
 const styles = StyleSheet.create({
   headline: {
-    backgroundColor: Colors.secondaryBackgroundColor,
     borderRadius: 20,
     padding: 24,
     gap: 8,
+    marginVertical: 24,
+  },
+  headlineTitle: {
+    fontFamily: Fonts.bold,
+    color: Colors.text,
+    fontSize: 16,
   },
   amount: {
     fontFamily: Fonts.bold,
     fontSize: 30,
   },
   status: {
-    color: Colors.ash,
     fontFamily: Fonts.regular,
     fontSize: 13,
   },
   rows: {
-    gap: 12,
+    backgroundColor: '#141820',
+    paddingHorizontal: 20,
+    gap: 20,
+    borderRadius: 14,
+    paddingTop: 30,
+    paddingBottom: 60,
   },
   empty: {
     flex: 1,

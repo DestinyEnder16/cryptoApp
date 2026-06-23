@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
   rows: {
     backgroundColor: '#141820',
     paddingHorizontal: 20,
-    gap: 15,
+    gap: 20,
     borderRadius: 14,
     paddingTop: 30,
     paddingBottom: 60,

@@ -5,21 +5,30 @@ import ScreenIntro from '@/src/components/ScreenIntro';
 import WalletField from '@/src/components/wallet/WalletField';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
-import { sandboxAssets } from '@/src/data/sandboxWallet';
+import { formatAmount } from '@/src/helpers/formatAmount';
 import { formatPrice } from '@/src/helpers/formatPrice';
 import { useVerification } from '@/src/hooks/useVerification';
+import { useGetWalletQuery } from '@/src/store/api/walletApi';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 
-const NETWORK = 'TRC20 sandbox network';
-
 export default function WithdrawScreen() {
   const { limits } = useVerification();
-  const asset = sandboxAssets[0]; // USDT
+  const { data: wallet } = useGetWalletQuery();
 
   const [amount, setAmount] = useState('100.00');
   const [address, setAddress] = useState('');
+
+  // Withdraw from the first funded balance (USDT in the sandbox).
+  const balances = wallet?.wallet.balances ?? [];
+  const balance =
+    balances.find((b) => b.assetSymbol === 'USDT') ?? balances[0];
+  const symbol = balance?.assetSymbol ?? 'USDT';
+  const network =
+    wallet?.wallet.depositAddresses.find((a) => a.assetSymbol === symbol)
+      ?.network ?? '—';
+  const available = balance ? `${formatAmount(balance.available)} ${symbol}` : '—';
 
   const perTxLimit = limits?.withdrawalPerTransactionUsd ?? 1000;
   const dailyLimit = limits?.dailyWithdrawalUsd ?? 5000;
@@ -32,12 +41,10 @@ export default function WithdrawScreen() {
         hasBackBtn
       />
 
-      <AppKeyboardScrollView
-        contentContainerStyle={{ paddingTop: 20, gap: 16 }}
-      >
+      <AppKeyboardScrollView contentContainerStyle={{ paddingTop: 20, gap: 16 }}>
         <WalletField
           label="Asset"
-          value={`${asset.symbol} · Available ${asset.units}`}
+          value={`${symbol} · Available ${available}`}
         />
 
         <WalletField label="Amount">
@@ -62,7 +69,7 @@ export default function WithdrawScreen() {
           />
         </WalletField>
 
-        <WalletField label="Network" value={NETWORK} />
+        <WalletField label="Network" value={network} />
 
         <View style={[styles.limitCard, { backgroundColor: Colors.lime }]}>
           <Text style={styles.limitLabel}>Verified limit</Text>
@@ -91,7 +98,7 @@ export default function WithdrawScreen() {
                   amount
                 )}&address=${encodeURIComponent(
                   address || 'TXYZ...8K21'
-                )}&asset=${asset.symbol}&network=${encodeURIComponent(NETWORK)}`
+                )}&asset=${symbol}&network=${encodeURIComponent(network)}`
               )
             }
           />

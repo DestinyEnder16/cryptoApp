@@ -86,6 +86,6 @@ const baseQueryWithReauth: BaseQueryFn<
 export const baseApi = createApi({
   reducerPath: 'cryptoApi',
   baseQuery: baseQueryWithReauth,
-  tagTypes: ['User', 'Notification', 'Device'],
+  tagTypes: ['User', 'Notification', 'Device', 'Wallet', 'Transaction'],
   endpoints: () => ({}),
 });

@@ -2,33 +2,37 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Fonts } from '../../constants/fonts';
 import { Colors } from '../../constants/styles';
-import type {
-  SandboxTransaction,
-  SandboxTxType,
-} from '../../data/sandboxWallet';
+import { describeTransaction } from '../../helpers/describeTransaction';
+import { formatTxDate } from '../../helpers/formatTxDate';
+import type { Transaction, TransactionType } from '../../types/wallet/types';
 
 interface TransactionRowProps {
-  tx: SandboxTransaction;
+  tx: Transaction;
   onPress?: () => void;
 }
 
-const ICONS: Record<SandboxTxType, keyof typeof Ionicons.glyphMap> = {
+const ICONS: Record<TransactionType, keyof typeof Ionicons.glyphMap> = {
   deposit: 'arrow-down',
   withdrawal: 'arrow-up',
   buy: 'cart',
   sell: 'pricetag',
   swap: 'swap-horizontal',
-  alert: 'notifications',
+  transfer: 'swap-vertical',
 };
 
-const amountColor = (direction: SandboxTransaction['direction']) =>
+const amountColor = (direction: 'credit' | 'debit' | 'neutral') =>
   direction === 'credit'
     ? Colors.green
     : direction === 'debit'
     ? Colors.red
     : Colors.text;
 
+const statusLabel = (status: Transaction['status']) =>
+  status.charAt(0).toUpperCase() + status.slice(1);
+
 export default function TransactionRow({ tx, onPress }: TransactionRowProps) {
+  const display = describeTransaction(tx);
+
   return (
     <Pressable style={styles.row} onPress={onPress} disabled={!onPress}>
       <View style={styles.iconWrap}>
@@ -36,14 +40,14 @@ export default function TransactionRow({ tx, onPress }: TransactionRowProps) {
       </View>
 
       <View style={styles.info}>
-        <Text style={styles.title}>{tx.title}</Text>
+        <Text style={styles.title}>{display.title}</Text>
         <Text style={styles.sub}>
-          {tx.status === 'pending' ? 'Pending' : 'Completed'} · {tx.date}
+          {statusLabel(tx.status)} · {formatTxDate(tx.createdAt)}
         </Text>
       </View>
 
-      <Text style={[styles.amount, { color: amountColor(tx.direction) }]}>
-        {tx.amountLabel}
+      <Text style={[styles.amount, { color: amountColor(display.direction) }]}>
+        {display.amountLabel}
       </Text>
     </Pressable>
   );

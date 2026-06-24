@@ -3,12 +3,13 @@ import Btn from '@/src/components/Btn';
 import ScreenIntro from '@/src/components/ScreenIntro';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
+import { WITHDRAWAL_FEE_USDT } from '@/src/data/sandboxWallet';
+import { formatFullDate } from '@/src/helpers/formatTxDate';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 const REFERENCE = 'wd_8392';
-// const RELATED_TX = 'txw_8392';
 
 interface RowProps {
   label: string;
@@ -46,19 +47,14 @@ export default function WithdrawalSubmittedScreen() {
         </View>
 
         <View style={styles.rows}>
-          {/* <StatusRow label="Status" value="Pending review" />
-          <StatusRow label="Amount" value={`${amount} ${symbol}`} />
-          <StatusRow
+          <Row label="Status" value="Pending review" />
+          <Row label="Amount" value={`${amount} ${symbol}`} />
+          <Row
             label="Fee"
             value={`${WITHDRAWAL_FEE_USDT.toFixed(2)} ${symbol}`}
           />
-          <StatusRow label="Reference" value={REFERENCE} />
-          <StatusRow label="Created" value="May 27, 2026" /> */}
-          <Row label="Status" value="Pending review" />
-          <Row label="Amount" value={`${amount} ${symbol}`} />
-          <Row label="Fee" value={`${10000} ${symbol}`} />
           <Row label="Reference" value={REFERENCE} />
-          <Row label="Created" value="May 27, 2026" />
+          <Row label="Created" value={formatFullDate(new Date().toISOString())} />
         </View>
       </ScrollView>
 

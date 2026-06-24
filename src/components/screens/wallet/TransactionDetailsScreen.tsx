@@ -3,26 +3,40 @@ import Btn from '@/src/components/Btn';
 import ScreenIntro from '@/src/components/ScreenIntro';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
-import { getTransactionById } from '@/src/data/sandboxWallet';
+import { describeTransaction } from '@/src/helpers/describeTransaction';
+import { formatAmount } from '@/src/helpers/formatAmount';
+import { formatFullDate } from '@/src/helpers/formatTxDate';
+import { formatPrice } from '@/src/helpers/formatPrice';
+import { useGetTransactionsQuery } from '@/src/store/api/walletApi';
 import { router, useLocalSearchParams } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Row } from './WithdrawalSubmittedScreen';
 
-const CREATED = 'May 27, 2026';
-
 export default function TransactionDetailsScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
-  const tx = getTransactionById(id);
 
+  // No GET /transactions/{id} yet — pick the entry out of the cached list.
+  const { tx } = useGetTransactionsQuery(
+    { order: 'desc' },
+    {
+      selectFromResult: ({ data }) => ({
+        tx: data?.find((t) => t.id === id),
+      }),
+    }
+  );
+
+  const display = tx ? describeTransaction(tx) : null;
   const amountColor =
-    tx?.direction === 'credit'
+    display?.direction === 'credit'
       ? Colors.green
-      : tx?.direction === 'debit'
+      : display?.direction === 'debit'
       ? Colors.red
       : Colors.text;
 
-  const isPositive = tx?.direction === 'credit';
-  const isNeutral = tx?.direction === 'neutral';
+  const isPositive = display?.direction === 'credit';
+  const isNeutral = display?.direction === 'neutral';
+
+  const feeAsset = tx?.toAsset ?? tx?.fromAsset ?? '';
 
   return (
     <AppBackground>
@@ -32,7 +46,7 @@ export default function TransactionDetailsScreen() {
         hasBackBtn
       />
 
-      {tx ? (
+      {tx && display ? (
         <>
           <ScrollView
             showsVerticalScrollIndicator={false}
@@ -52,10 +66,10 @@ export default function TransactionDetailsScreen() {
                   : { backgroundColor: Colors.dotInactive },
               ]}
             >
-              <Text style={styles.headlineTitle}>{tx.title}</Text>
+              <Text style={styles.headlineTitle}>{display.title}</Text>
 
               <Text style={[styles.amount, { color: amountColor }]}>
-                {tx.detailAmount}
+                {display.detailAmount}
               </Text>
               <Text
                 style={[
@@ -65,20 +79,26 @@ export default function TransactionDetailsScreen() {
                     : { color: Colors.textMuted },
                 ]}
               >
-                {tx.status === 'pending' ? 'Pending review' : 'Completed'}
+                {tx.status.charAt(0).toUpperCase() + tx.status.slice(1)}
               </Text>
             </View>
 
             <View style={styles.rows}>
               <Row label="Reference" value={tx.reference} />
-              <Row label="Asset" value={tx.asset} />
-              <Row label="Network" value={tx.network} />
-              <Row label="Rate" value={tx.rate} />
-              <Row label="Created" value={CREATED} />
-              <Row
-                label="Completed"
-                value={tx.status === 'completed' ? CREATED : '—'}
-              />
+              {!!tx.fromAsset && <Row label="From" value={tx.fromAsset} />}
+              {!!tx.toAsset && <Row label="To" value={tx.toAsset} />}
+              {tx.rate != null && (
+                <Row label="Rate" value={formatPrice(tx.rate)} />
+              )}
+              {tx.feeAmount != null && (
+                <Row
+                  label="Fee"
+                  value={`${formatAmount(tx.feeAmount)} ${feeAsset}`.trim()}
+                />
+              )}
+              {!!tx.note && <Row label="Note" value={tx.note} />}
+              <Row label="Created" value={formatFullDate(tx.createdAt)} />
+              <Row label="Completed" value={formatFullDate(tx.completedAt)} />
             </View>
           </ScrollView>
 

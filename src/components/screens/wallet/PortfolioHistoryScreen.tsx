@@ -5,7 +5,7 @@ import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
 import { formatPrice } from '@/src/helpers/formatPrice';
 import { useGetPortfolioHistoryQuery } from '@/src/store/api/walletApi';
-import type { PortfolioRange } from '@/src/types/wallet/types';
+import type { PortfolioPoint, PortfolioRange } from '@/src/types/wallet/types';
 import { useState } from 'react';
 import {
   ActivityIndicator,
@@ -18,6 +18,46 @@ import {
 } from 'react-native';
 
 const PERIODS: PortfolioRange[] = ['1D', '1W', '1M', '1Y'];
+
+interface MonthGroup {
+  id: string;
+  label: string;
+  valueUsd: number;
+  changePct: number;
+}
+
+/**
+ * Bucket the time-series points by calendar month (most-recent first).
+ * Each bucket's change % is from its first point to its last.
+ */
+function groupByMonth(points: PortfolioPoint[]): MonthGroup[] {
+
+  const map = new Map<string, PortfolioPoint[]>();
+
+  for (const point of points) {
+    const d = new Date(point.time);
+    const key = `${d.getFullYear()}-${d.getMonth()}`;
+    const bucket = map.get(key) ?? [];
+    bucket.push(point);
+    map.set(key, bucket);
+  }
+
+  return Array.from(map.entries())
+    .map(([key, pts]): MonthGroup => {
+      const first = pts[0];
+      const last = pts[pts.length - 1];
+      const label = new Date(first.time).toLocaleDateString(undefined, {
+        month: 'long',
+        year: 'numeric',
+      });
+      const changePct =
+        first.valueUsd > 0
+          ? ((last.valueUsd - first.valueUsd) / first.valueUsd) * 100
+          : 0;
+      return { id: key, label, valueUsd: last.valueUsd, changePct };
+    })
+    .reverse(); // newest first, matching the screenshot
+}
 
 export default function PortfolioHistoryScreen() {
   const { width } = useWindowDimensions();
@@ -35,9 +75,9 @@ export default function PortfolioHistoryScreen() {
 
   const first = points[0]?.valueUsd;
   const latest = data?.meta.latestValueUsd;
-  const changePct =
-    first && latest != null ? ((latest - first) / first) * 100 : null;
-  const up = (changePct ?? 0) >= 0;
+  const overallUp = latest != null && first != null ? latest >= first : true;
+
+  const months = groupByMonth(points);
 
   return (
     <AppBackground>
@@ -57,7 +97,7 @@ export default function PortfolioHistoryScreen() {
           ) : (
             <LineChartView
               chartData={chartData}
-              isNegative={!up}
+              isNegative={!overallUp}
               width={chartWidth}
               height={180}
               strokeWidth={3}
@@ -84,28 +124,41 @@ export default function PortfolioHistoryScreen() {
           </View>
         </View>
 
-        {latest != null && (
-          <View style={styles.summary}>
-            <View style={styles.summaryInfo}>
-              <Text style={styles.summaryLabel}>Current value</Text>
-              <Text style={styles.summarySub}>Change over {range}</Text>
-            </View>
-            <View style={styles.summaryAmounts}>
-              <Text style={styles.summaryValue}>{formatPrice(latest)}</Text>
-              {changePct !== null && (
+        {months.map((row) => {
+          const positive = row.changePct >= 0;
+          return (
+            <View key={row.id} style={styles.historyRow}>
+              <View
+                style={[
+                  styles.badge,
+                  { backgroundColor: positive ? Colors.green : Colors.red },
+                ]}
+              >
+                <Text style={styles.badgeLetter}>P</Text>
+              </View>
+
+              <View style={styles.historyInfo}>
+                <Text style={styles.historyMonth}>{row.label}</Text>
+                <Text style={styles.historyLabel}>Portfolio value</Text>
+              </View>
+
+              <View style={styles.historyAmounts}>
+                <Text style={styles.historyValue}>
+                  {formatPrice(row.valueUsd)}
+                </Text>
                 <Text
                   style={[
-                    styles.summaryChange,
-                    { color: up ? Colors.green : Colors.red },
+                    styles.historyChange,
+                    { color: positive ? Colors.green : Colors.red },
                   ]}
                 >
-                  {up ? '+' : ''}
-                  {changePct.toFixed(2)}%
+                  {positive ? '+' : ''}
+                  {row.changePct.toFixed(1)}%
                 </Text>
-              )}
+              </View>
             </View>
-          </View>
-        )}
+          );
+        })}
       </ScrollView>
     </AppBackground>
   );
@@ -141,7 +194,7 @@ const styles = StyleSheet.create({
   periodTxtActive: {
     color: Colors.dark,
   },
-  summary: {
+  historyRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
@@ -149,31 +202,44 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingVertical: 16,
     paddingHorizontal: 16,
+    marginBottom: 12,
   },
-  summaryInfo: {
+  badge: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  badgeLetter: {
+    color: Colors.dark,
+    fontFamily: Fonts.bold,
+    fontSize: 16,
+  },
+  historyInfo: {
     flex: 1,
     gap: 4,
   },
-  summaryLabel: {
+  historyMonth: {
     color: Colors.text,
     fontFamily: Fonts.medium,
     fontSize: 15,
   },
-  summarySub: {
+  historyLabel: {
     color: Colors.ash,
     fontFamily: Fonts.regular,
     fontSize: 12,
   },
-  summaryAmounts: {
+  historyAmounts: {
     alignItems: 'flex-end',
     gap: 4,
   },
-  summaryValue: {
+  historyValue: {
     color: Colors.text,
     fontFamily: Fonts.bold,
     fontSize: 15,
   },
-  summaryChange: {
+  historyChange: {
     fontFamily: Fonts.medium,
     fontSize: 12,
   },

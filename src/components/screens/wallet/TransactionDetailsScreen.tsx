@@ -7,25 +7,17 @@ import { describeTransaction } from '@/src/helpers/describeTransaction';
 import { formatAmount } from '@/src/helpers/formatAmount';
 import { formatFullDate } from '@/src/helpers/formatTxDate';
 import { formatPrice } from '@/src/helpers/formatPrice';
-import { useGetTransactionsQuery } from '@/src/store/api/walletApi';
+import { useGetTransactionByIdQuery } from '@/src/store/api/walletApi';
 import { router, useLocalSearchParams } from 'expo-router';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Row } from './WithdrawalSubmittedScreen';
 
 export default function TransactionDetailsScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
-
-  // No GET /transactions/{id} yet — pick the entry out of the cached list.
-  const { tx } = useGetTransactionsQuery(
-    { order: 'desc' },
-    {
-      selectFromResult: ({ data }) => ({
-        tx: data?.find((t) => t.id === id),
-      }),
-    }
-  );
+  const { data: tx, isLoading } = useGetTransactionByIdQuery(id!, { skip: !id });
 
   const display = tx ? describeTransaction(tx) : null;
+
   const amountColor =
     display?.direction === 'credit'
       ? Colors.green
@@ -35,7 +27,6 @@ export default function TransactionDetailsScreen() {
 
   const isPositive = display?.direction === 'credit';
   const isNeutral = display?.direction === 'neutral';
-
   const feeAsset = tx?.toAsset ?? tx?.fromAsset ?? '';
 
   return (
@@ -46,15 +37,17 @@ export default function TransactionDetailsScreen() {
         hasBackBtn
       />
 
-      {tx && display ? (
+      {isLoading ? (
+        <ActivityIndicator
+          color={Colors.green}
+          style={{ marginTop: 60 }}
+          size="large"
+        />
+      ) : tx && display ? (
         <>
           <ScrollView
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{
-              paddingTop: 20,
-              paddingBottom: 30,
-              gap: 20,
-            }}
+            contentContainerStyle={{ paddingTop: 20, paddingBottom: 30, gap: 20 }}
           >
             <View
               style={[
@@ -67,7 +60,6 @@ export default function TransactionDetailsScreen() {
               ]}
             >
               <Text style={styles.headlineTitle}>{display.title}</Text>
-
               <Text style={[styles.amount, { color: amountColor }]}>
                 {display.detailAmount}
               </Text>

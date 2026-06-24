@@ -3,13 +3,10 @@ import Btn from '@/src/components/Btn';
 import ScreenIntro from '@/src/components/ScreenIntro';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
-import { WITHDRAWAL_FEE_USDT } from '@/src/data/sandboxWallet';
 import { formatFullDate } from '@/src/helpers/formatTxDate';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
-
-const REFERENCE = 'wd_8392';
 
 interface RowProps {
   label: string;
@@ -26,9 +23,21 @@ export function Row({ label, value }: RowProps) {
 }
 
 export default function WithdrawalSubmittedScreen() {
-  const params = useLocalSearchParams<{ amount?: string; asset?: string }>();
+  const params = useLocalSearchParams<{
+    amount?: string;
+    asset?: string;
+    fee?: string;
+    reference?: string;
+    createdAt?: string;
+  }>();
+
   const symbol = params.asset ?? 'USDT';
   const amount = params.amount ?? '0.00';
+  const fee = params.fee ?? '—';
+  const reference = params.reference ?? '—';
+  const createdAt = params.createdAt
+    ? formatFullDate(params.createdAt)
+    : formatFullDate(new Date().toISOString());
 
   return (
     <AppBackground>
@@ -49,19 +58,16 @@ export default function WithdrawalSubmittedScreen() {
         <View style={styles.rows}>
           <Row label="Status" value="Pending review" />
           <Row label="Amount" value={`${amount} ${symbol}`} />
-          <Row
-            label="Fee"
-            value={`${WITHDRAWAL_FEE_USDT.toFixed(2)} ${symbol}`}
-          />
-          <Row label="Reference" value={REFERENCE} />
-          <Row label="Created" value={formatFullDate(new Date().toISOString())} />
+          <Row label="Fee" value={`${fee} ${symbol}`} />
+          <Row label="Reference" value={reference} />
+          <Row label="Created" value={createdAt} />
         </View>
       </ScrollView>
 
       <Btn
         text="View transactions"
         fontSize={13}
-        action={() => router.navigate(`/wallet/transactions`)}
+        action={() => router.navigate('/wallet/transactions')}
       />
     </AppBackground>
   );

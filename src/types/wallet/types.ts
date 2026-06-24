@@ -120,3 +120,86 @@ export interface TransactionListParams {
   limit?: number;
   order?: 'asc' | 'desc';
 }
+
+export interface TransactionResponse {
+  data: Transaction;
+}
+
+// POST /wallet/deposit/simulate ---------------------------------------------
+
+export interface SimulateDepositRequest {
+  amount: number;
+  settlementDelaySeconds: number;
+}
+
+export interface SimulateDepositPayload {
+  transaction: Transaction;
+  wallet: Wallet;
+  estimatedCompletionAt: string;
+  /** Path to poll for completion, e.g. "/wallet/transactions/txn_deposit_001". */
+  pollingUrl: string;
+}
+
+export interface SimulateDepositResponse {
+  data: SimulateDepositPayload;
+}
+
+// POST /wallet/withdrawals --------------------------------------------------
+
+export interface WithdrawalRequest {
+  assetSymbol: string;
+  amount: number;
+  address: string;
+  network: string;
+}
+
+export interface Withdrawal {
+  id: string;
+  userId: string;
+  assetSymbol: string;
+  amount: number;
+  feeAssetAmount: number;
+  address: string;
+  network: string;
+  status: string;
+  createdAt: string;
+  reviewedAt: string | null;
+  reviewerNote: string | null;
+}
+
+export interface WithdrawalResponse {
+  data: Withdrawal;
+}
+
+// POST /wallet/transfers ----------------------------------------------------
+
+export interface TransferRequest {
+  assetSymbol: string;
+  amount: number;
+  /** Email, phone, user id, or deposit address of the recipient. */
+  recipient: string;
+  pin: string;
+}
+
+export interface TransferRecipient {
+  id: string;
+  fullName: string;
+  email: string;
+  phone: string;
+}
+
+export interface TransferPayload {
+  transfer: {
+    reference: string;
+    assetSymbol: string;
+    amount: number;
+    recipient: TransferRecipient;
+  };
+  transaction: Transaction;
+  recipientTransaction: Transaction;
+  wallet: Wallet;
+}
+
+export interface TransferResponse {
+  data: TransferPayload;
+}

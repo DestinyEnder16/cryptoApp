@@ -4,7 +4,9 @@ import Btn from '@/src/components/Btn';
 import ScreenIntro from '@/src/components/ScreenIntro';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
-import { WITHDRAWAL_FEE_USDT } from '@/src/data/sandboxWallet';
+import { formatAmount } from '@/src/helpers/formatAmount';
+import { showToast } from '@/src/helpers/showToast';
+import { useRequestWithdrawalMutation } from '@/src/store/api/walletApi';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
@@ -21,20 +23,37 @@ export default function ConfirmWithdrawalScreen() {
   const symbol = params.asset ?? 'USDT';
   const amount = params.amount ?? '0.00';
   const address = params.address ?? '—';
-  const network = params.network ?? 'TRC20';
+  const network = params.network ?? '—';
+  const numericAmount = parseFloat(amount) || 0;
 
   const [pin, setPin] = useState('');
+  const [requestWithdrawal, { isLoading }] = useRequestWithdrawalMutation();
 
-  const numericAmount = parseFloat(amount) || 0;
-  const receive = Math.max(numericAmount - WITHDRAWAL_FEE_USDT, 0);
-  const receiveLabel = `${receive.toFixed(2)} ${symbol}`;
+  const submit = async () => {
+    try {
+      const wd = await requestWithdrawal({
+        assetSymbol: symbol,
+        amount: numericAmount,
+        address,
+        network,
+      }).unwrap();
 
-  const submit = () => {
-    router.navigate(
-      `/wallet/withdraw/submitted?amount=${encodeURIComponent(
-        amount
-      )}&asset=${symbol}&receive=${encodeURIComponent(receiveLabel)}`
-    );
+      router.navigate(
+        `/wallet/withdraw/submitted?amount=${encodeURIComponent(
+          formatAmount(wd.amount)
+        )}&asset=${wd.assetSymbol}&fee=${encodeURIComponent(
+          formatAmount(wd.feeAssetAmount)
+        )}&reference=${encodeURIComponent(wd.id)}&createdAt=${encodeURIComponent(
+          wd.createdAt
+        )}`
+      );
+    } catch {
+      showToast({
+        type: 'error',
+        title: 'Withdrawal failed',
+        message: 'Could not submit your withdrawal. Please try again.',
+      });
+    }
   };
 
   return (
@@ -45,9 +64,7 @@ export default function ConfirmWithdrawalScreen() {
         hasBackBtn
       />
 
-      <AppKeyboardScrollView
-        contentContainerStyle={{ paddingTop: 20, gap: 16 }}
-      >
+      <AppKeyboardScrollView contentContainerStyle={{ paddingTop: 20, gap: 16 }}>
         <View style={styles.rows}>
           <Text style={styles.amount}>
             {amount} {symbol}
@@ -56,16 +73,10 @@ export default function ConfirmWithdrawalScreen() {
           <Row label="Asset" value={symbol} />
           <Row label="Network" value={network} />
           <Row label="Address" value={address} />
-          <Row
-            label="Fee"
-            value={`${WITHDRAWAL_FEE_USDT.toFixed(2)} ${symbol}`}
-          />
-          <Row label="You receive" value={receiveLabel} />
         </View>
 
         <View style={styles.pinBlock}>
           <Text style={styles.pinLabel}>Transaction PIN</Text>
-
           <TextInput
             value={pin}
             onChangeText={(text) =>
@@ -82,7 +93,7 @@ export default function ConfirmWithdrawalScreen() {
           <Btn
             text="Submit withdrawal"
             fontSize={13}
-            disabled={pin.length < 4}
+            disabled={pin.length < 4 || isLoading}
             action={submit}
           />
         </View>
@@ -105,7 +116,7 @@ const styles = StyleSheet.create({
     gap: 20,
     borderRadius: 14,
     paddingTop: 30,
-    paddingBottom: 60,
+    paddingBottom: 30,
     marginVertical: 20,
   },
   pinBlock: {

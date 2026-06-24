@@ -3,13 +3,18 @@ import Btn from '@/src/components/Btn';
 import ScreenIntro from '@/src/components/ScreenIntro';
 import WalletAssetRow from '@/src/components/wallet/WalletAssetRow';
 import WalletNote from '@/src/components/wallet/WalletNote';
-import { sandboxAssets } from '@/src/data/sandboxWallet';
+import { Colors } from '@/src/constants/styles';
+import { useGetDepositAddressesQuery } from '@/src/store/api/walletApi';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { ActivityIndicator, ScrollView, View } from 'react-native';
 
 export default function DepositAssetScreen() {
-  const [selected, setSelected] = useState(sandboxAssets[0].symbol);
+  const { data: addresses, isLoading } = useGetDepositAddressesQuery();
+  const [selected, setSelected] = useState<string | null>(null);
+
+  // Default to the first asset once the list loads.
+  const active = selected ?? addresses?.[0]?.assetSymbol ?? null;
 
   return (
     <AppBackground>
@@ -19,35 +24,45 @@ export default function DepositAssetScreen() {
         hasBackBtn
       />
 
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingTop: 20, paddingBottom: 30 }}
-      >
-        {sandboxAssets.map((asset) => (
-          <WalletAssetRow
-            key={asset.symbol}
-            asset={asset}
-            selectable
-            selected={selected === asset.symbol}
-            onPress={() => setSelected(asset.symbol)}
-          />
-        ))}
+      {isLoading ? (
+        <ActivityIndicator
+          color={Colors.green}
+          style={{ marginTop: 60 }}
+          size="large"
+        />
+      ) : (
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingTop: 20, paddingBottom: 30 }}
+        >
+          {addresses?.map((addr) => (
+            <WalletAssetRow
+              key={addr.assetSymbol}
+              symbol={addr.assetSymbol}
+              title={addr.assetSymbol}
+              subtitle={addr.network}
+              selectable
+              selected={active === addr.assetSymbol}
+              onPress={() => setSelected(addr.assetSymbol)}
+            />
+          ))}
 
-        <View style={{ marginTop: 8 }}>
-          <WalletNote
-            title="Sandbox only"
-            message="Deposits create demo ledger entries for class exercises. Do not send real funds."
-          />
-        </View>
-      </ScrollView>
+          <View style={{ marginTop: 8 }}>
+            <WalletNote
+              title="Sandbox only"
+              message="Deposits create demo ledger entries for class exercises. Do not send real funds."
+            />
+          </View>
+        </ScrollView>
+      )}
 
-      <Btn
-        text={`Continue with ${selected}`}
-        fontSize={13}
-        action={() =>
-          router.navigate(`/wallet/deposit/address?asset=${selected}`)
-        }
-      />
+      {!!active && (
+        <Btn
+          text={`Continue with ${active}`}
+          fontSize={13}
+          action={() => router.navigate(`/wallet/deposit/address?asset=${active}`)}
+        />
+      )}
     </AppBackground>
   );
 }

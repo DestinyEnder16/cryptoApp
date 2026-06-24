@@ -3,22 +3,30 @@ import ScreenIntro from '@/src/components/ScreenIntro';
 import TransactionRow from '@/src/components/wallet/TransactionRow';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
-import { sandboxTransactions } from '@/src/data/sandboxWallet';
+import { useGetTransactionsQuery } from '@/src/store/api/walletApi';
+import type { TransactionType } from '@/src/types/wallet/types';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
-const FILTERS = [
-  { label: 'All', match: () => true },
-  { label: 'Deposits', match: (type: string) => type === 'deposit' },
-  { label: 'Withdrawals', match: (type: string) => type === 'withdrawal' },
-] as const;
+const FILTERS: { label: string; type?: TransactionType }[] = [
+  { label: 'All' },
+  { label: 'Deposits', type: 'deposit' },
+  { label: 'Withdrawals', type: 'withdrawal' },
+];
 
 export default function TransactionsScreen() {
   const [active, setActive] = useState(0);
-
-  const filtered = sandboxTransactions.filter((tx) =>
-    FILTERS[active].match(tx.type)
+  const type = FILTERS[active].type;
+  const { data, isFetching } = useGetTransactionsQuery(
+    type ? { type, order: 'desc' } : { order: 'desc' }
   );
 
   return (
@@ -48,18 +56,30 @@ export default function TransactionsScreen() {
         ))}
       </View>
 
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingTop: 20, paddingBottom: 40 }}
-      >
-        {filtered.map((tx) => (
-          <TransactionRow
-            key={tx.id}
-            tx={tx}
-            onPress={() => router.navigate(`/wallet/transactions/${tx.id}`)}
-          />
-        ))}
-      </ScrollView>
+      {isFetching ? (
+        <ActivityIndicator
+          color={Colors.green}
+          style={{ marginTop: 40 }}
+          size="large"
+        />
+      ) : (
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingTop: 20, paddingBottom: 40 }}
+        >
+          {data?.length ? (
+            data.map((tx) => (
+              <TransactionRow
+                key={tx.id}
+                tx={tx}
+                onPress={() => router.navigate(`/wallet/transactions/${tx.id}`)}
+              />
+            ))
+          ) : (
+            <Text style={styles.empty}>No transactions yet.</Text>
+          )}
+        </ScrollView>
+      )}
     </AppBackground>
   );
 }
@@ -86,5 +106,12 @@ const styles = StyleSheet.create({
   },
   filterTxtActive: {
     color: Colors.dark,
+  },
+  empty: {
+    color: Colors.ash,
+    fontFamily: Fonts.regular,
+    fontSize: 14,
+    textAlign: 'center',
+    marginTop: 40,
   },
 });

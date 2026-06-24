@@ -4,24 +4,39 @@ import TransactionRow from '@/src/components/wallet/TransactionRow';
 import WalletAssetRow from '@/src/components/wallet/WalletAssetRow';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
-import {
-  changeTodayPct,
-  sandboxAssets,
-  sandboxTransactions,
-  totalPortfolioUsd,
-} from '@/src/data/sandboxWallet';
+import { formatAmount } from '@/src/helpers/formatAmount';
 import { formatPrice } from '@/src/helpers/formatPrice';
+import {
+  useGetPortfolioHistoryQuery,
+  useGetTransactionsQuery,
+  useGetWalletQuery,
+} from '@/src/store/api/walletApi';
 import { router } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 const ACTIONS = [
-  { label: 'Deposit', icon: 'arrow-down', route: '/wallet/deposit' },
-  { label: 'Withdraw', icon: 'arrow-up', route: '/wallet/withdraw' },
-  { label: 'Trade', icon: 'swap-horizontal', route: '/(tabs)/trades' },
+  { label: 'Deposit', route: '/wallet/deposit' },
+  { label: 'Withdraw', route: '/wallet/withdraw' },
+  { label: 'Trade', route: '/(tabs)/trades' },
 ] as const;
 
 export default function WalletHomeScreen() {
-  const recent = sandboxTransactions.slice(0, 1);
+  const { data: wallet, isLoading } = useGetWalletQuery();
+  const { data: recent } = useGetTransactionsQuery({ limit: 3, order: 'desc' });
+  const { data: day } = useGetPortfolioHistoryQuery('1D');
+
+  // Today's move = change from the first 1D point to the latest value.
+  const first = day?.data[0]?.valueUsd;
+  const changePct =
+    first && day ? ((day.meta.latestValueUsd - first) / first) * 100 : null;
+  const up = (changePct ?? 0) >= 0;
 
   return (
     <AppBackground>
@@ -30,51 +45,80 @@ export default function WalletHomeScreen() {
         description="Aggregated in USD from active asset balances."
       />
 
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingTop: 20, paddingBottom: 40 }}
-      >
-        <Pressable
-          style={styles.valueCard}
-          onPress={() => router.navigate('/wallet/portfolio')}
+      {isLoading ? (
+        <ActivityIndicator
+          color={Colors.green}
+          style={{ marginTop: 60 }}
+          size="large"
+        />
+      ) : (
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingTop: 20, paddingBottom: 40 }}
         >
-          <Text style={styles.valueLabel}>Total portfolio value</Text>
-          <Text style={styles.valueAmount}>
-            {formatPrice(totalPortfolioUsd)}
-          </Text>
-          <Text style={styles.valueChange}>+{changeTodayPct}% today</Text>
-        </Pressable>
-
-        <View style={styles.actionRow}>
-          {ACTIONS.map((action) => (
-            <Pressable
-              key={action.label}
-              style={styles.action}
-              onPress={() => router.navigate(action.route)}
-            >
-              <Text style={styles.actionLabel}>{action.label}</Text>
-            </Pressable>
-          ))}
-        </View>
-
-        {sandboxAssets.map((asset) => (
-          <WalletAssetRow key={asset.symbol} asset={asset} />
-        ))}
-
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Recent transactions</Text>
-          <Pressable onPress={() => router.navigate('/wallet/transactions')}>
-            <Text style={styles.seeAll}>See all</Text>
+          <Pressable
+            style={styles.valueCard}
+            onPress={() => router.navigate('/wallet/portfolio')}
+          >
+            <Text style={styles.valueLabel}>Total portfolio value</Text>
+            <Text style={styles.valueAmount}>
+              {formatPrice(wallet?.portfolioValueUsd ?? 0)}
+            </Text>
+            {changePct !== null && (
+              <Text
+                style={[
+                  styles.valueChange,
+                  { color: up ? Colors.green : Colors.red },
+                ]}
+              >
+                {up ? '+' : ''}
+                {changePct.toFixed(2)}% today
+              </Text>
+            )}
           </Pressable>
-        </View>
-        {recent.map((tx) => (
-          <TransactionRow
-            key={tx.id}
-            tx={tx}
-            onPress={() => router.navigate(`/wallet/transactions/${tx.id}`)}
-          />
-        ))}
-      </ScrollView>
+
+          <View style={styles.actionRow}>
+            {ACTIONS.map((action) => (
+              <Pressable
+                key={action.label}
+                style={styles.action}
+                onPress={() => router.navigate(action.route)}
+              >
+                <Text style={styles.actionLabel}>{action.label}</Text>
+              </Pressable>
+            ))}
+          </View>
+
+          {wallet?.wallet.balances.map((b) => (
+            <WalletAssetRow
+              key={b.assetSymbol}
+              symbol={b.assetSymbol}
+              title={b.assetSymbol}
+              subtitle="Available"
+              value={`${formatAmount(b.available)} ${b.assetSymbol}`}
+              caption={
+                b.locked > 0
+                  ? `${formatAmount(b.locked)} locked`
+                  : undefined
+              }
+            />
+          ))}
+
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Recent transactions</Text>
+            <Pressable onPress={() => router.navigate('/wallet/transactions')}>
+              <Text style={styles.seeAll}>See all</Text>
+            </Pressable>
+          </View>
+          {recent?.map((tx) => (
+            <TransactionRow
+              key={tx.id}
+              tx={tx}
+              onPress={() => router.navigate(`/wallet/transactions/${tx.id}`)}
+            />
+          ))}
+        </ScrollView>
+      )}
     </AppBackground>
   );
 }

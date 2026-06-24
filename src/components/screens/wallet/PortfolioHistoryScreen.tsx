@@ -3,13 +3,12 @@ import LineChartView from '@/src/components/LineChartView';
 import ScreenIntro from '@/src/components/ScreenIntro';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
-import {
-  portfolioChartData,
-  portfolioHistory,
-} from '@/src/data/sandboxWallet';
 import { formatPrice } from '@/src/helpers/formatPrice';
+import { useGetPortfolioHistoryQuery } from '@/src/store/api/walletApi';
+import type { PortfolioRange } from '@/src/types/wallet/types';
 import { useState } from 'react';
 import {
+  ActivityIndicator,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -18,14 +17,27 @@ import {
   View,
 } from 'react-native';
 
-const PERIODS = ['1D', '1W', '1M', '1Y'] as const;
+const PERIODS: PortfolioRange[] = ['1D', '1W', '1M', '1Y'];
 
 export default function PortfolioHistoryScreen() {
   const { width } = useWindowDimensions();
-  const [period, setPeriod] = useState<(typeof PERIODS)[number]>('1M');
+  const [range, setRange] = useState<PortfolioRange>('1M');
+  const { data, isFetching } = useGetPortfolioHistoryQuery(range);
 
   // AppBackground applies 20px horizontal padding; the card adds 20px each side.
   const chartWidth = width - 40 - 40;
+
+  const points = data?.data ?? [];
+  const chartData = points.map((p) => ({
+    timestamp: new Date(p.time).getTime(),
+    value: p.valueUsd,
+  }));
+
+  const first = points[0]?.valueUsd;
+  const latest = data?.meta.latestValueUsd;
+  const changePct =
+    first && latest != null ? ((latest - first) / first) * 100 : null;
+  const up = (changePct ?? 0) >= 0;
 
   return (
     <AppBackground>
@@ -40,25 +52,29 @@ export default function PortfolioHistoryScreen() {
         contentContainerStyle={{ paddingTop: 20, paddingBottom: 40 }}
       >
         <View style={styles.chartCard}>
-          <LineChartView
-            chartData={portfolioChartData}
-            isNegative={false}
-            width={chartWidth}
-            height={180}
-            strokeWidth={3}
-          />
+          {isFetching ? (
+            <ActivityIndicator color={Colors.green} style={{ height: 180 }} />
+          ) : (
+            <LineChartView
+              chartData={chartData}
+              isNegative={!up}
+              width={chartWidth}
+              height={180}
+              strokeWidth={3}
+            />
+          )}
 
           <View style={styles.periodRow}>
             {PERIODS.map((p) => (
               <Pressable
                 key={p}
-                style={[styles.period, period === p && styles.periodActive]}
-                onPress={() => setPeriod(p)}
+                style={[styles.period, range === p && styles.periodActive]}
+                onPress={() => setRange(p)}
               >
                 <Text
                   style={[
                     styles.periodTxt,
-                    period === p && styles.periodTxtActive,
+                    range === p && styles.periodTxtActive,
                   ]}
                 >
                   {p}
@@ -68,32 +84,28 @@ export default function PortfolioHistoryScreen() {
           </View>
         </View>
 
-        {portfolioHistory.map((row) => {
-          const positive = row.changePct >= 0;
-          return (
-            <View key={row.id} style={styles.historyRow}>
-              <View style={styles.dot} />
-              <View style={styles.historyInfo}>
-                <Text style={styles.historyMonth}>{row.month}</Text>
-                <Text style={styles.historyLabel}>Portfolio value</Text>
-              </View>
-              <View style={styles.historyAmounts}>
-                <Text style={styles.historyValue}>
-                  {formatPrice(row.valueUsd)}
-                </Text>
+        {latest != null && (
+          <View style={styles.summary}>
+            <View style={styles.summaryInfo}>
+              <Text style={styles.summaryLabel}>Current value</Text>
+              <Text style={styles.summarySub}>Change over {range}</Text>
+            </View>
+            <View style={styles.summaryAmounts}>
+              <Text style={styles.summaryValue}>{formatPrice(latest)}</Text>
+              {changePct !== null && (
                 <Text
                   style={[
-                    styles.historyChange,
-                    { color: positive ? Colors.green : Colors.red },
+                    styles.summaryChange,
+                    { color: up ? Colors.green : Colors.red },
                   ]}
                 >
-                  {positive ? '+' : ''}
-                  {row.changePct}%
+                  {up ? '+' : ''}
+                  {changePct.toFixed(2)}%
                 </Text>
-              </View>
+              )}
             </View>
-          );
-        })}
+          </View>
+        )}
       </ScrollView>
     </AppBackground>
   );
@@ -129,7 +141,7 @@ const styles = StyleSheet.create({
   periodTxtActive: {
     color: Colors.dark,
   },
-  historyRow: {
+  summary: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
@@ -137,38 +149,31 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingVertical: 16,
     paddingHorizontal: 16,
-    marginBottom: 12,
   },
-  dot: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: Colors.green,
-  },
-  historyInfo: {
+  summaryInfo: {
     flex: 1,
     gap: 4,
   },
-  historyMonth: {
+  summaryLabel: {
     color: Colors.text,
     fontFamily: Fonts.medium,
     fontSize: 15,
   },
-  historyLabel: {
+  summarySub: {
     color: Colors.ash,
     fontFamily: Fonts.regular,
     fontSize: 12,
   },
-  historyAmounts: {
+  summaryAmounts: {
     alignItems: 'flex-end',
     gap: 4,
   },
-  historyValue: {
+  summaryValue: {
     color: Colors.text,
     fontFamily: Fonts.bold,
     fontSize: 15,
   },
-  historyChange: {
+  summaryChange: {
     fontFamily: Fonts.medium,
     fontSize: 12,
   },

@@ -7,27 +7,100 @@ import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
 import { SETTLEMENT_DELAYS } from '@/src/data/sandboxWallet';
 import { showToast } from '@/src/helpers/showToast';
+import {
+  useGetTransactionByIdQuery,
+  useSimulateDepositMutation,
+  walletApi,
+} from '@/src/store/api/walletApi';
+import { useAppDispatch } from '@/src/store/hooks';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
+
+/** Extract the transaction id from the server's pollingUrl path. */
+const idFromUrl = (url: string) => url.split('/').pop() ?? null;
 
 export default function SimulateDepositScreen() {
   const { asset } = useLocalSearchParams<{ asset?: string }>();
   const symbol = asset ?? 'USDT';
+  const dispatch = useAppDispatch();
 
   const [amount, setAmount] = useState('250.00');
   const [delay, setDelay] = useState(SETTLEMENT_DELAYS[0]);
 
-  const previewAmount = amount.trim() === '' ? '0.00' : amount;
+  const [simulate, { isLoading: isSubmitting }] = useSimulateDepositMutation();
+  const [pollingId, setPollingId] = useState<string | null>(null);
 
-  const createDeposit = () => {
+  // Poll every 2 s until the transaction settles. pollingInterval: 0 = disabled.
+  const { data: polledTx } = useGetTransactionByIdQuery(pollingId!, {
+    skip: !pollingId,
+    pollingInterval: 2000,
+  });
+
+  // Once the server marks the deposit completed, refresh the wallet + tx list
+  // and navigate home.
+  useEffect(() => {
+    if (polledTx?.status !== 'completed') return;
+    dispatch(walletApi.util.invalidateTags(['Wallet', 'Transaction']));
     showToast({
       type: 'success',
-      title: 'Sandbox deposit created',
-      message: `+${previewAmount} ${symbol} will settle in ${delay.label}.`,
+      title: 'Deposit completed',
+      message: `+${amount} ${symbol} is now available in your wallet.`,
     });
     router.dismissTo('/wallet/main');
+  }, [polledTx?.status]);
+
+  const submit = async () => {
+    const numericAmount = parseFloat(amount);
+    if (!numericAmount) return;
+
+    try {
+      const result = await simulate({
+        amount: numericAmount,
+        settlementDelaySeconds: delay.seconds,
+      }).unwrap();
+
+      setPollingId(idFromUrl(result.pollingUrl));
+    } catch {
+      showToast({
+        type: 'error',
+        title: 'Deposit failed',
+        message: 'Could not create the sandbox deposit. Please try again.',
+      });
+    }
   };
+
+  const previewAmount = amount.trim() === '' ? '0.00' : amount;
+  const isPending = !!pollingId && polledTx?.status !== 'completed';
+
+  // Pending state: show a waiting screen while we poll.
+  if (isPending) {
+    return (
+      <AppBackground>
+        <ScreenIntro
+          title="Settling deposit"
+          description="Your deposit is being processed."
+          hasBackBtn
+        />
+        <View style={styles.pendingWrap}>
+          <ActivityIndicator color={Colors.green} size="large" />
+          <Text style={styles.pendingAmount}>
+            +{previewAmount} {symbol}
+          </Text>
+          <Text style={styles.pendingNote}>
+            Settling in {delay.label} — this screen will update automatically.
+          </Text>
+        </View>
+      </AppBackground>
+    );
+  }
 
   return (
     <AppBackground>
@@ -86,7 +159,8 @@ export default function SimulateDepositScreen() {
           <Btn
             text="Create sandbox deposit"
             fontSize={13}
-            action={createDeposit}
+            disabled={isSubmitting || amount.trim() === ''}
+            action={submit}
           />
         </View>
       </AppKeyboardScrollView>
@@ -142,5 +216,23 @@ const styles = StyleSheet.create({
     color: Colors.ash,
     fontFamily: Fonts.regular,
     fontSize: 12,
+  },
+  pendingWrap: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 20,
+    paddingHorizontal: 32,
+  },
+  pendingAmount: {
+    color: Colors.green,
+    fontFamily: Fonts.bold,
+    fontSize: 32,
+  },
+  pendingNote: {
+    color: Colors.ash,
+    fontFamily: Fonts.regular,
+    fontSize: 14,
+    textAlign: 'center',
   },
 });

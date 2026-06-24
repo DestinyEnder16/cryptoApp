@@ -2,22 +2,29 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Fonts } from '../../constants/fonts';
 import { Colors } from '../../constants/styles';
-import { formatPrice } from '../../helpers/formatPrice';
-import type { SandboxAsset } from '../../data/sandboxWallet';
 import CoinBadge from './CoinBadge';
 
 interface WalletAssetRowProps {
-  asset: SandboxAsset;
-  /** Right-side caption under the name. Defaults to the asset's USD balance. */
+  symbol: string;
+  /** Primary line, usually the asset symbol or name. */
+  title: string;
+  /** Secondary line under the title. */
+  subtitle?: string;
+  /** Right-side primary value (e.g. balance). Hidden in selectable mode. */
+  value?: string;
+  /** Right-side caption under the value. */
   caption?: string;
-  /** Selectable picker mode (radio on the right). */
+  /** Selectable picker mode (radio on the right instead of a value). */
   selectable?: boolean;
   selected?: boolean;
   onPress?: () => void;
 }
 
 export default function WalletAssetRow({
-  asset,
+  symbol,
+  title,
+  subtitle,
+  value,
   caption,
   selectable = false,
   selected = false,
@@ -29,11 +36,11 @@ export default function WalletAssetRow({
       onPress={onPress}
       disabled={!onPress && !selectable}
     >
-      <CoinBadge symbol={asset.symbol} />
+      <CoinBadge symbol={symbol} />
 
       <View style={styles.identity}>
-        <Text style={styles.name}>{asset.name}</Text>
-        <Text style={styles.sub}>{caption ?? asset.symbol}</Text>
+        <Text style={styles.name}>{title}</Text>
+        {!!subtitle && <Text style={styles.sub}>{subtitle}</Text>}
       </View>
 
       {selectable ? (
@@ -44,8 +51,8 @@ export default function WalletAssetRow({
         </View>
       ) : (
         <View style={styles.amounts}>
-          <Text style={styles.value}>{formatPrice(asset.balanceUsd)}</Text>
-          <Text style={styles.units}>{asset.units}</Text>
+          {!!value && <Text style={styles.value}>{value}</Text>}
+          {!!caption && <Text style={styles.units}>{caption}</Text>}
         </View>
       )}
     </Pressable>

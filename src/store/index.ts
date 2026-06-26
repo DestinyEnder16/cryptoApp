@@ -22,6 +22,7 @@ import './api/settingsApi';
 import './api/verificationApi';
 import './api/walletApi';
 import './api/watchListApi';
+import './api/tradeApi';
 import authReducer from './slices/authSlice';
 import coinReducer from './slices/coinSlice';
 import profileReducer from './slices/profileSlice';

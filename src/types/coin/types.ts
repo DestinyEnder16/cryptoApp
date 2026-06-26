@@ -35,9 +35,12 @@ export interface AssetStats {
   explorerUrl: string;
 }
 
-export interface AssetDetails extends CoinData {
+export interface AssetDetailsData extends CoinData {
   stats: AssetStats;
   chart: ChartPoint[];
+}
+
+export interface AssetDetails extends AssetDetailsData {
   chartData: ChartDatum[];
 }
 

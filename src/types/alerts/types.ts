@@ -24,3 +24,36 @@ export interface PriceAlertsResponse {
     active: number;
   };
 }
+
+export interface CreatePriceAlertRequest {
+  assetSymbol: string;
+  direction: PriceAlertDirection;
+  targetPriceUsd: number;
+}
+
+export interface CreatePriceAlertResponse {
+  data: PriceAlert;
+}
+
+export interface UpdatePriceAlertRequest {
+  direction?: PriceAlertDirection;
+  targetPriceUsd?: number;
+  isActive?: boolean;
+}
+
+export interface UpdatedPriceAlert {
+  id: string;
+  assetSymbol: string;
+  direction: PriceAlertDirection;
+  targetPriceUsd: number;
+  isActive: boolean;
+  triggeredAt: string | null;
+}
+
+export interface UpdatePriceAlertResponse {
+  data: UpdatedPriceAlert;
+}
+
+export interface DeletePriceAlertResponse {
+  data: { deleted: boolean };
+}

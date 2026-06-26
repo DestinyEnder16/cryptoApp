@@ -33,37 +33,45 @@ export default function ConfirmTradeScreen() {
   const pinInputRef = useRef<TextInput>(null);
 
   function handlePinChange(text: string) {
-    // Only digits, max PIN_LENGTH
-    const clean = text.replace(/[^0-9]/g, '').slice(0, PIN_LENGTH);
-    setPin(clean);
+    setPin(text.replace(/[^0-9]/g, '').slice(0, PIN_LENGTH));
   }
 
-  async function handleExecute() {
+  function handleExecute() {
     if (pin.length < PIN_LENGTH || !quoteId) return;
-    try {
-      const result = await executeTrade({ quoteId, pin }).unwrap();
-      const tx = result.transaction;
-      router.navigate(
-        `/trades/result?status=completed` +
-          `&txnId=${tx.id}` +
-          `&reference=${tx.reference}` +
-          `&fromAsset=${tx.fromAsset}` +
-          `&toAsset=${tx.toAsset}` +
-          `&fromAmount=${tx.fromAmount}` +
-          `&toAmount=${tx.toAmount}` +
-          `&feeAmount=${tx.feeAmount}`
+    void executeTrade({ quoteId, pin })
+      .unwrap()
+      .then(
+        (result) => {
+          const tx = result.transaction;
+          router.replace({
+            pathname: '/trades/result',
+            params: {
+              status:    'completed',
+              txnId:     tx.id,
+              reference: tx.reference,
+              fromAsset: tx.fromAsset,
+              toAsset:   tx.toAsset,
+              fromAmount: String(tx.fromAmount),
+              toAmount:   String(tx.toAmount),
+              feeAmount:  String(tx.feeAmount),
+            },
+          });
+        },
+        (err: unknown) => {
+          const message = getApiErrorMessage(err, 'Trade execution failed.');
+          setPin('');
+          router.navigate({
+            pathname: '/trades/result',
+            params: {
+              status:       'failed',
+              errorMessage: message,
+              fromAsset:    quote?.fromAsset ?? '',
+              toAsset:      quote?.toAsset ?? '',
+              fromAmount:   String(quote?.fromAmount ?? ''),
+            },
+          });
+        }
       );
-    } catch (err) {
-      const message = getApiErrorMessage(err, 'Trade execution failed.');
-      setPin('');
-      router.navigate(
-        `/trades/result?status=failed` +
-          `&errorMessage=${encodeURIComponent(message)}` +
-          `&fromAsset=${quote?.fromAsset ?? ''}` +
-          `&toAsset=${quote?.toAsset ?? ''}` +
-          `&fromAmount=${quote?.fromAmount ?? ''}`
-      );
-    }
   }
 
   const tradeLabel = quote
@@ -102,16 +110,15 @@ export default function ConfirmTradeScreen() {
           {/* Transaction PIN label */}
           <Text style={styles.pinLabel}>Transaction PIN</Text>
 
-          {/* PIN dots — tap to focus the hidden input */}
+          {/* PIN slots — tap anywhere to focus the hidden input */}
           <Pressable
             style={styles.pinDotsRow}
             onPress={() => pinInputRef.current?.focus()}
           >
             {Array.from({ length: PIN_LENGTH }).map((_, i) => (
-              <View
-                key={i}
-                style={[styles.dot, i < pin.length && styles.dotFilled]}
-              />
+              <View key={i} style={styles.pinBox}>
+                <View style={[styles.pinDot, i < pin.length && styles.pinDotFilled]} />
+              </View>
             ))}
           </Pressable>
 
@@ -186,20 +193,24 @@ const styles = StyleSheet.create({
   },
   pinDotsRow: {
     flexDirection: 'row',
-    gap: 28,
-    paddingVertical: 8,
+    gap: 14,
   },
-  dot: {
+  pinBox: {
+    flex: 1,
+    aspectRatio: 1,
+    backgroundColor: Colors.secondaryBackgroundColor,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pinDot: {
     width: 14,
     height: 14,
     borderRadius: 7,
-    borderWidth: 1.5,
-    borderColor: Colors.text,
-    backgroundColor: 'transparent',
+    backgroundColor: Colors.ash,
   },
-  dotFilled: {
-    backgroundColor: Colors.green,
-    borderColor: Colors.green,
+  pinDotFilled: {
+    backgroundColor: Colors.text,
   },
   hiddenInput: {
     position: 'absolute',

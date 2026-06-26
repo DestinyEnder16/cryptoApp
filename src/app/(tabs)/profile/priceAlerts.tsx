@@ -4,10 +4,15 @@ import Loader from '@/src/components/Loader';
 import ScreenIntro from '@/src/components/ScreenIntro';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
-import { useFetchPriceAlertsQuery } from '@/src/store/api/alertsApi';
+import {
+  useDeletePriceAlertMutation,
+  useFetchPriceAlertsQuery,
+  useUpdatePriceAlertMutation,
+} from '@/src/store/api/alertsApi';
 import type { PriceAlert } from '@/src/types/alerts/types';
 import { FlashList } from '@shopify/flash-list';
-import { StyleSheet, Text, View } from 'react-native';
+import { router } from 'expo-router';
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
 type AlertStatus = 'on' | 'off' | 'triggered';
 
@@ -26,7 +31,10 @@ export default function PriceAlerts() {
         />
 
         <View style={styles.createBtn}>
-          <Btn text="Create alert" action={() => {}} />
+          <Btn
+            text="Create alert"
+            action={() => router.navigate('/profile/createAlert')}
+          />
         </View>
 
         {isLoading ? (
@@ -37,6 +45,7 @@ export default function PriceAlerts() {
           <FlashList
             data={alerts}
             keyExtractor={(item) => item.id}
+            estimatedItemSize={60}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.listContent}
             ItemSeparatorComponent={() => <View style={styles.separator} />}
@@ -50,9 +59,37 @@ export default function PriceAlerts() {
 
 function AlertItem({ item }: { item: PriceAlert }) {
   const status = getStatus(item);
+  const [updateAlert, { isLoading: updating }] = useUpdatePriceAlertMutation();
+  const [deleteAlert, { isLoading: deleting }] = useDeletePriceAlertMutation();
+
+  const busy = updating || deleting;
+
+  function handleToggle() {
+    if (status === 'triggered' || busy) return;
+    updateAlert({ alertId: item.id, body: { isActive: !item.isActive } });
+  }
+
+  function handleLongPress() {
+    Alert.alert(
+      'Delete alert',
+      `Remove the ${item.assetSymbol} ${item.direction} ${formatPrice(item.targetPriceUsd)} alert?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => deleteAlert(item.id),
+        },
+      ]
+    );
+  }
 
   return (
-    <View style={styles.item}>
+    <Pressable
+      style={[styles.item, busy && styles.itemBusy]}
+      onLongPress={handleLongPress}
+      delayLongPress={400}
+    >
       <View
         style={[
           styles.dot,
@@ -65,10 +102,16 @@ function AlertItem({ item }: { item: PriceAlert }) {
         </Text>
         <Text style={styles.itemSubtitle}>{getSubtitle(item, status)}</Text>
       </View>
-      <Text style={[styles.badge, styles[`badge_${status}`]]}>
-        {badgeLabel(status)}
-      </Text>
-    </View>
+      <Pressable
+        onPress={handleToggle}
+        disabled={status === 'triggered' || busy}
+        hitSlop={12}
+      >
+        <Text style={[styles.badge, styles[`badge_${status}`]]}>
+          {badgeLabel(status)}
+        </Text>
+      </Pressable>
+    </Pressable>
   );
 }
 
@@ -84,7 +127,7 @@ function EmptyState() {
   );
 }
 
-function getStatus(alert: PriceAlert): AlertStatus {
+function getStatus(alert: PriceAlert) {
   if (alert.triggeredAt) return 'triggered';
   return alert.isActive ? 'on' : 'off';
 }
@@ -97,7 +140,7 @@ function badgeLabel(status: AlertStatus) {
 
 function getSubtitle(alert: PriceAlert, status: AlertStatus) {
   if (status === 'on') return 'Active · push notification on';
-  if (status === 'off') return 'Paused';
+  if (status === 'off') return 'Paused · tap badge to resume';
   return `Triggered ${formatTriggeredAt(alert.triggeredAt!)}`;
 }
 
@@ -150,6 +193,9 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 16,
     gap: 14,
+  },
+  itemBusy: {
+    opacity: 0.5,
   },
   dot: {
     width: 12,

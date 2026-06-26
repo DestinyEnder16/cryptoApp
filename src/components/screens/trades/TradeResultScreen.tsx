@@ -81,11 +81,7 @@ export default function TradeResultScreen() {
           <View
             style={isCompleted ? styles.successCircle : styles.failedCircle}
           >
-            <Text
-              style={
-                isCompleted ? styles.successMark : styles.failedMark
-              }
-            >
+            <Text style={isCompleted ? styles.successMark : styles.failedMark}>
               {isCompleted ? '✓' : '✕'}
             </Text>
           </View>
@@ -96,12 +92,11 @@ export default function TradeResultScreen() {
           <Text style={styles.heading}>
             {isCompleted
               ? `${toAmountFmt} received`
-              : 'Insufficient balance'}
+              : errorMessage ?? 'Trade failed'}
           </Text>
           {!isCompleted && (
             <Text style={styles.headingDesc}>
-              {errorMessage ??
-                'Your available balance changed before the quote was executed.'}
+              Check your details and try again with a new quote.
             </Text>
           )}
         </View>
@@ -109,9 +104,7 @@ export default function TradeResultScreen() {
         {/* Info cards */}
         {isCompleted ? (
           <>
-            {!!reference && (
-              <InfoCard label="Reference" value={reference} />
-            )}
+            {!!reference && <InfoCard label="Reference" value={reference} />}
             <InfoCard label="Paid" value={fromAmountFmt} />
             <InfoCard label="Received" value={toAmountFmt} />
             <InfoCard label="Fee" value={feeAmountFmt} />
@@ -124,11 +117,7 @@ export default function TradeResultScreen() {
         ) : (
           <>
             <InfoCard label="Required" value={fromAmountFmt} />
-            <InfoCard
-              label="Available"
-              value="—"
-              valueColor={Colors.red}
-            />
+            <InfoCard label="Available" value="—" valueColor={Colors.red} />
             <InfoCard label="Status" value="Failed" valueColor={Colors.red} />
           </>
         )}
@@ -196,7 +185,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     paddingHorizontal: 16,
-    marginBottom: 8,
+    marginBottom: 64,
   },
   heading: {
     color: Colors.text,

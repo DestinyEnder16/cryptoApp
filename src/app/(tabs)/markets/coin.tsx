@@ -4,13 +4,12 @@ import { Colors } from '@/src/constants/styles';
 import { formatCompact } from '@/src/helpers/formatCompact';
 import { formatPrice } from '@/src/helpers/formatPrice';
 import { getSymbolColor } from '@/src/helpers/getSymbolColor';
-import { showToast } from '@/src/helpers/showToast';
 import {
   useFetchAssetDetailsQuery,
   useFetchCandlesQuery,
 } from '@/src/store/api/marketApi';
 import type { Candle, ChartDatum } from '@/src/types/coin/types';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Fragment, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
@@ -24,8 +23,8 @@ import {
 import Svg, { Rect } from 'react-native-svg';
 import { LineChart } from 'react-native-wagmi-charts';
 
-type Timeframe = '1H' | '1D' | '1W' | '1M' | '1Y';
-const TIMEFRAMES: Timeframe[] = ['1H', '1D', '1W', '1M', '1Y'];
+type Period = '1H' | '1D' | '1W' | '1M' | '1Y';
+const PERIODS: Period[] = ['1H', '1D', '1W', '1M', '1Y'];
 
 export default function Coin() {
   const { symbol } = useLocalSearchParams<{ symbol: string }>();
@@ -35,8 +34,8 @@ export default function Coin() {
   const { data: candles } = useFetchCandlesQuery(symbol ?? '', {
     skip: !symbol,
   });
-  // Timeframe is local-only for now — backend has no range param yet.
-  const [timeframe, setTimeframe] = useState<Timeframe>('1W');
+  // Period is local-only for now — backend has no range param yet.
+  const [period, setPeriod] = useState<Period>('1W');
 
   if (!symbol) {
     return (
@@ -68,13 +67,6 @@ export default function Coin() {
   const changeColor = isNegative ? Colors.red : Colors.green;
   const accent = getSymbolColor(data.symbol);
   const initial = data.name.charAt(0).toUpperCase();
-
-  const comingSoon = (label: string) =>
-    showToast({
-      type: 'info',
-      title: `${label} coming soon`,
-      message: 'This action is not wired up yet.',
-    });
 
   return (
     <AppBackground>
@@ -108,21 +100,38 @@ export default function Coin() {
           change24h={data.change24h}
           candles={candles ?? []}
           fallbackLine={data.chartData}
-          timeframe={timeframe}
-          onTimeframeChange={setTimeframe}
+          period={period}
+          onPeriodChange={setPeriod}
         />
 
-        <Pressable style={styles.buyBtn} onPress={() => comingSoon('Buy')}>
+        <Pressable
+          style={styles.buyBtn}
+          onPress={() =>
+            router.navigate({ pathname: '/trades/buy', params: { tab: 'buy', symbol: data.symbol } })
+          }
+        >
           <Text style={styles.buyBtnText}>Buy</Text>
         </Pressable>
 
         <View style={styles.actionRow}>
-          <SecondaryAction label="Sell" onPress={() => comingSoon('Sell')} />
-          <SecondaryAction label="Swap" onPress={() => comingSoon('Swap')} />
+          <SecondaryAction
+            label="Sell"
+            onPress={() =>
+              router.navigate({ pathname: '/trades/buy', params: { tab: 'sell', symbol: data.symbol } })
+            }
+          />
+          <SecondaryAction
+            label="Swap"
+            onPress={() =>
+              router.navigate({ pathname: '/trades/buy', params: { tab: 'swap', symbol: data.symbol } })
+            }
+          />
           <SecondaryAction
             label="Alert"
             highlight
-            onPress={() => comingSoon('Alert')}
+            onPress={() =>
+              router.navigate({ pathname: '/profile/createAlert', params: { symbol: data.symbol } })
+            }
           />
         </View>
 
@@ -156,8 +165,8 @@ interface ChartCardProps {
   change24h: number;
   candles: Candle[];
   fallbackLine: ChartDatum[];
-  timeframe: Timeframe;
-  onTimeframeChange: (tf: Timeframe) => void;
+  period: Period;
+  onPeriodChange: (tf: Period) => void;
 }
 
 function ChartCard({
@@ -165,8 +174,8 @@ function ChartCard({
   change24h,
   candles,
   fallbackLine,
-  timeframe,
-  onTimeframeChange,
+  period,
+  onPeriodChange,
 }: ChartCardProps) {
   const { width } = useWindowDimensions();
   // Card padding: outer 20 + card 16 each side = 72 total.
@@ -176,12 +185,12 @@ function ChartCard({
   const changeColor = isNegative ? Colors.red : Colors.green;
   const lineColor = isNegative ? Colors.red : Colors.green;
 
-  // Visual-only: slice the array into different windows per timeframe so
+  // Visual-only: slice the array into different windows per period so
   // the chart reshapes on tap. Replace with a real refetch once the
   // endpoint accepts a range/interval param.
   const visibleCandles = useMemo(
-    () => sliceForTimeframe(candles, timeframe),
-    [candles, timeframe]
+    () => sliceCandlesForPeriod(candles, period),
+    [candles, period]
   );
 
   // Derive the line from candle closes so candles + line share an x-axis.
@@ -193,8 +202,8 @@ function ChartCard({
         value: c.closeUsd,
       }));
     }
-    return sliceForTimeframe(fallbackLine, timeframe);
-  }, [visibleCandles, fallbackLine, timeframe]);
+    return sliceChartDataForPeriod(fallbackLine, period);
+  }, [visibleCandles, fallbackLine, period]);
 
   return (
     <View style={styles.chartCard}>
@@ -203,7 +212,7 @@ function ChartCard({
           <View style={{ flex: 1 }}>
             <Text style={styles.chartTitle}>{symbol} / USD</Text>
             <Text style={styles.chartSubtitle}>
-              {timeframeLabel(timeframe)} ·{' '}
+              {periodLabel(period)} ·{' '}
               {visibleCandles.length > 0 ? 'OHLC candles' : 'price trend'}
             </Text>
           </View>
@@ -239,22 +248,22 @@ function ChartCard({
           </LineChart>
         </View>
 
-        <View style={styles.timeframeRow}>
-          {TIMEFRAMES.map((tf) => {
-            const active = tf === timeframe;
+        <View style={styles.periodRow}>
+          {PERIODS.map((tf) => {
+            const active = tf === period;
             return (
               <Pressable
                 key={tf}
-                onPress={() => onTimeframeChange(tf)}
+                onPress={() => onPeriodChange(tf)}
                 style={[
-                  styles.timeframePill,
-                  active && styles.timeframePillActive,
+                  styles.periodPill,
+                  active && styles.periodPillActive,
                 ]}
               >
                 <Text
                   style={[
-                    styles.timeframeText,
-                    active && styles.timeframeTextActive,
+                    styles.periodText,
+                    active && styles.periodTextActive,
                   ]}
                 >
                   {tf}
@@ -392,9 +401,9 @@ function CenterMessage({ text }: { text: string }) {
   );
 }
 
-// Visual-only window per timeframe — last N% of the array. Replace with
+// Visual-only window per period — last N% of the array. Replace with
 // a real refetch (e.g., ?range=1w) once the endpoint supports it.
-const TIMEFRAME_RATIOS: Record<Timeframe, number> = {
+const PERIOD_RATIOS: { '1H': number; '1D': number; '1W': number; '1M': number; '1Y': number } = {
   '1H': 0.15,
   '1D': 0.35,
   '1W': 0.6,
@@ -402,13 +411,19 @@ const TIMEFRAME_RATIOS: Record<Timeframe, number> = {
   '1Y': 1,
 };
 
-function sliceForTimeframe<T>(data: T[], tf: Timeframe): T[] {
+function sliceCandlesForPeriod(data: Candle[], tf: Period) {
   if (data.length === 0) return data;
-  const count = Math.max(2, Math.ceil(data.length * TIMEFRAME_RATIOS[tf]));
+  const count = Math.max(2, Math.ceil(data.length * PERIOD_RATIOS[tf]));
   return data.slice(-count);
 }
 
-function timeframeLabel(tf: Timeframe): string {
+function sliceChartDataForPeriod(data: ChartDatum[], tf: Period) {
+  if (data.length === 0) return data;
+  const count = Math.max(2, Math.ceil(data.length * PERIOD_RATIOS[tf]));
+  return data.slice(-count);
+}
+
+function periodLabel(tf: Period) {
   switch (tf) {
     case '1H':
       return '1 hour';
@@ -526,26 +541,26 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 2,
   },
-  timeframeRow: {
+  periodRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 14,
   },
-  timeframePill: {
+  periodPill: {
     paddingHorizontal: 14,
     paddingVertical: 6,
     borderRadius: 999,
     backgroundColor: 'transparent',
   },
-  timeframePillActive: {
+  periodPillActive: {
     backgroundColor: Colors.green,
   },
-  timeframeText: {
+  periodText: {
     color: Colors.ash,
     fontFamily: Fonts.medium,
     fontSize: 12,
   },
-  timeframeTextActive: {
+  periodTextActive: {
     color: '#0E1A22',
   },
   buyBtn: {

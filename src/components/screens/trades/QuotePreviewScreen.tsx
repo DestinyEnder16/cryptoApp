@@ -10,14 +10,23 @@ import { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
 
-function InfoRow({ label, value, valueColor }: { label: string; value: string; valueColor?: string }) {
+function InfoCard({
+  label,
+  value,
+  valueColor,
+}: {
+  label: string;
+  value: string;
+  valueColor?: string;
+}) {
   return (
-    <View style={styles.infoRow}>
+    <View style={styles.infoCard}>
       <Text style={styles.infoLabel}>{label}</Text>
       <Text style={[styles.infoValue, valueColor ? { color: valueColor } : {}]}>
         {value}
@@ -36,11 +45,13 @@ export default function QuotePreviewScreen() {
   const [secondsLeft, setSecondsLeft] = useState<number | null>(null);
   const intervalRef = useRef<number | null>(null);
 
-  // Seed the countdown once we have the real expiry timestamp from the API.
   useEffect(() => {
     if (!quote) return;
     const computeRemaining = () =>
-      Math.max(0, Math.floor((new Date(quote.expiresAt).getTime() - Date.now()) / 1000));
+      Math.max(
+        0,
+        Math.floor((new Date(quote.expiresAt).getTime() - Date.now()) / 1000)
+      );
 
     setSecondsLeft(computeRemaining());
     intervalRef.current = setInterval(() => {
@@ -54,14 +65,6 @@ export default function QuotePreviewScreen() {
 
   const expired = quote?.isExpired || secondsLeft === 0;
 
-  function handleConfirm() {
-    router.navigate(`/trades/confirm?quoteId=${quoteId}`);
-  }
-
-  function handleNewQuote() {
-    router.back();
-  }
-
   const pad = (n: number) => String(n).padStart(2, '0');
   const s = secondsLeft ?? 0;
   const countdownDisplay = `${pad(Math.floor(s / 60))}:${pad(s % 60)}`;
@@ -74,166 +77,151 @@ export default function QuotePreviewScreen() {
           description="Confirming quote details…"
           hasBackBtn
         />
-        <ActivityIndicator color={Colors.green} size="large" style={{ marginTop: 60 }} />
+        <ActivityIndicator
+          color={Colors.green}
+          size="large"
+          style={{ marginTop: 60 }}
+        />
       </AppBackground>
     );
   }
 
+  /* ── EXPIRED STATE ─────────────────────────────────────────────────────── */
+  if (expired) {
+    return (
+      <AppBackground>
+        <ScreenIntro
+          title="Quote expired"
+          description="Rates moved. Request a fresh quote before trading."
+          hasBackBtn
+        />
+
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingTop: 24, paddingBottom: 32, gap: 10 }}
+        >
+          {/* Centered expired card */}
+          <View style={styles.expiredCard}>
+            <View style={styles.expiredIconCircle}>
+              <Text style={styles.expiredIconTxt}>!</Text>
+            </View>
+            <Text style={styles.expiredHeading}>
+              This quote is no longer valid
+            </Text>
+            <Text style={styles.expiredSubtitle}>
+              Get a new quote so the rate, fee, and receive amount are current.
+            </Text>
+          </View>
+
+          {/* Meta info cards */}
+          {quote && (
+            <>
+              <InfoCard label="Expired quote" value={quote.id} />
+              <InfoCard
+                label="Previous receive"
+                value={`${formatAmount(quote.toAmount)} ${quote.toAsset}`}
+              />
+            </>
+          )}
+        </ScrollView>
+
+        <Pressable style={styles.amberBtn} onPress={() => router.back()}>
+          <Text style={styles.amberBtnTxt}>Get new quote</Text>
+        </Pressable>
+      </AppBackground>
+    );
+  }
+
+  /* ── ACTIVE STATE ──────────────────────────────────────────────────────── */
   return (
     <AppBackground>
       <ScreenIntro
         title="Quote preview"
-        description="Confirm the details before your quote expires."
+        description="Confirm the rate before this quote expires."
         hasBackBtn
       />
 
-      <View style={{ flex: 1, paddingTop: 24, gap: 20 }}>
-        {/* Timer / expired banner */}
-        {!expired ? (
-          <View style={styles.timerRow}>
-            <View style={styles.timerBadge}>
-              <Text style={styles.timerTxt}>{countdownDisplay}</Text>
-            </View>
-            <Text style={styles.timerNote}>
-              Quote expires in {secondsLeft}s
-            </Text>
-          </View>
-        ) : (
-          <View style={styles.expiredBanner}>
-            <Text style={styles.expiredIcon}>!</Text>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.expiredTitle}>Quote expired</Text>
-              <Text style={styles.expiredDesc}>
-                This quote is no longer valid. Get a new one to continue.
-              </Text>
-            </View>
-          </View>
-        )}
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingTop: 24, paddingBottom: 32, gap: 8 }}
+      >
+        {/* Full-width timer card */}
+        <View style={[styles.timerCard, { marginBottom: 8 }]}>
+          <Text style={styles.timerLabel}>Expires in</Text>
+          <Text style={styles.timerValue}>{countdownDisplay}</Text>
+        </View>
 
-        {/* Quote detail rows */}
+        {/* Individual detail cards */}
         {quote && (
-          <View style={styles.card}>
-            <InfoRow
-              label="Action"
-              value={`${quote.type.charAt(0).toUpperCase() + quote.type.slice(1)} ${quote.toAsset}`}
-            />
-            <InfoRow
+          <>
+            <InfoCard
               label="From"
               value={`${formatAmount(quote.fromAmount)} ${quote.fromAsset}`}
             />
-            <InfoRow
+            <InfoCard
               label="To"
               value={`${formatAmount(quote.toAmount)} ${quote.toAsset}`}
             />
-            <InfoRow
+            <InfoCard
               label="Rate"
-              value={`1 ${quote.toAsset} = ${quote.rate.toLocaleString(undefined, { maximumFractionDigits: 2 })} ${quote.fromAsset}`}
+              value={`1 ${quote.toAsset} = ${quote.rate.toLocaleString(undefined, {
+                maximumFractionDigits: 2,
+              })} ${quote.fromAsset}`}
             />
-            <InfoRow
+            <InfoCard
               label="Fee"
               value={`${formatAmount(quote.feeAmount)} ${quote.fromAsset}`}
             />
-            <View style={[styles.infoRow, { borderBottomWidth: 0 }]}>
-              <Text style={styles.infoLabel}>Estimated balance</Text>
-              <Text style={[styles.infoValue, { color: Colors.green }]}>
-                {formatAmount(quote.toAmount)} {quote.toAsset}
-              </Text>
-            </View>
-          </View>
+            <InfoCard
+              label="Estimated receive"
+              value={`${formatAmount(quote.toAmount)} ${quote.toAsset}`}
+              valueColor={Colors.green}
+            />
+          </>
         )}
+      </ScrollView>
 
-        {/* Expired quote meta */}
-        {expired && quote && (
-          <View style={styles.metaCard}>
-            <View style={styles.metaRow}>
-              <Text style={styles.metaLabel}>Expired quote</Text>
-              <Text style={styles.metaValue}>{quote.id}</Text>
-            </View>
-            <View style={[styles.metaRow, { borderBottomWidth: 0 }]}>
-              <Text style={styles.metaLabel}>Amount</Text>
-              <Text style={styles.metaValue}>
-                {formatAmount(quote.fromAmount)} {quote.fromAsset}
-              </Text>
-            </View>
-          </View>
-        )}
-      </View>
-
-      {!expired ? (
-        <Btn text="Confirm with PIN" action={handleConfirm} fontSize={16} />
-      ) : (
-        <Pressable style={styles.newQuoteBtn} onPress={handleNewQuote}>
-          <Text style={styles.newQuoteTxt}>Get new quote</Text>
-        </Pressable>
-      )}
+      <Btn
+        text="Confirm with PIN"
+        action={() => router.navigate(`/trades/confirm?quoteId=${quoteId}`)}
+        fontSize={16}
+      />
     </AppBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  timerRow: {
+  // ── Timer ─────────────────────────────────────────────────────────────────
+  timerCard: {
+    backgroundColor: Colors.lime,
+    borderRadius: 14,
+    paddingHorizontal: 20,
+    paddingVertical: 18,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    justifyContent: 'space-between',
   },
-  timerBadge: {
-    backgroundColor: Colors.lime,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
+  timerLabel: {
+    color: Colors.ash,
+    fontFamily: Fonts.regular,
+    fontSize: 14,
   },
-  timerTxt: {
+  timerValue: {
     color: Colors.green,
     fontFamily: Fonts.bold,
-    fontSize: 16,
-    letterSpacing: 1,
+    fontSize: 30,
+    letterSpacing: 2,
   },
-  timerNote: {
-    color: Colors.ash,
-    fontFamily: Fonts.regular,
-    fontSize: 13,
-  },
-  expiredBanner: {
-    backgroundColor: '#2A1A08',
-    borderRadius: 16,
-    padding: 18,
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 14,
-    borderWidth: 1,
-    borderColor: Colors.orangeBrown,
-  },
-  expiredIcon: {
-    color: Colors.orangeBrown,
-    fontFamily: Fonts.bold,
-    fontSize: 20,
-    width: 28,
-    textAlign: 'center',
-  },
-  expiredTitle: {
-    color: Colors.text,
-    fontFamily: Fonts.bold,
-    fontSize: 15,
-    marginBottom: 4,
-  },
-  expiredDesc: {
-    color: Colors.ash,
-    fontFamily: Fonts.regular,
-    fontSize: 13,
-  },
-  card: {
+
+  // ── Info card (active state) ───────────────────────────────────────────────
+  infoCard: {
     backgroundColor: Colors.secondaryBackgroundColor,
-    borderRadius: 16,
-    overflow: 'hidden',
-  },
-  infoRow: {
+    borderRadius: 12,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.primaryBackgroundColor,
   },
   infoLabel: {
     color: Colors.ash,
@@ -246,38 +234,52 @@ const styles = StyleSheet.create({
     fontSize: 13,
     flexShrink: 1,
     textAlign: 'right',
-    marginLeft: 12,
+    marginLeft: 16,
   },
-  metaCard: {
+
+  // ── Expired state ─────────────────────────────────────────────────────────
+  expiredCard: {
     backgroundColor: Colors.secondaryBackgroundColor,
-    borderRadius: 16,
-    overflow: 'hidden',
+    borderRadius: 20,
+    padding: 28,
+    alignItems: 'center',
+    gap: 14,
+    marginBottom: 6,
   },
-  metaRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.primaryBackgroundColor,
+  expiredIconCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: Colors.brown,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 4,
   },
-  metaLabel: {
+  expiredIconTxt: {
+    color: Colors.orangeBrown,
+    fontFamily: Fonts.bold,
+    fontSize: 40,
+  },
+  expiredHeading: {
+    color: Colors.text,
+    fontFamily: Fonts.bold,
+    fontSize: 18,
+    textAlign: 'center',
+  },
+  expiredSubtitle: {
     color: Colors.ash,
     fontFamily: Fonts.regular,
     fontSize: 13,
+    textAlign: 'center',
+    lineHeight: 20,
   },
-  metaValue: {
-    color: Colors.textMuted,
-    fontFamily: Fonts.medium,
-    fontSize: 13,
-  },
-  newQuoteBtn: {
+  amberBtn: {
     backgroundColor: Colors.orangeBrown,
     paddingVertical: 20,
     borderRadius: 16,
     alignItems: 'center',
   },
-  newQuoteTxt: {
+  amberBtnTxt: {
     color: Colors.dark,
     fontFamily: Fonts.medium,
     fontSize: 16,

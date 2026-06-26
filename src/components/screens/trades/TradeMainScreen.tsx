@@ -1,58 +1,75 @@
 import AppBackground from '@/src/components/AppBackground';
-import LineChartView from '@/src/components/LineChartView';
 import ScreenIntro from '@/src/components/ScreenIntro';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import Svg, { Rect } from 'react-native-svg';
 
-const MOCK_CHART_DATA = [
-  { timestamp: 1, value: 63200 },
-  { timestamp: 2, value: 63800 },
-  { timestamp: 3, value: 63100 },
-  { timestamp: 4, value: 64500 },
-  { timestamp: 5, value: 64100 },
-  { timestamp: 6, value: 65200 },
-  { timestamp: 7, value: 64800 },
-  { timestamp: 8, value: 63900 },
-  { timestamp: 9, value: 64200 },
-  { timestamp: 10, value: 64800 },
-  { timestamp: 11, value: 65100 },
-  { timestamp: 12, value: 64200 },
-];
+// Deterministic mock bars — no Math.random() so no hydration flicker
+const BARS = Array.from({ length: 28 }, (_, i) => ({
+  isUp: (i * 7 + i * i * 3) % 3 !== 0,
+  pct: 30 + ((i * 13 + i * i * 7) % 55), // 30–85% of chart height
+}));
 
-const TIME_FILTERS = ['1h', '1d', '1w', '1m', '1y'] as const;
+function BarChart({ width = 300, height = 80 }: { width?: number; height?: number }) {
+  const gap = 3;
+  const barW = useMemo(
+    () => (width - gap * (BARS.length - 1)) / BARS.length,
+    [width]
+  );
+  return (
+    <Svg width={width} height={height}>
+      {BARS.map((bar, i) => {
+        const barH = (bar.pct / 100) * height;
+        return (
+          <Rect
+            key={i}
+            x={i * (barW + gap)}
+            y={height - barH}
+            width={barW}
+            height={barH}
+            fill={bar.isUp ? Colors.green : Colors.red}
+            rx={2}
+          />
+        );
+      })}
+    </Svg>
+  );
+}
+
+const TIME_FILTERS = ['1m', '5m', '15m', '1h', '1d'];
 
 const ACTIONS = [
   {
     label: 'Buy crypto',
-    desc: 'Buy ETH or BTC using your balance',
+    desc: 'Pay USDT and receive BTC',
     tab: 'buy',
-    btnLabel: 'Buy',
-    btnColor: Colors.lightGreen,
-    btnTextColor: Colors.dark,
+    dotColor: Colors.lightGreen,
+    actionLabel: 'Buy',
+    actionColor: Colors.green,
   },
   {
     label: 'Sell crypto',
-    desc: 'Sell ETH or BTC, receive USDT',
+    desc: 'Sell ETH or BTC back to USDT',
     tab: 'sell',
-    btnLabel: 'Sell',
-    btnColor: Colors.red,
-    btnTextColor: Colors.text,
+    dotColor: Colors.red,
+    actionLabel: 'Sell',
+    actionColor: Colors.red,
   },
   {
     label: 'Swap assets',
-    desc: 'Swap any supported asset pair quickly',
+    desc: 'Convert between supported coins',
     tab: 'swap',
-    btnLabel: 'Swap',
-    btnColor: Colors.blue,
-    btnTextColor: Colors.text,
+    dotColor: Colors.lightGreen,
+    actionLabel: 'Swap',
+    actionColor: Colors.green,
   },
-] as const;
+];
 
 export default function TradeMainScreen() {
-  const [period, setPeriod] = useState<string>('1d');
+  const [period, setPeriod] = useState<string>('5m');
 
   return (
     <AppBackground>
@@ -63,32 +80,25 @@ export default function TradeMainScreen() {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingTop: 20, paddingBottom: 40, gap: 16 }}
+        contentContainerStyle={{ paddingTop: 20, paddingBottom: 40, gap: 14 }}
       >
+        {/* Price + bar chart card */}
         <View style={styles.chartCard}>
           <View style={styles.chartHeader}>
             <View>
               <Text style={styles.pair}>BTC / USDT</Text>
               <Text style={styles.price}>64,200.50</Text>
             </View>
-            <Text style={styles.change}>+2.1%</Text>
+            <View style={styles.changePill}>
+              <Text style={styles.changeTxt}>+2.1%</Text>
+            </View>
           </View>
 
-          <LineChartView
-            chartData={MOCK_CHART_DATA}
-            isNegative={false}
-            width={300}
-            height={80}
-            strokeWidth={2}
-          />
+          <BarChart width={300} height={80} />
 
           <View style={styles.filterRow}>
             {TIME_FILTERS.map((f) => (
-              <Pressable
-                key={f}
-                onPress={() => setPeriod(f)}
-                style={[styles.filterPill, period === f && styles.filterPillActive]}
-              >
+              <Pressable key={f} onPress={() => setPeriod(f)} hitSlop={8}>
                 <Text
                   style={[
                     styles.filterTxt,
@@ -102,21 +112,24 @@ export default function TradeMainScreen() {
           </View>
         </View>
 
+        {/* Action rows */}
         {ACTIONS.map((a) => (
           <Pressable
             key={a.tab}
             style={styles.actionRow}
             onPress={() => router.navigate(`/trades/buy?tab=${a.tab}`)}
           >
+            {/* Colored circle icon */}
+            <View style={[styles.actionDot, { backgroundColor: a.dotColor }]} />
+
             <View style={styles.actionInfo}>
               <Text style={styles.actionLabel}>{a.label}</Text>
               <Text style={styles.actionDesc}>{a.desc}</Text>
             </View>
-            <View style={[styles.actionBtn, { backgroundColor: a.btnColor }]}>
-              <Text style={[styles.actionBtnTxt, { color: a.btnTextColor }]}>
-                {a.btnLabel}
-              </Text>
-            </View>
+
+            <Text style={[styles.actionAction, { color: a.actionColor }]}>
+              {a.actionLabel}
+            </Text>
           </Pressable>
         ))}
       </ScrollView>
@@ -139,53 +152,51 @@ const styles = StyleSheet.create({
   pair: {
     color: Colors.ash,
     fontFamily: Fonts.regular,
-    fontSize: 12,
+    fontSize: 13,
     marginBottom: 4,
   },
   price: {
     color: Colors.text,
     fontFamily: Fonts.bold,
-    fontSize: 26,
+    fontSize: 36,
   },
-  change: {
-    color: Colors.green,
-    fontFamily: Fonts.medium,
-    fontSize: 13,
+  changePill: {
     backgroundColor: Colors.lime,
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 20,
-    overflow: 'hidden',
+  },
+  changeTxt: {
+    color: Colors.green,
+    fontFamily: Fonts.medium,
+    fontSize: 13,
   },
   filterRow: {
     flexDirection: 'row',
-    gap: 8,
-  },
-  filterPill: {
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderRadius: 20,
-    backgroundColor: Colors.primaryBackgroundColor,
-  },
-  filterPillActive: {
-    backgroundColor: Colors.lime,
+    gap: 20,
   },
   filterTxt: {
     color: Colors.ash,
     fontFamily: Fonts.medium,
-    fontSize: 12,
+    fontSize: 13,
   },
   filterTxtActive: {
-    color: Colors.green,
+    color: Colors.text,
   },
   actionRow: {
     backgroundColor: Colors.secondaryBackgroundColor,
     borderRadius: 16,
-    padding: 18,
+    paddingHorizontal: 18,
+    paddingVertical: 18,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 12,
+    gap: 14,
+  },
+  actionDot: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    flexShrink: 0,
   },
   actionInfo: {
     flex: 1,
@@ -193,7 +204,7 @@ const styles = StyleSheet.create({
   },
   actionLabel: {
     color: Colors.text,
-    fontFamily: Fonts.medium,
+    fontFamily: Fonts.bold,
     fontSize: 15,
   },
   actionDesc: {
@@ -201,13 +212,9 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.regular,
     fontSize: 12,
   },
-  actionBtn: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 20,
-  },
-  actionBtnTxt: {
+  actionAction: {
     fontFamily: Fonts.medium,
-    fontSize: 13,
+    fontSize: 14,
+    flexShrink: 0,
   },
 });

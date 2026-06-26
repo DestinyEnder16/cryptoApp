@@ -5,9 +5,9 @@ import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
 import { formatAmount } from '@/src/helpers/formatAmount';
 import { router, useLocalSearchParams } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-function InfoRow({
+function InfoCard({
   label,
   value,
   valueColor,
@@ -17,7 +17,7 @@ function InfoRow({
   valueColor?: string;
 }) {
   return (
-    <View style={styles.infoRow}>
+    <View style={styles.infoCard}>
       <Text style={styles.infoLabel}>{label}</Text>
       <Text style={[styles.infoValue, valueColor ? { color: valueColor } : {}]}>
         {value}
@@ -51,82 +51,88 @@ export default function TradeResultScreen() {
 
   const isCompleted = status === 'completed';
 
+  const toAmountFmt = toAmount
+    ? `${formatAmount(parseFloat(toAmount))} ${toAsset ?? ''}`
+    : '--';
+  const fromAmountFmt = fromAmount
+    ? `${formatAmount(parseFloat(fromAmount))} ${fromAsset ?? ''}`
+    : '--';
+  const feeAmountFmt = feeAmount
+    ? `${formatAmount(parseFloat(feeAmount))} ${fromAsset ?? ''}`
+    : '--';
+
   return (
     <AppBackground>
       <ScreenIntro
         title={isCompleted ? 'Trade completed' : 'Trade failed'}
         description={
           isCompleted
-            ? 'Your order has been settled successfully.'
+            ? 'Your sandbox trade has settled successfully.'
             : 'The trade could not be completed.'
         }
       />
 
-      <View style={{ flex: 1, paddingTop: 32, gap: 28 }}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingTop: 28, paddingBottom: 32, gap: 10 }}
+      >
         {/* Status icon */}
         <View style={styles.iconWrap}>
           <View
-            style={[
-              styles.iconCircle,
-              isCompleted ? styles.iconCircleGreen : styles.iconCircleRed,
-            ]}
+            style={isCompleted ? styles.successCircle : styles.failedCircle}
           >
-            <Text style={styles.iconTxt}>{isCompleted ? '✓' : '✕'}</Text>
+            <Text
+              style={
+                isCompleted ? styles.successMark : styles.failedMark
+              }
+            >
+              {isCompleted ? '✓' : '✕'}
+            </Text>
           </View>
         </View>
 
-        {/* Detail rows */}
-        <View style={styles.card}>
-          {isCompleted ? (
-            <>
-              {!!reference && <InfoRow label="Reference" value={reference} />}
-              <InfoRow label="Pair" value={`${fromAsset} → ${toAsset}`} />
-              <InfoRow
-                label="Received"
-                value={`${toAmount ? formatAmount(parseFloat(toAmount)) : '--'} ${toAsset ?? ''}`}
-              />
-              <InfoRow
-                label="Fee"
-                value={`${feeAmount ? formatAmount(parseFloat(feeAmount)) : '--'} ${fromAsset ?? ''}`}
-              />
-              <View style={[styles.infoRow, { borderBottomWidth: 0 }]}>
-                <Text style={styles.infoLabel}>Status</Text>
-                <Text style={[styles.infoValue, { color: Colors.green }]}>
-                  Completed
-                </Text>
-              </View>
-            </>
-          ) : (
-            <>
-              <InfoRow label="Pair" value={`${fromAsset} → ${toAsset}`} />
-              {!!fromAmount && (
-                <InfoRow
-                  label="Required"
-                  value={`${formatAmount(parseFloat(fromAmount))} ${fromAsset ?? ''}`}
-                />
-              )}
-              <View style={[styles.infoRow, { borderBottomWidth: 0 }]}>
-                <Text style={styles.infoLabel}>Status</Text>
-                <Text style={[styles.infoValue, { color: Colors.red }]}>
-                  Failed
-                </Text>
-              </View>
-            </>
+        {/* Heading below icon */}
+        <View style={styles.headingWrap}>
+          <Text style={styles.heading}>
+            {isCompleted
+              ? `${toAmountFmt} received`
+              : 'Insufficient balance'}
+          </Text>
+          {!isCompleted && (
+            <Text style={styles.headingDesc}>
+              {errorMessage ??
+                'Your available balance changed before the quote was executed.'}
+            </Text>
           )}
         </View>
 
-        {/* Error detail card */}
-        {!isCompleted && (
-          <View style={styles.errorCard}>
-            <Text style={styles.errorTitle}>
-              {errorMessage ?? 'Trade execution failed'}
-            </Text>
-            <Text style={styles.errorDesc}>
-              Edit the amount and get a new quote to try again.
-            </Text>
-          </View>
+        {/* Info cards */}
+        {isCompleted ? (
+          <>
+            {!!reference && (
+              <InfoCard label="Reference" value={reference} />
+            )}
+            <InfoCard label="Paid" value={fromAmountFmt} />
+            <InfoCard label="Received" value={toAmountFmt} />
+            <InfoCard label="Fee" value={feeAmountFmt} />
+            <InfoCard
+              label="Status"
+              value="Completed"
+              valueColor={Colors.green}
+            />
+          </>
+        ) : (
+          <>
+            <InfoCard label="Required" value={fromAmountFmt} />
+            <InfoCard
+              label="Available"
+              value="—"
+              valueColor={Colors.red}
+            />
+            <InfoCard label="Status" value="Failed" valueColor={Colors.red} />
+          </>
         )}
-      </View>
+      </ScrollView>
 
       {isCompleted ? (
         <Btn
@@ -151,44 +157,70 @@ export default function TradeResultScreen() {
 }
 
 const styles = StyleSheet.create({
+  // ── Icons ─────────────────────────────────────────────────────────────────
   iconWrap: {
     alignItems: 'center',
+    marginBottom: 8,
   },
-  iconCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+  successCircle: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    backgroundColor: Colors.green,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  iconCircleGreen: {
-    backgroundColor: Colors.lime,
-    borderWidth: 2,
-    borderColor: Colors.green,
+  successMark: {
+    color: Colors.dark,
+    fontSize: 44,
+    fontFamily: Fonts.bold,
+    lineHeight: 54,
   },
-  iconCircleRed: {
-    backgroundColor: '#2A0D0D',
-    borderWidth: 2,
-    borderColor: Colors.red,
+  failedCircle: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    backgroundColor: '#3D1515',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  iconTxt: {
-    fontSize: 36,
+  failedMark: {
+    color: Colors.red,
+    fontSize: 44,
+    fontFamily: Fonts.bold,
+    lineHeight: 54,
+  },
+
+  // ── Heading ───────────────────────────────────────────────────────────────
+  headingWrap: {
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 16,
+    marginBottom: 8,
+  },
+  heading: {
     color: Colors.text,
     fontFamily: Fonts.bold,
+    fontSize: 20,
+    textAlign: 'center',
   },
-  card: {
+  headingDesc: {
+    color: Colors.ash,
+    fontFamily: Fonts.regular,
+    fontSize: 13,
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+
+  // ── Info cards (individual, stacked) ─────────────────────────────────────
+  infoCard: {
     backgroundColor: Colors.secondaryBackgroundColor,
-    borderRadius: 16,
-    overflow: 'hidden',
-  },
-  infoRow: {
+    borderRadius: 12,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.primaryBackgroundColor,
   },
   infoLabel: {
     color: Colors.ash,
@@ -201,27 +233,10 @@ const styles = StyleSheet.create({
     fontSize: 13,
     flexShrink: 1,
     textAlign: 'right',
-    marginLeft: 12,
+    marginLeft: 16,
   },
-  errorCard: {
-    backgroundColor: '#2A0D0D',
-    borderRadius: 16,
-    padding: 18,
-    borderWidth: 1,
-    borderColor: Colors.red,
-    gap: 8,
-  },
-  errorTitle: {
-    color: Colors.text,
-    fontFamily: Fonts.bold,
-    fontSize: 15,
-  },
-  errorDesc: {
-    color: Colors.ash,
-    fontFamily: Fonts.regular,
-    fontSize: 13,
-    lineHeight: 20,
-  },
+
+  // ── Buttons ───────────────────────────────────────────────────────────────
   editBtn: {
     backgroundColor: Colors.red,
     paddingVertical: 20,

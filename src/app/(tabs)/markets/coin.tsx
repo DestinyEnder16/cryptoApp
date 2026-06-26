@@ -106,7 +106,9 @@ export default function Coin() {
 
         <Pressable
           style={styles.buyBtn}
-          onPress={() => router.navigate('/trades/buy?tab=buy')}
+          onPress={() =>
+            router.navigate({ pathname: '/trades/buy', params: { tab: 'buy', symbol: data.symbol } })
+          }
         >
           <Text style={styles.buyBtnText}>Buy</Text>
         </Pressable>
@@ -114,16 +116,22 @@ export default function Coin() {
         <View style={styles.actionRow}>
           <SecondaryAction
             label="Sell"
-            onPress={() => router.navigate('/trades/buy?tab=sell')}
+            onPress={() =>
+              router.navigate({ pathname: '/trades/buy', params: { tab: 'sell', symbol: data.symbol } })
+            }
           />
           <SecondaryAction
             label="Swap"
-            onPress={() => router.navigate('/trades/buy?tab=swap')}
+            onPress={() =>
+              router.navigate({ pathname: '/trades/buy', params: { tab: 'swap', symbol: data.symbol } })
+            }
           />
           <SecondaryAction
             label="Alert"
             highlight
-            onPress={() => router.navigate(`/profile/createAlert?symbol=${data.symbol}`)}
+            onPress={() =>
+              router.navigate({ pathname: '/profile/createAlert', params: { symbol: data.symbol } })
+            }
           />
         </View>
 
@@ -181,7 +189,7 @@ function ChartCard({
   // the chart reshapes on tap. Replace with a real refetch once the
   // endpoint accepts a range/interval param.
   const visibleCandles = useMemo(
-    () => sliceForPeriod(candles, period),
+    () => sliceCandlesForPeriod(candles, period),
     [candles, period]
   );
 
@@ -194,7 +202,7 @@ function ChartCard({
         value: c.closeUsd,
       }));
     }
-    return sliceForPeriod(fallbackLine, period);
+    return sliceChartDataForPeriod(fallbackLine, period);
   }, [visibleCandles, fallbackLine, period]);
 
   return (
@@ -403,7 +411,13 @@ const PERIOD_RATIOS: { '1H': number; '1D': number; '1W': number; '1M': number; '
   '1Y': 1,
 };
 
-function sliceForPeriod<T>(data: T[], tf: Period): T[] {
+function sliceCandlesForPeriod(data: Candle[], tf: Period) {
+  if (data.length === 0) return data;
+  const count = Math.max(2, Math.ceil(data.length * PERIOD_RATIOS[tf]));
+  return data.slice(-count);
+}
+
+function sliceChartDataForPeriod(data: ChartDatum[], tf: Period) {
   if (data.length === 0) return data;
   const count = Math.max(2, Math.ceil(data.length * PERIOD_RATIOS[tf]));
   return data.slice(-count);

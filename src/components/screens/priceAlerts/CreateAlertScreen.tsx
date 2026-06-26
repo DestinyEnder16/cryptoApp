@@ -89,12 +89,14 @@ export default function CreateAlertScreen() {
         direction,
         targetPriceUsd: parsedTarget,
       }).unwrap();
-      showToast({
-        type:    'success',
-        title:   'Alert created',
-        message: `You'll be notified when ${triggerText}.`,
+      router.replace({
+        pathname: '/profile/alertCreated',
+        params: {
+          symbol:      selectedAsset.symbol,
+          direction,
+          targetPrice: String(parsedTarget),
+        },
       });
-      router.back();
     } catch (err) {
       showToast({
         type:    'error',

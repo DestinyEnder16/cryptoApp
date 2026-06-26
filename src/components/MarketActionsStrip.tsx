@@ -16,13 +16,13 @@ export default function MarketActionsStrip() {
         text="Gainers"
         backgroundColor={Colors.secondaryBackgroundColor}
         txtColor={Colors.text}
-        action={() => router.navigate('/markets/trending')}
+        action={() => router.push('/markets/trending')}
       />
       <MarketActionBtn
         text="Watchlist"
         backgroundColor={Colors.secondaryBackgroundColor}
         txtColor={Colors.text}
-        action={() => router.navigate('/markets/watchlist')}
+        action={() => router.push('/markets/watchlist')}
       />
     </View>
   );

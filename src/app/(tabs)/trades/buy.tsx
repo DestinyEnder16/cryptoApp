@@ -6,8 +6,8 @@ type TabKey = 'buy' | 'sell' | 'swap';
 const VALID_TABS: TabKey[] = ['buy', 'sell', 'swap'];
 
 export default function BuyPage() {
-  const { tab } = useLocalSearchParams<{ tab?: string }>();
+  const { tab, symbol } = useLocalSearchParams<{ tab?: string; symbol?: string }>();
   const initialTab: TabKey =
     VALID_TABS.includes(tab as TabKey) ? (tab as TabKey) : 'buy';
-  return <TradeFormScreen initialTab={initialTab} />;
+  return <TradeFormScreen initialTab={initialTab} symbol={symbol} />;
 }

@@ -25,6 +25,7 @@ export default function WatchList() {
           title="Watchlist"
           description="Assets you follow with row sparklines."
           hasBackBtn
+          onBack={() => router.navigate('/(tabs)/markets')}
         />
 
         {isLoading ? (

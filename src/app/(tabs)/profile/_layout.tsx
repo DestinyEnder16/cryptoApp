@@ -7,6 +7,8 @@ export default function Layout() {
     >
       <Stack.Screen name="index" />
       <Stack.Screen name="createAlert" />
+      <Stack.Screen name="alertCreated" />
+      <Stack.Screen name="priceAlerts" />
     </Stack>
   );
 }

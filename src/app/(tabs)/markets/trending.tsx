@@ -1,4 +1,5 @@
 import AppBackground from '@/src/components/AppBackground';
+import { router } from 'expo-router';
 import { LoadingIcon } from '@/src/components/LoadingSpinner';
 import MarketAssetView from '@/src/components/MarketAssetView';
 import ScreenIntro from '@/src/components/ScreenIntro';
@@ -52,6 +53,8 @@ export default function Trending() {
         <ScreenIntro
           title="Trending"
           description="Top moving assets from the simulated market feed."
+          hasBackBtn
+          onBack={() => router.navigate('/(tabs)/markets')}
         />
 
         {isLoading || !topAsset ? (

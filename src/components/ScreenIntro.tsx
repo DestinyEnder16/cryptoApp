@@ -7,19 +7,21 @@ interface ScreenIntroProps {
   title: string;
   description?: string;
   hasBackBtn?: boolean;
+  onBack?: () => void;
 }
 
 export default function ScreenIntro({
   title,
   description,
   hasBackBtn,
+  onBack,
 }: ScreenIntroProps) {
   return (
     <View style={styles.container}>
       {hasBackBtn && (
         <Pressable
           hitSlop={30}
-          onPress={() => router.back()}
+          onPress={() => (onBack ? onBack() : router.back())}
           style={styles.backBtn}
         >
           <Text style={styles.backBtnText}>‹</Text>

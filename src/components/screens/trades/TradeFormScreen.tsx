@@ -2,9 +2,12 @@ import AppBackground from '@/src/components/AppBackground';
 import ScreenIntro from '@/src/components/ScreenIntro';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
+import { formatAmount } from '@/src/helpers/formatAmount';
 import { getApiErrorMessage } from '@/src/helpers/getApiErrorMessage';
 import { showToast } from '@/src/helpers/showToast';
+import { useFetchAssetDetailsQuery } from '@/src/store/api/marketApi';
 import { useCreateQuoteMutation } from '@/src/store/api/tradeApi';
+import { useGetWalletQuery } from '@/src/store/api/walletApi';
 import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import {
@@ -21,7 +24,6 @@ import {
 
 type TabKey = 'buy' | 'sell' | 'swap';
 
-// Colored dot shown next to asset name
 const ASSET_DOT: { [asset: string]: string } = {
   USDT: Colors.green,
   USDC: Colors.blue,
@@ -30,61 +32,42 @@ const ASSET_DOT: { [asset: string]: string } = {
   SOL:  Colors.blue,
 };
 
+// Static per-tab config — labels, colors, button text.
+// fromAsset / toAsset / title are derived dynamically from the symbol prop.
 const TAB_CONFIG = {
   buy: {
-    title:       'Buy Bitcoin',
     description: 'Create a quote before confirming with PIN.',
     fromLabel:   'You pay',
-    fromAsset:   'USDT',
     toLabel:     'You receive',
-    toAsset:     'BTC',
-    calcPreview: (from: number) => from / 64200.5,
     btnLabel:    'Get quote',
     btnBg:       Colors.lightGreen,
     btnTxt:      Colors.dark,
-    infoRows: [
-      { label: 'Available',          value: '920.00 USDT', valueColor: Colors.text  },
-      { label: 'Estimated rate',     value: '1 BTC = 64,200.50 USDT', valueColor: Colors.text  },
-      { label: 'Verification limit', value: '$5,000',      valueColor: Colors.green },
-    ],
   },
   sell: {
-    title:       'Sell Ethereum',
     description: 'Preview rate and fees before execution.',
     fromLabel:   'You sell',
-    fromAsset:   'ETH',
     toLabel:     'You receive',
-    toAsset:     'USDT',
-    calcPreview: (from: number) => from * 1840.8,
     btnLabel:    'Get quote',
     btnBg:       Colors.red,
     btnTxt:      Colors.text,
-    infoRows: [
-      { label: 'Available',        value: '1.25 ETH',       valueColor: Colors.text },
-      { label: 'Fee estimate',     value: '15.50 USDT',     valueColor: Colors.text },
-      { label: 'Receive after fees', value: '1,540.80 USDT', valueColor: Colors.text },
-    ],
   },
   swap: {
-    title:       'Swap assets',
     description: 'Convert one supported coin into another.',
     fromLabel:   'From',
-    fromAsset:   'SOL',
     toLabel:     'To',
-    toAsset:     'BTC',
-    calcPreview: (from: number) => from * 0.002275,
     btnLabel:    'Preview swap',
     btnBg:       Colors.lightGreen,
     btnTxt:      Colors.dark,
-    infoRows: [
-      { label: 'Route',        value: 'SOL → USDT → BTC', valueColor: Colors.text },
-      { label: 'Fee estimate', value: '$4.84',             valueColor: Colors.text },
-      { label: 'Quote expires', value: '30 seconds',       valueColor: Colors.text },
-    ],
   },
 };
 
-// Active tab pill color per tab key
+// Fallback when no symbol is passed in (direct navigation to /trades/buy)
+const DEFAULT_SYMBOL: { buy: string; sell: string; swap: string } = {
+  buy:  'BTC',
+  sell: 'ETH',
+  swap: 'SOL',
+};
+
 const TAB_ACTIVE_BG: { buy: string; sell: string; swap: string } = {
   buy:  Colors.lightGreen,
   sell: Colors.red,
@@ -97,12 +80,24 @@ const TAB_ACTIVE_TXT: { buy: string; sell: string; swap: string } = {
 };
 
 const TABS: TabKey[] = ['buy', 'sell', 'swap'];
+const STABLE_ASSETS = new Set(['USDT', 'USDC']);
+
+// Returns fromAsset + toAsset for a given tab + coin symbol.
+function deriveAssets(tab: TabKey, sym: string) {
+  switch (tab) {
+    case 'buy':  return { fromAsset: 'USDT', toAsset: sym };
+    case 'sell': return { fromAsset: sym, toAsset: 'USDT' };
+    case 'swap': return { fromAsset: sym, toAsset: sym === 'BTC' ? 'ETH' : 'BTC' };
+  }
+}
 
 interface Props {
   initialTab?: TabKey;
+  /** Coin symbol coming from the coin detail page (e.g. 'ETH'). */
+  symbol?: string;
 }
 
-export default function TradeFormScreen({ initialTab = 'buy' }: Props) {
+export default function TradeFormScreen({ initialTab = 'buy', symbol }: Props) {
   const [activeTab, setActiveTab] = useState<TabKey>(initialTab);
   const [fromAmount, setFromAmount] = useState('');
   const inputRef = useRef<TextInput>(null);
@@ -110,41 +105,92 @@ export default function TradeFormScreen({ initialTab = 'buy' }: Props) {
   const [createQuote, { isLoading }] = useCreateQuoteMutation();
   const config = TAB_CONFIG[activeTab];
 
+  // When a symbol is passed (from coin page), it stays fixed across tab switches.
+  // When no symbol is passed, use the per-tab default so behavior matches before.
+  const resolvedSymbol = symbol ?? DEFAULT_SYMBOL[activeTab];
+  const { fromAsset, toAsset } = deriveAssets(activeTab, resolvedSymbol);
+
+  // Live wallet balances
+  const { data: walletData } = useGetWalletQuery();
+  const availableBalance =
+    walletData?.wallet.balances.find((b) => b.assetSymbol === fromAsset)?.available ?? 0;
+
+  // Live prices — stablecoins are always $1
+  const { data: fromDetails } = useFetchAssetDetailsQuery(fromAsset, {
+    skip: STABLE_ASSETS.has(fromAsset),
+  });
+  const { data: toDetails } = useFetchAssetDetailsQuery(toAsset, {
+    skip: STABLE_ASSETS.has(toAsset),
+  });
+
+  const fromPriceUsd = STABLE_ASSETS.has(fromAsset) ? 1 : (fromDetails?.priceUsd ?? 0);
+  const toPriceUsd   = STABLE_ASSETS.has(toAsset)   ? 1 : (toDetails?.priceUsd   ?? 0);
+
+  // How many toAsset units you receive per 1 fromAsset unit
+  const rate = toPriceUsd > 0 ? fromPriceUsd / toPriceUsd : 0;
+
+  // Derive screen title from the live coin name so it stays correct.
+  // Buy = coin being received; Sell/Swap = coin being sent.
+  const coinDetails = activeTab === 'buy' ? toDetails : fromDetails;
+  const coinName = coinDetails?.name ?? resolvedSymbol;
+  const title = activeTab === 'swap'
+    ? `Swap ${coinName}`
+    : `${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} ${coinName}`;
+
   useEffect(() => { setFromAmount(''); }, [activeTab]);
 
+  const inputAmount = parseFloat(fromAmount) || 0;
+
   const previewToAmount = (() => {
-    const n = parseFloat(fromAmount);
-    if (!n || n <= 0) return '';
-    const r = config.calcPreview(n);
-    return r < 0.001 ? r.toFixed(6) : r < 1 ? r.toFixed(5) : r.toFixed(2);
+    if (!inputAmount || !rate) return '';
+    const r = inputAmount * rate;
+    if (r < 0.001) return r.toFixed(6);
+    if (r < 1)     return r.toFixed(5);
+    return r.toFixed(2);
+  })();
+
+  const hasInsufficientBalance = inputAmount > 0 && inputAmount > availableBalance;
+
+  // "1 BTC = 64,200.50 USDT" for buy; "1 ETH = 1,840.80 USDT" for sell/swap
+  const rateDisplay = (() => {
+    if (!rate) return '—';
+    if (STABLE_ASSETS.has(fromAsset)) {
+      const formatted = toPriceUsd.toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+      return `1 ${toAsset} = ${formatted} ${fromAsset}`;
+    }
+    const formatted =
+      rate < 0.001 ? rate.toFixed(6) : rate < 1 ? rate.toFixed(5) : rate.toFixed(2);
+    return `1 ${fromAsset} = ${formatted} ${toAsset}`;
   })();
 
   async function handleGetQuote() {
-    const n = parseFloat(fromAmount);
-    if (!n || n <= 0) return;
+    if (!inputAmount || hasInsufficientBalance) return;
     try {
       const quote = await createQuote({
-        type: activeTab,
-        fromAsset: config.fromAsset,
-        toAsset:   config.toAsset,
-        fromAmount: n,
+        type:       activeTab,
+        fromAsset,
+        toAsset,
+        fromAmount: inputAmount,
       }).unwrap();
       router.navigate(`/trades/quote?quoteId=${quote.id}`);
     } catch (err) {
       showToast({
-        type: 'error',
-        title: 'Quote failed',
+        type:    'error',
+        title:   'Quote failed',
         message: getApiErrorMessage(err, 'Could not create a quote. Try again.'),
       });
     }
   }
 
-  const canSubmit = !!fromAmount && parseFloat(fromAmount) > 0 && !isLoading;
+  const canSubmit = inputAmount > 0 && !isLoading && !hasInsufficientBalance;
 
   return (
     <AppBackground>
       <ScreenIntro
-        title={config.title}
+        title={title}
         description={config.description}
         hasBackBtn
       />
@@ -167,18 +213,14 @@ export default function TradeFormScreen({ initialTab = 'buy' }: Props) {
                   key={key}
                   style={[
                     styles.tab,
-                    isActive && {
-                      backgroundColor: TAB_ACTIVE_BG[key],
-                    },
+                    isActive && { backgroundColor: TAB_ACTIVE_BG[key] },
                   ]}
                   onPress={() => setActiveTab(key)}
                 >
                   <Text
                     style={[
                       styles.tabTxt,
-                      isActive
-                        ? { color: TAB_ACTIVE_TXT[key] }
-                        : { color: Colors.ash },
+                      { color: isActive ? TAB_ACTIVE_TXT[key] : Colors.ash },
                     ]}
                   >
                     {key.charAt(0).toUpperCase() + key.slice(1)}
@@ -201,7 +243,7 @@ export default function TradeFormScreen({ initialTab = 'buy' }: Props) {
                 keyboardType="decimal-pad"
                 style={styles.amountInput}
               />
-              <AssetBadge asset={config.fromAsset} />
+              <AssetBadge asset={fromAsset} />
             </View>
           </View>
 
@@ -226,27 +268,44 @@ export default function TradeFormScreen({ initialTab = 'buy' }: Props) {
               >
                 {previewToAmount || '0.00'}
               </Text>
-              <AssetBadge asset={config.toAsset} />
+              <AssetBadge asset={toAsset} />
             </View>
           </View>
 
-          {/* Info rows — no card wrapper, transparent rows */}
+          {/* Info rows */}
           <View>
-            {config.infoRows.map((row, i) => (
-              <View
-                key={row.label}
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Available</Text>
+              <Text style={styles.infoValue}>
+                {formatAmount(availableBalance)} {fromAsset}
+              </Text>
+            </View>
+
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Total cost</Text>
+              <Text
                 style={[
-                  styles.infoRow,
-                  i === config.infoRows.length - 1 && { borderBottomWidth: 0 },
+                  styles.infoValue,
+                  hasInsufficientBalance && { color: Colors.red },
                 ]}
               >
-                <Text style={styles.infoLabel}>{row.label}</Text>
-                <Text style={[styles.infoValue, { color: row.valueColor }]}>
-                  {row.value}
-                </Text>
-              </View>
-            ))}
+                {inputAmount > 0 ? `${fromAmount} ${fromAsset}` : '—'}
+              </Text>
+            </View>
+
+            <View style={[styles.infoRow, { borderBottomWidth: 0 }]}>
+              <Text style={styles.infoLabel}>Estimated rate</Text>
+              <Text style={styles.infoValue}>{rateDisplay}</Text>
+            </View>
           </View>
+
+          {/* Insufficient balance warning */}
+          {hasInsufficientBalance && (
+            <Text style={styles.warningTxt}>
+              Insufficient balance — you only have{' '}
+              {formatAmount(availableBalance)} {fromAsset} available.
+            </Text>
+          )}
         </ScrollView>
 
         {/* CTA button */}
@@ -384,11 +443,20 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   infoValue: {
+    color: Colors.text,
     fontFamily: Fonts.medium,
     fontSize: 13,
     flexShrink: 1,
     textAlign: 'right',
     marginLeft: 12,
+  },
+
+  // ── Warning text ──────────────────────────────────────────────────────────
+  warningTxt: {
+    color: Colors.red,
+    fontFamily: Fonts.regular,
+    fontSize: 13,
+    textAlign: 'center',
   },
 
   // ── CTA button ────────────────────────────────────────────────────────────

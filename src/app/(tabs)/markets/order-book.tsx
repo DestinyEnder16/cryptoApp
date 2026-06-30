@@ -370,6 +370,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginTop: 8,
     paddingHorizontal: 4,
+    gap: 16,
   },
   halfCol: {
     flex: 1,
@@ -389,6 +390,7 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
+    gap: 16,
     paddingVertical: 10,
     paddingHorizontal: 4,
     borderBottomWidth: StyleSheet.hairlineWidth,

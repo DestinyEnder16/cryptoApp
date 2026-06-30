@@ -2,6 +2,8 @@ import type { AssetDetails, Candle, CoinData } from '@/src/types/coin/types';
 import type {
   AssetDetailsResponse,
   CandlesResponse,
+  MarketTrade,
+  MarketTradesResponse,
   OrderBook,
   OrderBookResponse,
   SupportedAssetsResponse,
@@ -48,6 +50,12 @@ export const marketApi = baseApi.injectEndpoints({
       transformResponse: (response: OrderBookResponse) => response.data,
       keepUnusedDataFor: 30,
     }),
+
+    fetchMarketTrades: build.query<MarketTrade[], string>({
+      query: (symbol) => `/market/assets/${symbol}/trades`,
+      transformResponse: (response: MarketTradesResponse) => response.data,
+      keepUnusedDataFor: 30,
+    }),
   }),
 });
 
@@ -57,4 +65,5 @@ export const {
   useFetchTrendingAssetsQuery,
   useFetchCandlesQuery,
   useFetchOrderBookQuery,
+  useFetchMarketTradesQuery,
 } = marketApi;

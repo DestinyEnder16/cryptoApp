@@ -1,8 +1,11 @@
 import AppBackground from '@/src/components/AppBackground';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
-import { useFetchOrderBookQuery } from '@/src/store/api/marketApi';
-import type { OrderBookLevel } from '@/src/types/market/types';
+import {
+  useFetchMarketTradesQuery,
+  useFetchOrderBookQuery,
+} from '@/src/store/api/marketApi';
+import type { MarketTrade, OrderBookLevel } from '@/src/types/market/types';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import {
@@ -20,10 +23,23 @@ export default function OrderBook() {
   const { symbol } = useLocalSearchParams<{ symbol: string }>();
   const [activeTab, setActiveTab] = useState<Tab>('orderBook');
 
-  const { data, isLoading, isError } = useFetchOrderBookQuery(
+  const {
+    data: orderBookData,
+    isLoading: obLoading,
+    isError: obError,
+  } = useFetchOrderBookQuery(
     { symbol: symbol ?? '', levels: 12 },
     { skip: !symbol }
   );
+
+  const {
+    data: tradesData,
+    isLoading: tradesLoading,
+    isError: tradesError,
+  } = useFetchMarketTradesQuery(symbol ?? '', {
+    skip: !symbol,
+    pollingInterval: 10_000,
+  });
 
   if (!symbol) {
     return (
@@ -35,6 +51,13 @@ export default function OrderBook() {
     );
   }
 
+  const title =
+    activeTab === 'orderBook' ? `${symbol} order book` : 'Recent trades';
+  const subtitle =
+    activeTab === 'orderBook'
+      ? 'Bid and ask levels for the trade screen.'
+      : 'Latest simulated market prints.';
+
   return (
     <AppBackground>
       <View style={styles.container}>
@@ -44,28 +67,13 @@ export default function OrderBook() {
             <Text style={styles.backBtnText}>‹</Text>
           </Pressable>
           <View style={styles.headerText}>
-            <Text style={styles.title}>{symbol} order book</Text>
-            <Text style={styles.subtitle}>
-              Bid and ask levels for the trade screen.
-            </Text>
+            <Text style={styles.title}>{title}</Text>
+            <Text style={styles.subtitle}>{subtitle}</Text>
           </View>
         </View>
 
         {/* Tabs */}
         <View style={styles.tabRow}>
-          <Pressable
-            style={[styles.tab, activeTab === 'orderBook' && styles.tabActive]}
-            onPress={() => setActiveTab('orderBook')}
-          >
-            <Text
-              style={[
-                styles.tabText,
-                activeTab === 'orderBook' && styles.tabTextActive,
-              ]}
-            >
-              Order book
-            </Text>
-          </Pressable>
           <Pressable
             style={[styles.tab, activeTab === 'trades' && styles.tabActive]}
             onPress={() => setActiveTab('trades')}
@@ -79,15 +87,28 @@ export default function OrderBook() {
               Trades
             </Text>
           </Pressable>
+          <Pressable
+            style={[styles.tab, activeTab === 'orderBook' && styles.tabActive]}
+            onPress={() => setActiveTab('orderBook')}
+          >
+            <Text
+              style={[
+                styles.tabText,
+                activeTab === 'orderBook' && styles.tabTextActive,
+              ]}
+            >
+              Order book
+            </Text>
+          </Pressable>
         </View>
 
         {/* Content */}
         {activeTab === 'orderBook' ? (
-          isLoading ? (
+          obLoading ? (
             <View style={styles.center}>
               <ActivityIndicator color={Colors.green} />
             </View>
-          ) : isError || !data ? (
+          ) : obError || !orderBookData ? (
             <View style={styles.center}>
               <Text style={styles.errorText}>
                 Could not load order book data.
@@ -99,26 +120,24 @@ export default function OrderBook() {
               contentContainerStyle={styles.scrollContent}
               showsVerticalScrollIndicator={false}
             >
-              {/* Mid price */}
               <View style={styles.infoCard}>
                 <Text style={styles.infoLabel}>Mid price</Text>
                 <Text style={styles.infoValue}>
-                  ${data.midPriceUsd.toLocaleString(undefined, {
+                  $
+                  {orderBookData.midPriceUsd.toLocaleString(undefined, {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
                 </Text>
               </View>
 
-              {/* Spread */}
               <View style={styles.infoCard}>
                 <Text style={styles.infoLabel}>Spread</Text>
                 <Text style={styles.infoValue}>
-                  ${data.spreadUsd.toFixed(2)}
+                  ${orderBookData.spreadUsd.toFixed(2)}
                 </Text>
               </View>
 
-              {/* Column headers */}
               <View style={styles.tableHeader}>
                 <View style={styles.halfCol}>
                   <Text style={styles.colHeaderBid}>Bids</Text>
@@ -128,22 +147,38 @@ export default function OrderBook() {
                 </View>
               </View>
 
-              {/* Bid / Ask rows */}
               {Array.from({
-                length: Math.max(data.bids.length, data.asks.length),
+                length: Math.max(
+                  orderBookData.bids.length,
+                  orderBookData.asks.length
+                ),
               }).map((_, i) => (
                 <BookRow
                   key={i}
-                  bid={data.bids[i]}
-                  ask={data.asks[i]}
+                  bid={orderBookData.bids[i]}
+                  ask={orderBookData.asks[i]}
                 />
               ))}
             </ScrollView>
           )
-        ) : (
+        ) : tradesLoading ? (
           <View style={styles.center}>
-            <Text style={styles.errorText}>Trades coming soon.</Text>
+            <ActivityIndicator color={Colors.green} />
           </View>
+        ) : tradesError || !tradesData ? (
+          <View style={styles.center}>
+            <Text style={styles.errorText}>Could not load trades.</Text>
+          </View>
+        ) : (
+          <ScrollView
+            style={styles.scroll}
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+          >
+            {tradesData.map((trade) => (
+              <TradeRow key={trade.id} trade={trade} />
+            ))}
+          </ScrollView>
         )}
 
         {/* Trade button */}
@@ -173,7 +208,6 @@ interface BookRowProps {
 function BookRow({ bid, ask }: BookRowProps) {
   return (
     <View style={styles.row}>
-      {/* Bid side */}
       <View style={styles.halfCol}>
         {bid ? (
           <>
@@ -187,8 +221,6 @@ function BookRow({ bid, ask }: BookRowProps) {
           </>
         ) : null}
       </View>
-
-      {/* Ask side */}
       <View style={styles.halfCol}>
         {ask ? (
           <>
@@ -202,6 +234,31 @@ function BookRow({ bid, ask }: BookRowProps) {
           </>
         ) : null}
       </View>
+    </View>
+  );
+}
+
+function TradeRow({ trade }: { trade: MarketTrade }) {
+  const isBuy = trade.side === 'buy';
+  return (
+    <View style={styles.tradeRow}>
+      <Text style={[styles.tradeSide, isBuy ? styles.tradeBuy : styles.tradeSell]}>
+        {isBuy ? 'Buy' : 'Sell'}
+      </Text>
+      <Text style={styles.tradePrice}>
+        $
+        {trade.priceUsd.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}
+      </Text>
+      <Text style={styles.tradeAmount}>{trade.amount.toFixed(4)}</Text>
+      <Text style={styles.tradeTotal}>
+        {trade.totalUsd.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}
+      </Text>
     </View>
   );
 }
@@ -255,7 +312,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   tab: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 999,
     backgroundColor: Colors.secondaryBackgroundColor,
@@ -354,6 +411,45 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.regular,
     fontSize: 13,
     textAlign: 'right',
+  },
+  tradeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.secondaryBackgroundColor,
+    borderRadius: 14,
+    paddingVertical: 18,
+    paddingHorizontal: 16,
+    gap: 12,
+  },
+  tradeSide: {
+    fontFamily: Fonts.medium,
+    fontSize: 14,
+    width: 32,
+  },
+  tradeBuy: {
+    color: Colors.green,
+  },
+  tradeSell: {
+    color: Colors.red,
+  },
+  tradePrice: {
+    flex: 1,
+    color: Colors.text,
+    fontFamily: Fonts.medium,
+    fontSize: 14,
+  },
+  tradeAmount: {
+    color: Colors.ash,
+    fontFamily: Fonts.regular,
+    fontSize: 13,
+    textAlign: 'right',
+  },
+  tradeTotal: {
+    color: Colors.ash,
+    fontFamily: Fonts.regular,
+    fontSize: 13,
+    textAlign: 'right',
+    minWidth: 60,
   },
   footer: {
     paddingHorizontal: 12,

@@ -6,11 +6,16 @@ import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
 import { formatAmount } from '@/src/helpers/formatAmount';
 import { formatPrice } from '@/src/helpers/formatPrice';
+import { showToast } from '@/src/helpers/showToast';
 import {
+  useGetDepositAddressesQuery,
   useGetPortfolioHistoryQuery,
   useGetTransactionsQuery,
   useGetWalletQuery,
 } from '@/src/store/api/walletApi';
+import type { DepositAddress } from '@/src/types/wallet/types';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import * as Clipboard from 'expo-clipboard';
 import { router } from 'expo-router';
 import {
   ActivityIndicator,
@@ -23,6 +28,7 @@ import {
 
 const ACTIONS = [
   { label: 'Deposit', route: '/wallet/deposit' },
+  { label: 'Send', route: '/wallet/send' },
   { label: 'Withdraw', route: '/wallet/withdraw' },
   { label: 'Trade', route: '/(tabs)/trades' },
 ] as const;
@@ -31,6 +37,7 @@ export default function WalletHomeScreen() {
   const { data: wallet, isLoading } = useGetWalletQuery();
   const { data: recent } = useGetTransactionsQuery({ limit: 3, order: 'desc' });
   const { data: day } = useGetPortfolioHistoryQuery('1D');
+  const { data: depositAddresses } = useGetDepositAddressesQuery();
 
   // Today's move = change from the first 1D point to the latest value.
   const first = day?.data[0]?.valueUsd;
@@ -103,6 +110,17 @@ export default function WalletHomeScreen() {
               }
             />
           ))}
+
+          {depositAddresses && depositAddresses.length > 0 && (
+            <>
+              <View style={[styles.sectionHeader, { marginTop: 8 }]}>
+                <Text style={styles.sectionTitle}>My deposit addresses</Text>
+              </View>
+              {depositAddresses.map((addr) => (
+                <DepositAddressRow key={addr.assetSymbol} addr={addr} />
+              ))}
+            </>
+          )}
 
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Recent transactions</Text>
@@ -182,4 +200,56 @@ const styles = StyleSheet.create({
     fontSize: 13,
     marginBottom: 14,
   },
+  addrRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.secondaryBackgroundColor,
+    borderRadius: 16,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    marginBottom: 10,
+    gap: 12,
+  },
+  addrText: {
+    flex: 1,
+    gap: 4,
+  },
+  addrSymbol: {
+    color: Colors.text,
+    fontFamily: Fonts.medium,
+    fontSize: 14,
+  },
+  addrValue: {
+    color: Colors.ash,
+    fontFamily: Fonts.regular,
+    fontSize: 12,
+  },
 });
+
+function DepositAddressRow({ addr }: { addr: DepositAddress }) {
+  const short =
+    addr.address.length > 16
+      ? `${addr.address.slice(0, 8)}…${addr.address.slice(-4)}`
+      : addr.address;
+
+  const copy = async () => {
+    await Clipboard.setStringAsync(addr.address);
+    showToast({
+      type: 'success',
+      title: 'Address copied',
+      message: `${addr.assetSymbol} deposit address copied to clipboard.`,
+    });
+  };
+
+  return (
+    <Pressable style={styles.addrRow} onPress={copy}>
+      <View style={styles.addrText}>
+        <Text style={styles.addrSymbol}>
+          {addr.assetSymbol} · {addr.network}
+        </Text>
+        <Text style={styles.addrValue}>{short}</Text>
+      </View>
+      <Ionicons name="copy-outline" size={18} color={Colors.ash} />
+    </Pressable>
+  );
+}

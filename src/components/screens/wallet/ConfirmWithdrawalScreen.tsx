@@ -36,6 +36,7 @@ export default function ConfirmWithdrawalScreen() {
         amount: numericAmount,
         address,
         network,
+        pin,
       }).unwrap();
 
       router.navigate(

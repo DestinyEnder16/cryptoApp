@@ -151,6 +151,7 @@ export interface WithdrawalRequest {
   amount: number;
   address: string;
   network: string;
+  pin: string;
 }
 
 export interface Withdrawal {

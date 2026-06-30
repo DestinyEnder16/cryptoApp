@@ -10,6 +10,7 @@ const SERVICE = 'com.tminus.crypto.auth';
 // Refresh token lives in its own entry so existing readers of the access-token
 // entry (credentials.password) keep working unchanged.
 const REFRESH_SERVICE = 'com.tminus.crypto.refresh';
+const DEVICE_SERVICE = 'com.tminus.crypto.device';
 
 export const setCredentials = async ({
   token,
@@ -66,4 +67,25 @@ export const getCredentials = async () => {
 export const resetCredentials = async () => {
   await Keychain.resetGenericPassword({ service: SERVICE });
   await Keychain.resetGenericPassword({ service: REFRESH_SERVICE });
+};
+
+export const saveDeviceId = async (deviceId: string) => {
+  await Keychain.setGenericPassword('device', deviceId, {
+    service: DEVICE_SERVICE,
+  });
+};
+
+export const getDeviceId = async (): Promise<string | null> => {
+  try {
+    const result = await Keychain.getGenericPassword({
+      service: DEVICE_SERVICE,
+    });
+    return result ? result.password : null;
+  } catch {
+    return null;
+  }
+};
+
+export const clearDeviceId = async () => {
+  await Keychain.resetGenericPassword({ service: DEVICE_SERVICE });
 };

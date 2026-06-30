@@ -1,10 +1,11 @@
 import type { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import { persistor, type AppDispatch } from '../store';
 import { baseApi } from '../store/api/baseApi';
+import { devicesApi } from '../store/api/devicesApi';
 import { profileApi } from '../store/api/profileApi';
 import { logout } from '../store/slices/authSlice';
 import { clearUser } from '../store/slices/profileSlice';
-import { resetCredentials } from './nativeKeychain';
+import { clearDeviceId, getDeviceId, resetCredentials } from './nativeKeychain';
 
 export function isAuthError(err: unknown): boolean {
   if (typeof err !== 'object' || err === null) return false;
@@ -13,7 +14,19 @@ export function isAuthError(err: unknown): boolean {
 }
 
 export async function signOut(dispatch: AppDispatch): Promise<void> {
+  const deviceId = await getDeviceId();
+  if (deviceId) {
+    try {
+      await dispatch(
+        devicesApi.endpoints.deleteDevice.initiate(deviceId)
+      ).unwrap();
+    } catch {
+      // Best-effort — token may already be expired or device already removed.
+    }
+  }
+
   await resetCredentials();
+  await clearDeviceId();
   dispatch(logout());
   dispatch(clearUser());
   dispatch(baseApi.util.resetApiState());

@@ -71,21 +71,50 @@ export default function Notifications() {
 function NotificationItem({ item }: { item: NotificationDetails }) {
   return (
     <View style={styles.item}>
-      <View style={styles.dot} />
+      <View style={[styles.dot, item.isRead && styles.dotRead]} />
       <View style={styles.itemText}>
-        <Text style={styles.itemTitle}>{item.title}</Text>
+        <View style={styles.itemHeader}>
+          <Text style={styles.itemTitle} numberOfLines={1}>
+            {item.title}
+          </Text>
+          {!item.isRead && <View style={styles.newBadge} />}
+        </View>
         <Text style={styles.itemBody}>{item.body}</Text>
+        <Text style={styles.itemDate}>{formatNotifDate(item.createdAt)}</Text>
       </View>
-      <Text
-        style={[
-          styles.status,
-          item.isRead ? styles.statusRead : styles.statusNew,
-        ]}
-      >
-        {item.isRead ? 'Read' : 'New'}
-      </Text>
     </View>
   );
+}
+
+function formatNotifDate(iso: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return '';
+
+  const time = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const now = new Date();
+
+  if (date.toDateString() === now.toDateString()) {
+    return time;
+  }
+
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+  if (date.toDateString() === yesterday.toDateString()) {
+    return `Yesterday, ${time}`;
+  }
+
+  const diffDays = Math.floor((now.getTime() - date.getTime()) / 86_400_000);
+  if (diffDays < 7) {
+    return `${date.toLocaleDateString([], { weekday: 'short' })}, ${time}`;
+  }
+
+  const sameYear = date.getFullYear() === now.getFullYear();
+  const datePart = date.toLocaleDateString([], {
+    month: 'short',
+    day: 'numeric',
+    ...(sameYear ? {} : { year: 'numeric' }),
+  });
+  return `${datePart}, ${time}`;
 }
 
 function EmptyState() {
@@ -131,42 +160,55 @@ const styles = StyleSheet.create({
   },
   item: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     backgroundColor: Colors.secondaryBackgroundColor,
     borderRadius: 16,
-    paddingVertical: 14,
+    paddingVertical: 16,
     paddingHorizontal: 16,
     gap: 14,
   },
   dot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
     backgroundColor: Colors.green,
+    marginTop: 4,
+  },
+  dotRead: {
+    backgroundColor: Colors.grey,
   },
   itemText: {
     flex: 1,
-    gap: 4,
+    gap: 5,
+  },
+  itemHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   itemTitle: {
+    flex: 1,
     fontFamily: Fonts.medium,
     color: Colors.text,
     fontSize: 15,
   },
+  newBadge: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: Colors.green,
+  },
   itemBody: {
     fontFamily: Fonts.regular,
     color: Colors.ash,
-    fontSize: 12,
-  },
-  status: {
-    fontFamily: Fonts.medium,
     fontSize: 13,
+    lineHeight: 18,
   },
-  statusNew: {
-    color: Colors.green,
-  },
-  statusRead: {
-    color: Colors.ash,
+  itemDate: {
+    fontFamily: Fonts.regular,
+    color: Colors.grey,
+    fontSize: 11,
+    marginTop: 2,
   },
   empty: {
     backgroundColor: Colors.secondaryBackgroundColor,

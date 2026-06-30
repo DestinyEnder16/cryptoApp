@@ -8,7 +8,13 @@ import {
   useFetchAssetDetailsQuery,
   useFetchCandlesQuery,
 } from '@/src/store/api/marketApi';
+import {
+  useAddToWatchlistMutation,
+  useFetchWatchlistQuery,
+  useRemoveFromWatchlistMutation,
+} from '@/src/store/api/watchListApi';
 import type { Candle, ChartDatum } from '@/src/types/coin/types';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Fragment, useMemo, useState } from 'react';
 import {
@@ -34,6 +40,10 @@ export default function Coin() {
   const { data: candles } = useFetchCandlesQuery(symbol ?? '', {
     skip: !symbol,
   });
+  const { data: watchlist } = useFetchWatchlistQuery();
+  const [addToWatchlist, { isLoading: isAdding }] = useAddToWatchlistMutation();
+  const [removeFromWatchlist, { isLoading: isRemoving }] =
+    useRemoveFromWatchlistMutation();
   // Period is local-only for now — backend has no range param yet.
   const [period, setPeriod] = useState<Period>('1W');
 
@@ -67,6 +77,17 @@ export default function Coin() {
   const changeColor = isNegative ? Colors.red : Colors.green;
   const accent = getSymbolColor(data.symbol);
   const initial = data.name.charAt(0).toUpperCase();
+  const isWatchlisted = watchlist?.data.some((a) => a.symbol === data.symbol) ?? false;
+  const isToggling = isAdding || isRemoving;
+
+  function handleWatchlistToggle() {
+    if (isToggling || !data) return;
+    if (isWatchlisted) {
+      removeFromWatchlist(data.symbol);
+    } else {
+      addToWatchlist(data.symbol);
+    }
+  }
 
   return (
     <AppBackground>
@@ -134,6 +155,29 @@ export default function Coin() {
             }
           />
         </View>
+
+        <Pressable
+          style={[
+            styles.watchlistBtn,
+            isWatchlisted && styles.watchlistBtnActive,
+          ]}
+          onPress={handleWatchlistToggle}
+          disabled={isToggling}
+        >
+          <Ionicons
+            name={isWatchlisted ? 'bookmark' : 'bookmark-outline'}
+            size={18}
+            color={isWatchlisted ? Colors.green : Colors.ash}
+          />
+          <Text
+            style={[
+              styles.watchlistBtnText,
+              isWatchlisted && styles.watchlistBtnTextActive,
+            ]}
+          >
+            {isWatchlisted ? 'Saved to Watchlist' : 'Add to Watchlist'}
+          </Text>
+        </Pressable>
 
         <View style={styles.statsGrid}>
           <StatCell
@@ -452,6 +496,8 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.regular,
   },
   headerRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
     gap: 12,
   },
   backBtn: {
@@ -493,6 +539,29 @@ const styles = StyleSheet.create({
     color: '#0E1A22',
     fontFamily: Fonts.bold,
     fontSize: 18,
+  },
+  watchlistBtn: {
+    marginTop: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 16,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: Colors.ash,
+  },
+  watchlistBtnActive: {
+    borderColor: Colors.green,
+    backgroundColor: Colors.secondaryBackgroundColor,
+  },
+  watchlistBtnText: {
+    color: Colors.ash,
+    fontFamily: Fonts.medium,
+    fontSize: 15,
+  },
+  watchlistBtnTextActive: {
+    color: Colors.green,
   },
   priceRow: {
     flexDirection: 'row',

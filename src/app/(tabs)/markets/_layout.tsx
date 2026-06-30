@@ -12,6 +12,7 @@ export default function Layout() {
       <Stack.Screen name="trending" />
       <Stack.Screen name="coin" />
       <Stack.Screen name="watchlist" />
+      <Stack.Screen name="order-book" />
     </Stack>
   );
 }

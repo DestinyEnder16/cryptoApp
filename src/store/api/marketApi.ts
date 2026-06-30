@@ -2,6 +2,8 @@ import type { AssetDetails, Candle, CoinData } from '@/src/types/coin/types';
 import type {
   AssetDetailsResponse,
   CandlesResponse,
+  OrderBook,
+  OrderBookResponse,
   SupportedAssetsResponse,
   TrendingAssetsResponse,
 } from '@/src/types/market/types';
@@ -39,6 +41,13 @@ export const marketApi = baseApi.injectEndpoints({
       transformResponse: (response: CandlesResponse) => response.data,
       keepUnusedDataFor: 60,
     }),
+
+    fetchOrderBook: build.query<OrderBook, { symbol: string; levels?: number }>({
+      query: ({ symbol, levels = 12 }) =>
+        `/market/assets/${symbol}/order-book?levels=${levels}`,
+      transformResponse: (response: OrderBookResponse) => response.data,
+      keepUnusedDataFor: 30,
+    }),
   }),
 });
 
@@ -47,4 +56,5 @@ export const {
   useFetchAssetDetailsQuery,
   useFetchTrendingAssetsQuery,
   useFetchCandlesQuery,
+  useFetchOrderBookQuery,
 } = marketApi;

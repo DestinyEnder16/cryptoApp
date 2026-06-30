@@ -199,6 +199,19 @@ export default function Coin() {
             }`}
           />
         </View>
+
+        <Pressable
+          style={styles.orderBookBtn}
+          onPress={() =>
+            router.navigate({
+              pathname: '/markets/order-book',
+              params: { symbol: data.symbol },
+            })
+          }
+        >
+          <Text style={styles.orderBookBtnText}>View order book</Text>
+          <Ionicons name="chevron-forward" size={16} color={Colors.ash} />
+        </Pressable>
       </ScrollView>
     </AppBackground>
   );
@@ -562,6 +575,21 @@ const styles = StyleSheet.create({
   },
   watchlistBtnTextActive: {
     color: Colors.green,
+  },
+  orderBookBtn: {
+    marginTop: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: Colors.secondaryBackgroundColor,
+    borderRadius: 16,
+    paddingVertical: 18,
+    paddingHorizontal: 18,
+  },
+  orderBookBtnText: {
+    color: Colors.text,
+    fontFamily: Fonts.medium,
+    fontSize: 15,
   },
   priceRow: {
     flexDirection: 'row',

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
 import { Colors } from '../constants/styles';
+import { useRefresh } from '../hooks/useRefresh';
 import { useFetchSupportedAssetsQuery } from '../store/api/marketApi';
 import MarketActionsStrip from './MarketActionsStrip';
 import MarketAssetView from './MarketAssetView';
@@ -9,7 +10,8 @@ import SearchMarketCoins from './SearchMarketCoins';
 const supportedColors = [Colors.blue, Colors.green, Colors.orangeBrown];
 
 function MarketsView() {
-  const { data: assets } = useFetchSupportedAssetsQuery();
+  const { data: assets, refetch } = useFetchSupportedAssetsQuery();
+  const { refreshControl } = useRefresh(refetch);
   const [filterText, setFilterText] = useState('');
 
   // NOTE PROBLEM - The search field can only search using the symbols
@@ -28,6 +30,7 @@ function MarketsView() {
       keyExtractor={keyExtractor}
       renderItem={renderItem}
       showsVerticalScrollIndicator={false}
+      refreshControl={refreshControl}
       ListHeaderComponent={
         <>
           <SearchMarketCoins text={filterText} onChangeText={setFilterText} />

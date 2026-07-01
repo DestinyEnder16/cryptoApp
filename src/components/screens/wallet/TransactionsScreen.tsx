@@ -3,6 +3,7 @@ import ScreenIntro from '@/src/components/ScreenIntro';
 import TransactionRow from '@/src/components/wallet/TransactionRow';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
+import { useRefresh } from '@/src/hooks/useRefresh';
 import { useGetTransactionsQuery } from '@/src/store/api/walletApi';
 import type { TransactionType } from '@/src/types/wallet/types';
 import { router } from 'expo-router';
@@ -25,9 +26,10 @@ const FILTERS: { label: string; type?: TransactionType }[] = [
 export default function TransactionsScreen() {
   const [active, setActive] = useState(0);
   const type = FILTERS[active].type;
-  const { data, isFetching } = useGetTransactionsQuery(
+  const { data, isLoading, refetch } = useGetTransactionsQuery(
     type ? { type, order: 'desc' } : { order: 'desc' }
   );
+  const { refreshControl } = useRefresh(refetch);
 
   return (
     <AppBackground>
@@ -56,7 +58,7 @@ export default function TransactionsScreen() {
         ))}
       </View>
 
-      {isFetching ? (
+      {isLoading ? (
         <ActivityIndicator
           color={Colors.green}
           style={{ marginTop: 40 }}
@@ -66,6 +68,7 @@ export default function TransactionsScreen() {
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingTop: 20, paddingBottom: 40 }}
+          refreshControl={refreshControl}
         >
           {data?.length ? (
             data.map((tx) => (

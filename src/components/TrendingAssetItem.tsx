@@ -1,6 +1,7 @@
 import { Image } from 'expo-image';
 import { memo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { API_URL } from '../constants/config';
 import { Fonts } from '../constants/fonts';
 import { Colors } from '../constants/styles';
 import { currencyConverter } from '../utils/currencyConverter';
@@ -35,7 +36,7 @@ function TrendingAssetItem({
       <View style={styles.left}>
         <Image
           style={{ width: 40, height: 40 }}
-          source={{ uri: `${process.env.EXPO_PUBLIC_API_URL}${iconUrl}` }}
+          source={{ uri: `${API_URL}${iconUrl}` }}
         />
         <View>
           <Text style={styles.name}>{name}</Text>

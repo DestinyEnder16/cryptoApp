@@ -15,9 +15,10 @@ import {
 import { getCredentials, getRefreshToken } from "../services/nativeKeychain";
 import { persistor, store } from "../store";
 import { profileApi } from "../store/api/profileApi";
-import { useAppDispatch } from "../store/hooks";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { setRefreshToken, setToken } from "../store/slices/authSlice";
 import { NotificationProvider } from "../context/NotificationContext";
+import { usePushNotifications } from "../hooks/usePushNotifications";
 
 import * as Notifications from "expo-notifications";
 
@@ -81,6 +82,13 @@ type Route =
 function AuthBootstrap({ children }: { children: ReactNode }) {
   const dispatch = useAppDispatch();
   const [target, setTarget] = useState<Route | null>(null);
+
+  // Register this device's push token with the API whenever a session token is
+  // present — covers both cold boot (token restored from Keychain) and fresh
+  // login (token set by the sign-in flow). AuthBootstrap stays mounted for the
+  // whole session, so this reacts to login without needing to re-bootstrap.
+  const isAuthenticated = useAppSelector((state) => !!state.auth.token);
+  usePushNotifications(isAuthenticated);
 
   useEffect(() => {
     let cancelled = false;

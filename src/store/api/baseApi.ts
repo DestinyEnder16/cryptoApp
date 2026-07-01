@@ -1,3 +1,4 @@
+import { API_URL } from '@/src/constants/config';
 import { getRefreshToken, saveRefreshToken } from '@/src/services/nativeKeychain';
 import type { RootState } from '@/src/store';
 import {
@@ -10,7 +11,7 @@ import {
 import { logout, setRefreshToken, setToken } from '../slices/authSlice';
 
 const rawBaseQuery = fetchBaseQuery({
-  baseUrl: process.env.EXPO_PUBLIC_API_URL,
+  baseUrl: API_URL,
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.token;
     if (token) {

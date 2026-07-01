@@ -7,6 +7,7 @@ import { Colors } from '@/src/constants/styles';
 import { formatAmount } from '@/src/helpers/formatAmount';
 import { formatPrice } from '@/src/helpers/formatPrice';
 import { showToast } from '@/src/helpers/showToast';
+import { useRefresh } from '@/src/hooks/useRefresh';
 import {
   useGetDepositAddressesQuery,
   useGetPortfolioHistoryQuery,
@@ -34,10 +35,21 @@ const ACTIONS = [
 ] as const;
 
 export default function WalletHomeScreen() {
-  const { data: wallet, isLoading } = useGetWalletQuery();
-  const { data: recent } = useGetTransactionsQuery({ limit: 3, order: 'desc' });
-  const { data: day } = useGetPortfolioHistoryQuery('1D');
-  const { data: depositAddresses } = useGetDepositAddressesQuery();
+  const { data: wallet, isLoading, refetch: refetchWallet } = useGetWalletQuery();
+  const { data: recent, refetch: refetchRecent } = useGetTransactionsQuery({
+    limit: 3,
+    order: 'desc',
+  });
+  const { data: day, refetch: refetchDay } = useGetPortfolioHistoryQuery('1D');
+  const { data: depositAddresses, refetch: refetchAddresses } =
+    useGetDepositAddressesQuery();
+
+  const { refreshControl } = useRefresh(
+    refetchWallet,
+    refetchRecent,
+    refetchDay,
+    refetchAddresses
+  );
 
   // Today's move = change from the first 1D point to the latest value.
   const first = day?.data[0]?.valueUsd;
@@ -62,6 +74,7 @@ export default function WalletHomeScreen() {
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingTop: 20, paddingBottom: 40 }}
+          refreshControl={refreshControl}
         >
           <Pressable
             style={styles.valueCard}

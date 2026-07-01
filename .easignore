@@ -39,8 +39,6 @@ yarn-error.*
 
 app-example
 
-# google credentials
-google-services.json
 
 # generated native folders
 /ios

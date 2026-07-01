@@ -8,10 +8,6 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { Colors } from "../constants/styles";
 import { isAuthError, signOut } from "../services/auth";
-import {
-  authenticateWithBiometrics,
-  isBiometricAvailable,
-} from "../services/biometricAuth";
 import { getCredentials, getRefreshToken } from "../services/nativeKeychain";
 import { persistor, store } from "../store";
 import { profileApi } from "../store/api/profileApi";
@@ -106,9 +102,10 @@ function AuthBootstrap({ children }: { children: ReactNode }) {
       const refreshToken = await getRefreshToken();
       if (refreshToken) dispatch(setRefreshToken(refreshToken));
 
-      let user;
       try {
-        user = await dispatch(profileApi.endpoints.fetchMe.initiate()).unwrap();
+        // Validate the stored token; we don't need the payload here, only
+        // that /me succeeds (a 401/403 means the session is dead).
+        await dispatch(profileApi.endpoints.fetchMe.initiate()).unwrap();
       } catch (err) {
         if (isAuthError(err)) {
           // Token is dead — wipe Keychain, Redux, and persisted profile so
@@ -120,18 +117,9 @@ function AuthBootstrap({ children }: { children: ReactNode }) {
         return "/(auth)/auth";
       }
 
-      // Biometric gate: only prompt when the user opted in AND the device
-      // actually has biometrics enrolled. A successful prompt is enough proof
-      // of ownership to skip the welcome screen and land straight on home.
-      if (user.settings.biometricEnabled && (await isBiometricAvailable())) {
-        const passed = await authenticateWithBiometrics();
-        // Biometric failed/cancelled: hand off to /(auth)/welcome which has
-        // a password fallback for this exact case.
-        return passed ? "/(tabs)/home" : "/(auth)/welcome";
-      }
-
-      // No biometric fast-path: the session is still stored, but the user must
-      // re-verify ownership on the welcome screen before regaining access.
+      // Returning user with a stored, still-valid session: always gate access
+      // behind the welcome screen, where they re-verify ownership (password or
+      // biometric) and are logged straight in — no OTP.
       return "/(auth)/welcome";
     }
 

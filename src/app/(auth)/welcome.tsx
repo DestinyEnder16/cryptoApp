@@ -5,14 +5,16 @@ import ProfileAvatar from '@/src/components/ProfileAvatar';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
 import { showToast } from '@/src/helpers/showToast';
+import { signOut } from '@/src/services/auth';
 import {
   authenticateWithBiometrics,
   isBiometricAvailable,
 } from '@/src/services/biometricAuth';
+import { saveRefreshToken } from '@/src/services/nativeKeychain';
 import { useLoginMutation } from '@/src/store/api/authApi';
 import { useFetchMeQuery } from '@/src/store/api/profileApi';
 import { useAppDispatch } from '@/src/store/hooks';
-import { addUserEmail, addUserPassword } from '@/src/store/slices/userSlice';
+import { setRefreshToken, setToken } from '@/src/store/slices/authSlice';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
@@ -67,32 +69,50 @@ export default function Welcome() {
 
   if (!user) return null;
 
-  const handleSignup = async () => {
+  const handleLogin = async () => {
     try {
       if (password.length === 0)
         throw new Error('Password field must be filled');
 
-      dispatch(addUserEmail(user.email));
-      dispatch(addUserPassword(password));
+      // Re-authenticate with the password only — no OTP. The account already
+      // lives on this device; a correct password (or 2FA, if the user enabled
+      // it) is enough to restore access.
+      const result = await login({
+        loginType: 'email',
+        identifier: user.email,
+        password,
+      }).unwrap();
 
       setPassword('');
-      router.replace('/verify-otp');
+
+      if ('requiresTwoFactor' in result) {
+        router.replace({
+          pathname: '/verify-2fa',
+          params: { challengeId: result.challengeId },
+        });
+        return;
+      }
+
+      dispatch(setToken(result.accessToken));
+      dispatch(setRefreshToken(result.refreshToken));
+      await saveRefreshToken(result.refreshToken);
+      router.replace('/home');
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Unknown error';
-      showToast({
-        type: 'error',
-        title: 'Error',
-        message,
-      });
+      const message =
+        err instanceof Error
+          ? err.message
+          : 'Incorrect password. Please try again.';
+      showToast({ type: 'error', title: 'Login failed', message });
     }
   };
 
   const handleAuth = async () => {
     try {
-      const res = await authenticateWithBiometrics();
-      if (!res) throw new Error(); // or show an error
-      // navigate
-      if (res) router.navigate('/verify-otp');
+      const passed = await authenticateWithBiometrics();
+      if (!passed) throw new Error();
+      // Biometric proves ownership and the stored session is still valid, so
+      // go straight in — no password, no OTP.
+      router.replace('/home');
     } catch {
       showToast({
         type: 'error',
@@ -100,6 +120,13 @@ export default function Welcome() {
         message: 'Error authenticating via biometrics',
       });
     }
+  };
+
+  const handleDifferentAccount = async () => {
+    // Genuinely switching accounts: wipe the stored session so the next user
+    // signs in from a clean slate.
+    await signOut(dispatch);
+    router.replace('/(auth)/auth');
   };
 
   return (
@@ -128,10 +155,10 @@ export default function Welcome() {
 
           <View style={{ gap: 15 }}>
             <Btn
-              text={isLoading ? 'Signing up...' : 'Sign Up'}
+              text={isLoading ? 'Logging in...' : 'Log in'}
               bgColor={Colors.green}
               txtColor={Colors.dark}
-              onClick={() => handleSignup()}
+              onClick={() => handleLogin()}
               disabled={isLoading}
             />
             {hasSavedBiometrics && (
@@ -156,7 +183,7 @@ export default function Welcome() {
           <Text style={{ fontFamily: Fonts.regular, color: Colors.text }}>
             Not you?
           </Text>
-          <Pressable onPress={() => router.navigate('/(auth)/auth')}>
+          <Pressable onPress={handleDifferentAccount}>
             <Text style={{ fontFamily: Fonts.regular, color: Colors.green }}>
               Sign in with a different account
             </Text>

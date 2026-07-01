@@ -4,22 +4,18 @@ import ScreenIntro from '@/src/components/ScreenIntro';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
 import { showToast } from '@/src/helpers/showToast';
-import { signOut } from '@/src/services/auth';
 import {
   authenticateWithBiometrics,
   isBiometricAvailable,
 } from '@/src/services/biometricAuth';
-import { useLogoutMutation } from '@/src/store/api/authApi';
 import { useFetchMeQuery } from '@/src/store/api/profileApi';
 import {
   useEditSettingsMutation,
   useFetchMySettingsQuery,
 } from '@/src/store/api/settingsApi';
-import { useAppDispatch } from '@/src/store/hooks';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
-  ActivityIndicator,
   Modal,
   Pressable,
   ScrollView,
@@ -29,13 +25,10 @@ import {
 } from 'react-native';
 
 export default function Index() {
-  const dispatch = useAppDispatch();
-
   const { data: user } = useFetchMeQuery();
   const { data: settings } = useFetchMySettingsQuery();
   const [editSettings, { isLoading: isUpdatingSettings }] =
     useEditSettingsMutation();
-  const [logoutMutation, { isLoading: isLoggingOut }] = useLogoutMutation();
 
   const biometricEnabled = user?.settings.biometricEnabled ?? false;
   const twoFactorAuthEnabled = user?.twoFactorEnabled;
@@ -81,17 +74,12 @@ export default function Index() {
     }
   }
 
-  async function handleLogout() {
-    try {
-      await logoutMutation().unwrap();
-    } catch (err) {
-      // Server-side logout failed (network, already-expired token, etc).
-      // Local cleanup still has to happen — otherwise the user is stuck.
-      console.warn('Server logout failed; clearing local session anyway', err);
-    }
-    await signOut(dispatch);
+  function handleLogout() {
+    // Soft lock — not a full sign-out. The session token and profile stay on
+    // the device (so the welcome screen can load the account), but the user is
+    // sent to /(auth)/welcome to re-verify ownership before regaining access.
     setShowLogoutModal(false);
-    router.replace('/(auth)/auth');
+    router.replace('/(auth)/welcome');
   }
 
   return (
@@ -183,7 +171,6 @@ export default function Index() {
           <Pressable
             style={styles.logoutBtn}
             onPress={() => setShowLogoutModal(true)}
-            disabled={isLoggingOut}
           >
             <Text style={styles.logoutBtnText}>Sign out</Text>
           </Pressable>
@@ -194,7 +181,6 @@ export default function Index() {
         visible={showLogoutModal}
         onCancel={() => setShowLogoutModal(false)}
         onConfirm={handleLogout}
-        isLoading={isLoggingOut}
       />
     </AppBackground>
   );
@@ -204,51 +190,35 @@ interface LogoutConfirmModalProps {
   visible: boolean;
   onCancel: () => void;
   onConfirm: () => void;
-  isLoading: boolean;
 }
 
 function LogoutConfirmModal({
   visible,
   onCancel,
   onConfirm,
-  isLoading,
 }: LogoutConfirmModalProps) {
   return (
     <Modal
       visible={visible}
       transparent
       animationType="fade"
-      onRequestClose={isLoading ? undefined : onCancel}
+      onRequestClose={onCancel}
     >
       <View style={styles.backdrop}>
-        <Pressable
-          style={StyleSheet.absoluteFill}
-          onPress={isLoading ? undefined : onCancel}
-        />
+        <Pressable style={StyleSheet.absoluteFill} onPress={onCancel} />
         <View style={styles.modalCard}>
           <Text style={styles.modalTitle}>Sign out?</Text>
           <Text style={styles.modalDesc}>
-            You&apos;ll need to sign in again to access your account.
+            Your account stays on this device. You&apos;ll need to verify it&apos;s
+            you before getting back in.
           </Text>
 
           <View style={styles.modalActions}>
-            <Pressable
-              style={styles.cancelBtn}
-              onPress={onCancel}
-              disabled={isLoading}
-            >
+            <Pressable style={styles.cancelBtn} onPress={onCancel}>
               <Text style={styles.cancelBtnText}>Cancel</Text>
             </Pressable>
-            <Pressable
-              style={[styles.confirmBtn, isLoading && { opacity: 0.6 }]}
-              onPress={onConfirm}
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <ActivityIndicator color={Colors.text} />
-              ) : (
-                <Text style={styles.confirmBtnText}>Sign out</Text>
-              )}
+            <Pressable style={styles.confirmBtn} onPress={onConfirm}>
+              <Text style={styles.confirmBtnText}>Sign out</Text>
             </Pressable>
           </View>
         </View>

@@ -121,7 +121,8 @@ function AuthBootstrap({ children }: { children: ReactNode }) {
       }
 
       // Biometric gate: only prompt when the user opted in AND the device
-      // actually has biometrics enrolled. Otherwise trust the validated /me.
+      // actually has biometrics enrolled. A successful prompt is enough proof
+      // of ownership to skip the welcome screen and land straight on home.
       if (user.settings.biometricEnabled && (await isBiometricAvailable())) {
         const passed = await authenticateWithBiometrics();
         // Biometric failed/cancelled: hand off to /(auth)/welcome which has
@@ -129,7 +130,9 @@ function AuthBootstrap({ children }: { children: ReactNode }) {
         return passed ? "/(tabs)/home" : "/(auth)/welcome";
       }
 
-      return "/(tabs)/home";
+      // No biometric fast-path: the session is still stored, but the user must
+      // re-verify ownership on the welcome screen before regaining access.
+      return "/(auth)/welcome";
     }
 
     bootstrap()

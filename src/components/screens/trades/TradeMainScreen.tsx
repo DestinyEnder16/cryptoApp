@@ -2,44 +2,81 @@ import AppBackground from '@/src/components/AppBackground';
 import ScreenIntro from '@/src/components/ScreenIntro';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
+import { formatPrice } from '@/src/helpers/formatPrice';
+import {
+  useFetchAssetDetailsQuery,
+  useFetchCandlesQuery,
+} from '@/src/store/api/marketApi';
+import type { Candle } from '@/src/types/coin/types';
+import { useIsFocused } from '@react-navigation/native';
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Svg, { Rect } from 'react-native-svg';
 
-// Deterministic mock bars — no Math.random() so no hydration flicker
-const BARS = Array.from({ length: 28 }, (_, i) => ({
-  isUp: (i * 7 + i * i * 3) % 3 !== 0,
-  pct: 30 + ((i * 13 + i * i * 7) % 55), // 30–85% of chart height
-}));
-
-function BarChart({ width = 300, height = 80 }: { width?: number; height?: number }) {
+// One bar per real OHLC candle: colored by close-vs-open, height scaled to the
+// close price within the visible window's high/low range.
+function BarChart({
+  candles,
+  width = 300,
+  height = 80,
+}: {
+  candles: Candle[];
+  width?: number;
+  height?: number;
+}) {
   const gap = 3;
-  const barW = useMemo(
-    () => (width - gap * (BARS.length - 1)) / BARS.length,
-    [width]
-  );
+  const bars = useMemo(() => {
+    if (candles.length === 0) return [];
+
+    const min = Math.min(...candles.map((c) => c.lowUsd));
+    const max = Math.max(...candles.map((c) => c.highUsd));
+    const range = max - min || 1;
+    const barW = (width - gap * (candles.length - 1)) / candles.length;
+
+    return candles.map((c, i) => {
+      const barH = Math.max(((c.closeUsd - min) / range) * height, 2);
+      return {
+        key: i,
+        x: i * (barW + gap),
+        y: height - barH,
+        w: barW,
+        h: barH,
+        isUp: c.closeUsd >= c.openUsd,
+      };
+    });
+  }, [candles, width, height]);
+
   return (
     <Svg width={width} height={height}>
-      {BARS.map((bar, i) => {
-        const barH = (bar.pct / 100) * height;
-        return (
-          <Rect
-            key={i}
-            x={i * (barW + gap)}
-            y={height - barH}
-            width={barW}
-            height={barH}
-            fill={bar.isUp ? Colors.green : Colors.red}
-            rx={2}
-          />
-        );
-      })}
+      {bars.map((b) => (
+        <Rect
+          key={b.key}
+          x={b.x}
+          y={b.y}
+          width={b.w}
+          height={b.h}
+          fill={b.isUp ? Colors.green : Colors.red}
+          rx={2}
+        />
+      ))}
     </Svg>
   );
 }
 
-const TIME_FILTERS = ['1m', '5m', '15m', '1h', '1d'];
+const TIME_FILTERS = ['1m', '5m', '15m', '1h', '1d'] as const;
+type TimeFilter = (typeof TIME_FILTERS)[number];
+
+// The candles endpoint returns a single fixed series (no interval param), so —
+// like the coin detail screen — each filter just windows the array to a
+// different number of the most recent candles. Visual, but driven by live data.
+const FILTER_BARS: Record<TimeFilter, number> = {
+  '1m': 12,
+  '5m': 18,
+  '15m': 24,
+  '1h': 32,
+  '1d': 48,
+};
 
 const ACTIONS = [
   {
@@ -69,7 +106,26 @@ const ACTIONS = [
 ];
 
 export default function TradeMainScreen() {
-  const [period, setPeriod] = useState<string>('5m');
+  const [period, setPeriod] = useState<TimeFilter>('5m');
+
+  const isFocused = useIsFocused();
+  const pollOptions = {
+    pollingInterval: isFocused ? 20000 : 0,
+    skipPollingIfUnfocused: true,
+  };
+
+  const { data: btc } = useFetchAssetDetailsQuery('BTC', pollOptions);
+  const { data: candles } = useFetchCandlesQuery('BTC', pollOptions);
+
+  const priceText = btc ? formatPrice(btc.priceUsd) : '—';
+  const change = btc?.change24h ?? 0;
+  const isUp = change >= 0;
+  const changeText = `${isUp ? '+' : ''}${change.toFixed(2)}%`;
+
+  const visibleCandles = useMemo(
+    () => (candles ?? []).slice(-FILTER_BARS[period]),
+    [candles, period]
+  );
 
   return (
     <AppBackground>
@@ -87,14 +143,28 @@ export default function TradeMainScreen() {
           <View style={styles.chartHeader}>
             <View>
               <Text style={styles.pair}>BTC / USDT</Text>
-              <Text style={styles.price}>64,200.50</Text>
+              <Text style={styles.price}>{priceText}</Text>
             </View>
-            <View style={styles.changePill}>
-              <Text style={styles.changeTxt}>+2.1%</Text>
+            <View
+              style={[
+                styles.changePill,
+                // Translucent red surface for a down move, mirroring the
+                // translucent-surface pattern used elsewhere in the palette.
+                { backgroundColor: isUp ? Colors.lime : '#DD4B4B22' },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.changeTxt,
+                  { color: isUp ? Colors.green : Colors.red },
+                ]}
+              >
+                {changeText}
+              </Text>
             </View>
           </View>
 
-          <BarChart width={300} height={80} />
+          <BarChart candles={visibleCandles} width={300} height={80} />
 
           <View style={styles.filterRow}>
             {TIME_FILTERS.map((f) => (

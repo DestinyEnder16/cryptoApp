@@ -167,18 +167,25 @@ export default function TradeMainScreen() {
           <BarChart candles={visibleCandles} width={300} height={80} />
 
           <View style={styles.filterRow}>
-            {TIME_FILTERS.map((f) => (
-              <Pressable key={f} onPress={() => setPeriod(f)} hitSlop={8}>
-                <Text
-                  style={[
-                    styles.filterTxt,
-                    period === f && styles.filterTxtActive,
-                  ]}
+            {TIME_FILTERS.map((f) => {
+              const active = period === f;
+              return (
+                <Pressable
+                  key={f}
+                  onPress={() => setPeriod(f)}
+                  style={[styles.filterPill, active && styles.filterPillActive]}
                 >
-                  {f}
-                </Text>
-              </Pressable>
-            ))}
+                  <Text
+                    style={[
+                      styles.filterTxt,
+                      active && styles.filterTxtActive,
+                    ]}
+                  >
+                    {f}
+                  </Text>
+                </Pressable>
+              );
+            })}
           </View>
         </View>
 
@@ -243,7 +250,20 @@ const styles = StyleSheet.create({
   },
   filterRow: {
     flexDirection: 'row',
-    gap: 20,
+    gap: 8,
+    backgroundColor: Colors.primaryBackgroundColor,
+    borderRadius: 14,
+    padding: 4,
+  },
+  filterPill: {
+    flex: 1,
+    paddingVertical: 10,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  filterPillActive: {
+    backgroundColor: Colors.dark,
   },
   filterTxt: {
     color: Colors.ash,
@@ -252,6 +272,7 @@ const styles = StyleSheet.create({
   },
   filterTxtActive: {
     color: Colors.text,
+    fontFamily: Fonts.bold,
   },
   actionRow: {
     backgroundColor: Colors.secondaryBackgroundColor,

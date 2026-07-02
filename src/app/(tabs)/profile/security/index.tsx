@@ -8,6 +8,7 @@ import {
   authenticateWithBiometrics,
   isBiometricAvailable,
 } from "@/src/services/biometricAuth";
+import { setSignedOut } from "@/src/services/sessionFlags";
 import { useFetchMeQuery } from "@/src/store/api/profileApi";
 import {
   useEditSettingsMutation,
@@ -74,11 +75,13 @@ export default function Index() {
     }
   }
 
-  function handleLogout() {
+  async function handleLogout() {
     // Soft lock — not a full sign-out. The session token and profile stay on
     // the device (so the welcome screen can load the account), but the user is
     // sent to /(auth)/welcome to re-verify ownership before regaining access.
+    // Persist the signed-out marker so a relaunch also lands on welcome.
     setShowLogoutModal(false);
+    await setSignedOut(true);
     router.replace("/(auth)/welcome");
   }
 
@@ -219,26 +222,6 @@ function LogoutConfirmModal({
 }
 
 const styles = StyleSheet.create({
-  warning: {
-    backgroundColor: Colors.brown,
-    borderRadius: 16,
-    paddingVertical: 18,
-    paddingHorizontal: 20,
-    marginTop: 10,
-    gap: 8,
-  },
-  warningTitle: {
-    color: Colors.text,
-    fontFamily: Fonts.bold,
-    fontSize: 14,
-  },
-  warningBody: {
-    color: Colors.orangeBrown,
-    fontFamily: Fonts.regular,
-    fontSize: 13,
-    lineHeight: 18,
-    textAlign: "left",
-  },
   logoutBtn: {
     marginTop: 30,
     backgroundColor: Colors.secondaryBackgroundColor,

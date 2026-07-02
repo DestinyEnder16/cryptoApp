@@ -11,6 +11,7 @@ import {
   isBiometricAvailable,
 } from '@/src/services/biometricAuth';
 import { saveRefreshToken } from '@/src/services/nativeKeychain';
+import { setSignedOut } from '@/src/services/sessionFlags';
 import { useLoginMutation } from '@/src/store/api/authApi';
 import { useFetchMeQuery } from '@/src/store/api/profileApi';
 import { useAppDispatch } from '@/src/store/hooks';
@@ -96,6 +97,9 @@ export default function Welcome() {
       dispatch(setToken(result.accessToken));
       dispatch(setRefreshToken(result.refreshToken));
       await saveRefreshToken(result.refreshToken);
+      // Re-entered successfully — clear the signed-out marker so the next
+      // launch goes straight home.
+      await setSignedOut(false);
       router.replace('/home');
     } catch (err) {
       const message =
@@ -112,6 +116,7 @@ export default function Welcome() {
       if (!passed) throw new Error();
       // Biometric proves ownership and the stored session is still valid, so
       // go straight in — no password, no OTP.
+      await setSignedOut(false);
       router.replace('/home');
     } catch {
       showToast({

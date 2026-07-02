@@ -9,7 +9,9 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { Colors } from "../constants/styles";
 import { isAuthError, signOut } from "../services/auth";
+import { authenticateWithBiometrics } from "../services/biometricAuth";
 import { getCredentials, getRefreshToken } from "../services/nativeKeychain";
+import { getSignedOut } from "../services/sessionFlags";
 import { persistor, store } from "../store";
 import { profileApi } from "../store/api/profileApi";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
@@ -108,10 +110,14 @@ function AuthBootstrap({ children }: { children: ReactNode }) {
       const refreshToken = await getRefreshToken();
       if (refreshToken) dispatch(setRefreshToken(refreshToken));
 
+      let me;
       try {
-        // Validate the stored token; we don't need the payload here, only
-        // that /me succeeds (a 401/403 means the session is dead).
-        await dispatch(profileApi.endpoints.fetchMe.initiate()).unwrap();
+        // Validate the stored token and read the profile (we need the settings
+        // to know whether biometric login is enabled). A 401/403 means the
+        // session is dead.
+        me = await dispatch(
+          profileApi.endpoints.fetchMe.initiate(),
+        ).unwrap();
       } catch (err) {
         if (isAuthError(err)) {
           // Token is dead — wipe Keychain, Redux, and persisted profile so
@@ -123,10 +129,20 @@ function AuthBootstrap({ children }: { children: ReactNode }) {
         return "/(auth)/auth";
       }
 
-      // Returning user with a stored, still-valid session: always gate access
-      // behind the welcome screen, where they re-verify ownership (password or
-      // biometric) and are logged straight in — no OTP.
-      return "/(auth)/welcome";
+      // The user explicitly signed out on this device (account still
+      // remembered): send them to the welcome screen to re-verify ownership.
+      if (await getSignedOut()) return "/(auth)/welcome";
+
+      // Otherwise go straight home. If the user enabled biometric login, gate
+      // the session behind a biometric prompt first; on failure fall back to
+      // the welcome screen (password / biometric retry) rather than exposing
+      // the account.
+      if (me.settings?.biometricEnabled) {
+        const passed = await authenticateWithBiometrics();
+        if (!passed) return "/(auth)/welcome";
+      }
+
+      return "/(tabs)/home";
     }
 
     bootstrap()

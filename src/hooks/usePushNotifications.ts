@@ -2,7 +2,10 @@ import {
   getDevicePlatform,
   getExpoPushToken,
 } from '@/src/services/expoPushToken';
-import { useRegisterDeviceMutation } from '@/src/store/api/devicesApi';
+import {
+  useGetDevicesQuery,
+  useRegisterDeviceMutation,
+} from '@/src/store/api/devicesApi';
 import { useEffect } from 'react';
 
 /**
@@ -11,19 +14,31 @@ import { useEffect } from 'react';
  * notifications to it. Foreground/tap listeners already live in
  * NotificationContext — this hook only handles the server registration wire.
  *
- * Call it from inside the Redux Provider (it uses an RTK Query mutation).
+ * Skips the POST if this device's token is already registered — every
+ * relogin on the same device would otherwise re-send the same token (the
+ * backend is trusted to upsert, but there's no reason to make the redundant
+ * call in the first place).
+ *
+ * Call it from inside the Redux Provider (it uses RTK Query hooks).
  */
 export function usePushNotifications(isAuthenticated: boolean) {
+  const { data: devicesData, isLoading: isLoadingDevices } =
+    useGetDevicesQuery(undefined, { skip: !isAuthenticated });
   const [registerDevice] = useRegisterDeviceMutation();
 
   useEffect(() => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated || isLoadingDevices) return;
     let cancelled = false;
 
     (async () => {
       try {
         const token = await getExpoPushToken();
         if (cancelled || !token) return;
+
+        const alreadyRegistered = devicesData?.data.some(
+          (d) => d.expoPushToken === token,
+        );
+        if (alreadyRegistered) return;
 
         await registerDevice({
           expoPushToken: token,
@@ -40,5 +55,5 @@ export function usePushNotifications(isAuthenticated: boolean) {
     return () => {
       cancelled = true;
     };
-  }, [isAuthenticated, registerDevice]);
+  }, [isAuthenticated, isLoadingDevices, devicesData, registerDevice]);
 }

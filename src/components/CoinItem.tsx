@@ -1,9 +1,9 @@
 import { Image } from "expo-image";
 import { memo } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { API_URL } from "../constants/config";
 import { Fonts } from "../constants/fonts";
 import { Colors } from "../constants/styles";
+import { assetUrl } from "../helpers/assetUrl";
 import { useFetchAssetDetailsQuery } from "../store/api/marketApi";
 import LineChartView from "./LineChartView";
 import MarketStripItemSkeleton from "./CoinItemSkeleton";
@@ -34,7 +34,7 @@ function CoinItem({ coin }: MarketStripItemProps) {
         </Text>
         <Image
           cachePolicy={"memory-disk"}
-          source={{ uri: `${API_URL}${data.iconUrl}` }}
+          source={{ uri: assetUrl(data.iconUrl) }}
           style={{ width: 24, height: 24 }}
         />
       </View>

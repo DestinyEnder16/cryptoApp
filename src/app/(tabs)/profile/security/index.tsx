@@ -1,20 +1,21 @@
-import AppBackground from '@/src/components/AppBackground';
-import ProfileStripItem from '@/src/components/ProfileStripItem';
-import ScreenIntro from '@/src/components/ScreenIntro';
-import { Fonts } from '@/src/constants/fonts';
-import { Colors } from '@/src/constants/styles';
-import { showToast } from '@/src/helpers/showToast';
+import AppBackground from "@/src/components/AppBackground";
+import ProfileStripItem from "@/src/components/ProfileStripItem";
+import ScreenIntro from "@/src/components/ScreenIntro";
+import { Fonts } from "@/src/constants/fonts";
+import { Colors } from "@/src/constants/styles";
+import { showToast } from "@/src/helpers/showToast";
 import {
   authenticateWithBiometrics,
   isBiometricAvailable,
-} from '@/src/services/biometricAuth';
-import { useFetchMeQuery } from '@/src/store/api/profileApi';
+} from "@/src/services/biometricAuth";
+import { setSignedOut } from "@/src/services/sessionFlags";
+import { useFetchMeQuery } from "@/src/store/api/profileApi";
 import {
   useEditSettingsMutation,
   useFetchMySettingsQuery,
-} from '@/src/store/api/settingsApi';
-import { router } from 'expo-router';
-import { useState } from 'react';
+} from "@/src/store/api/settingsApi";
+import { router } from "expo-router";
+import { useState } from "react";
 import {
   Modal,
   Pressable,
@@ -22,7 +23,7 @@ import {
   StyleSheet,
   Text,
   View,
-} from 'react-native';
+} from "react-native";
 
 export default function Index() {
   const { data: user } = useFetchMeQuery();
@@ -46,9 +47,9 @@ export default function Index() {
       const available = await isBiometricAvailable();
       if (!available) {
         showToast({
-          type: 'error',
-          title: 'Biometrics not set up',
-          message: 'Enable biometrics in your device settings first.',
+          type: "error",
+          title: "Biometrics not set up",
+          message: "Enable biometrics in your device settings first.",
         });
         return;
       }
@@ -59,27 +60,29 @@ export default function Index() {
     try {
       await editSettings({ ...settings, biometricEnabled: next }).unwrap();
       showToast({
-        type: 'success',
-        title: next ? 'Biometric login enabled' : 'Biometric login disabled',
+        type: "success",
+        title: next ? "Biometric login enabled" : "Biometric login disabled",
         message: next
           ? "We'll use Face ID or fingerprint to sign you in."
           : "We won't ask for biometrics at sign-in.",
       });
     } catch {
       showToast({
-        type: 'error',
-        title: 'Could not update',
-        message: 'Please try again.',
+        type: "error",
+        title: "Could not update",
+        message: "Please try again.",
       });
     }
   }
 
-  function handleLogout() {
+  async function handleLogout() {
     // Soft lock — not a full sign-out. The session token and profile stay on
     // the device (so the welcome screen can load the account), but the user is
     // sent to /(auth)/welcome to re-verify ownership before regaining access.
+    // Persist the signed-out marker so a relaunch also lands on welcome.
     setShowLogoutModal(false);
-    router.replace('/(auth)/welcome');
+    await setSignedOut(true);
+    router.replace("/(auth)/welcome");
   }
 
   return (
@@ -101,7 +104,7 @@ export default function Index() {
             badge="Set"
             onPress={() =>
               router.navigate({
-                pathname: '/(tabs)/profile/security/pin',
+                pathname: "/(tabs)/profile/security/pin",
               })
             }
           />
@@ -109,12 +112,12 @@ export default function Index() {
             danger={!twoFactorAuthEnabled}
             title="Authenticator app"
             subtitle={
-              twoFactorAuthEnabled ? 'Enabled for login protection' : 'Disabled'
+              twoFactorAuthEnabled ? "Enabled for login protection" : "Disabled"
             }
-            badge={twoFactorAuthEnabled ? 'On' : 'Off'}
+            badge={twoFactorAuthEnabled ? "On" : "Off"}
             onPress={() => {
               router.navigate({
-                pathname: '/profile/security/auth',
+                pathname: "/profile/security/auth",
               });
             }}
           />
@@ -123,21 +126,21 @@ export default function Index() {
             danger={!twoFactorAuthEnabled}
             subtitle={
               twoFactorAuthEnabled
-                ? '8 backup codes remaining'
-                : 'Set up the authenticator app to use recovery codes'
+                ? "8 backup codes remaining"
+                : "Set up the authenticator app to use recovery codes"
             }
-            badge={twoFactorAuthEnabled ? 'View' : 'Locked'}
+            badge={twoFactorAuthEnabled ? "View" : "Locked"}
             onPress={() => {
               if (!twoFactorAuthEnabled) {
                 showToast({
-                  type: 'info',
-                  title: 'Authenticator required',
-                  message: 'You need to first set up your authenticator app',
+                  type: "info",
+                  title: "Authenticator required",
+                  message: "You need to first set up your authenticator app",
                 });
                 return;
               }
               router.navigate({
-                pathname: '/(tabs)/profile/security/codes',
+                pathname: "/(tabs)/profile/security/codes",
               });
             }}
           />
@@ -145,28 +148,19 @@ export default function Index() {
             title="Registered devices"
             subtitle="iPhone 15 Pro · push enabled"
             badge={2}
-            onPress={() => router.navigate('/(tabs)/profile/security/devices')}
+            onPress={() => router.navigate("/(tabs)/profile/security/devices")}
           />
           <ProfileStripItem
             danger={!biometricEnabled}
             title="Biometric login"
             subtitle={
               biometricEnabled
-                ? 'Tap to disable Face ID / fingerprint sign-in'
-                : 'Tap to enable Face ID / fingerprint sign-in'
+                ? "Tap to disable Face ID / fingerprint sign-in"
+                : "Tap to enable Face ID / fingerprint sign-in"
             }
-            badge={isUpdatingSettings ? '...' : biometricEnabled ? 'On' : 'Off'}
+            badge={isUpdatingSettings ? "..." : biometricEnabled ? "On" : "Off"}
             onPress={handleBiometricToggle}
           />
-
-          <View style={styles.warning}>
-            <Text style={styles.warningTitle}>
-              Admin will never ask for codes
-            </Text>
-            <Text style={styles.warningBody}>
-              Keep recovery codes private and regenerate them if exposed.
-            </Text>
-          </View>
 
           <Pressable
             style={styles.logoutBtn}
@@ -209,8 +203,8 @@ function LogoutConfirmModal({
         <View style={styles.modalCard}>
           <Text style={styles.modalTitle}>Sign out?</Text>
           <Text style={styles.modalDesc}>
-            Your account stays on this device. You&apos;ll need to verify it&apos;s
-            you before getting back in.
+            Your account stays on this device. You&apos;ll need to verify
+            it&apos;s you before getting back in.
           </Text>
 
           <View style={styles.modalActions}>
@@ -228,32 +222,12 @@ function LogoutConfirmModal({
 }
 
 const styles = StyleSheet.create({
-  warning: {
-    backgroundColor: Colors.brown,
-    borderRadius: 16,
-    paddingVertical: 18,
-    paddingHorizontal: 20,
-    marginTop: 10,
-    gap: 8,
-  },
-  warningTitle: {
-    color: Colors.text,
-    fontFamily: Fonts.bold,
-    fontSize: 14,
-  },
-  warningBody: {
-    color: Colors.orangeBrown,
-    fontFamily: Fonts.regular,
-    fontSize: 13,
-    lineHeight: 18,
-    textAlign: 'left',
-  },
   logoutBtn: {
     marginTop: 30,
     backgroundColor: Colors.secondaryBackgroundColor,
     borderRadius: 14,
     paddingVertical: 20,
-    alignItems: 'center',
+    alignItems: "center",
   },
   logoutBtnText: {
     color: Colors.red,
@@ -262,8 +236,8 @@ const styles = StyleSheet.create({
   },
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    justifyContent: 'center',
+    backgroundColor: "rgba(0,0,0,0.6)",
+    justifyContent: "center",
     paddingHorizontal: 20,
   },
   modalCard: {
@@ -285,7 +259,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   modalActions: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 12,
     marginTop: 6,
   },
@@ -294,7 +268,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.secondaryBackgroundColor,
     borderRadius: 14,
     paddingVertical: 16,
-    alignItems: 'center',
+    alignItems: "center",
   },
   cancelBtnText: {
     color: Colors.text,
@@ -306,7 +280,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.red,
     borderRadius: 14,
     paddingVertical: 16,
-    alignItems: 'center',
+    alignItems: "center",
   },
   confirmBtnText: {
     color: Colors.text,

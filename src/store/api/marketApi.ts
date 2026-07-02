@@ -20,6 +20,7 @@ export const marketApi = baseApi.injectEndpoints({
       keepUnusedDataFor: 300,
     }),
 
+
     fetchAssetDetails: build.query<AssetDetails, string>({
       query: (arg) => `/market/assets/${arg}`,
       transformResponse: (response: AssetDetailsResponse): AssetDetails => ({

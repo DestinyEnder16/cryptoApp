@@ -4,11 +4,16 @@ import { Fonts } from '@/src/constants/fonts';
 import { NotificationEmptyIcon } from '@/src/constants/images';
 import { Colors } from '@/src/constants/styles';
 import { useFetchNotificationsQuery } from '@/src/store/api/notificationApi';
+import { useIsFocused } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { StyleSheet, Text, View } from 'react-native';
 
 export default function Notifications() {
-  const { isLoading, data } = useFetchNotificationsQuery();
+  const isFocused = useIsFocused();
+  const { isLoading, data } = useFetchNotificationsQuery(undefined, {
+    pollingInterval: isFocused ? 15000 : 0,
+    skipPollingIfUnfocused: true,
+  });
   const count = data?.meta.count ?? 0;
 
   return isLoading ? (

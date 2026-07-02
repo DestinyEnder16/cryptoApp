@@ -6,6 +6,7 @@ import { profileApi } from '../store/api/profileApi';
 import { logout } from '../store/slices/authSlice';
 import { clearUser } from '../store/slices/profileSlice';
 import { clearDeviceId, getDeviceId, resetCredentials } from './nativeKeychain';
+import { setSignedOut } from './sessionFlags';
 
 export function isAuthError(err: unknown): boolean {
   if (typeof err !== 'object' || err === null) return false;
@@ -27,6 +28,7 @@ export async function signOut(dispatch: AppDispatch): Promise<void> {
 
   await resetCredentials();
   await clearDeviceId();
+  await setSignedOut(false);
   dispatch(logout());
   dispatch(clearUser());
   dispatch(baseApi.util.resetApiState());

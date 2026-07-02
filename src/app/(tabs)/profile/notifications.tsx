@@ -9,11 +9,16 @@ import {
   useReadAllNotificationsMutation,
 } from '@/src/store/api/notificationApi';
 import type { NotificationDetails } from '@/src/types/notification/types';
+import { useIsFocused } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 export default function Notifications() {
-  const { data, isLoading } = useFetchNotificationsQuery();
+  const isFocused = useIsFocused();
+  const { data, isLoading } = useFetchNotificationsQuery(undefined, {
+    pollingInterval: isFocused ? 15000 : 0,
+    skipPollingIfUnfocused: true,
+  });
   const [readAll, { isLoading: isMarking }] = useReadAllNotificationsMutation();
 
   const notifications = data?.data ?? [];

@@ -1,7 +1,7 @@
-import Btn from '@/src/components/Btn';
-import KycStepper from '@/src/components/KycStepper';
-import ScreenIntro from '@/src/components/ScreenIntro';
-import { router } from 'expo-router';
+import Btn from "@/src/components/Btn";
+import KycStepper from "@/src/components/KycStepper";
+import ScreenIntro from "@/src/components/ScreenIntro";
+import { router } from "expo-router";
 import {
   Keyboard,
   Pressable,
@@ -9,27 +9,27 @@ import {
   Text,
   TextInput,
   View,
-} from 'react-native';
-import AppBackground from '../../../AppBackground';
+} from "react-native";
+import AppBackground from "../../../AppBackground";
 
-import WarningField from '@/src/components/WarningField';
-import { Fonts } from '@/src/constants/fonts';
-import { Colors } from '@/src/constants/styles';
+import WarningField from "@/src/components/WarningField";
+import { Fonts } from "@/src/constants/fonts";
+import { Colors } from "@/src/constants/styles";
 import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetView,
-} from '@gorhom/bottom-sheet';
+} from "@gorhom/bottom-sheet";
 
-import AppKeyboardScrollView from '@/src/components/AppKeyboardScrollView';
-import BottomSheetContent from '@/src/components/BottomSheetContent';
-import { kycIdentitySchema } from '@/src/schemas/kycIdentitySchema';
-import { useAppDispatch, useAppSelector } from '@/src/store/hooks';
+import AppKeyboardScrollView from "@/src/components/AppKeyboardScrollView";
+import BottomSheetContent from "@/src/components/BottomSheetContent";
+import { kycIdentitySchema } from "@/src/schemas/kycIdentitySchema";
+import { useAppDispatch, useAppSelector } from "@/src/store/hooks";
 import {
   addCountry,
   addDocumentNumber,
   addName,
-} from '@/src/store/slices/kycSlice';
-import { useCallback, useMemo, useRef, useState } from 'react';
+} from "@/src/store/slices/kycSlice";
+import { useCallback, useMemo, useRef, useState } from "react";
 interface InputProps {
   placeholder: string;
   value: string;
@@ -54,7 +54,7 @@ export default function IdentityScreen() {
   const sheetRef = useRef<BottomSheet>(null);
   const [, setIsOpen] = useState(true);
 
-  const snapPoints = ['40%'];
+  const snapPoints = ["40%"];
   const handleSnapPress = useCallback((index: number) => {
     // Close the keyboard first so it doesn't overlap the opening sheet.
     Keyboard.dismiss();
@@ -64,7 +64,7 @@ export default function IdentityScreen() {
 
   const dispatch = useAppDispatch();
   const { name, country, documentType, documentNumber } = useAppSelector(
-    (state) => state.kyc
+    (state) => state.kyc,
   );
 
   const isValid = useMemo(
@@ -75,7 +75,7 @@ export default function IdentityScreen() {
         documentType,
         documentNumber,
       }),
-    [name, country, documentType, documentNumber]
+    [name, country, documentType, documentNumber],
   );
 
   const renderBackdrop = useCallback(
@@ -88,7 +88,7 @@ export default function IdentityScreen() {
         pressBehavior="close"
       />
     ),
-    []
+    [],
   );
 
   return (
@@ -119,7 +119,7 @@ export default function IdentityScreen() {
               onPress={() => handleSnapPress(0)}
             >
               <Text style={styles.txt}>
-                {documentType.length === 0 ? 'Document Type' : documentType}
+                {documentType.length === 0 ? "Document Type" : documentType}
               </Text>
             </Pressable>
             <InputField
@@ -137,7 +137,7 @@ export default function IdentityScreen() {
             text="Continue"
             fontSize={13}
             disabled={!isValid}
-            action={() => router.navigate('/kyc/process/document/upload')}
+            action={() => router.navigate("/kyc/process/document/upload")}
           />
         </AppKeyboardScrollView>
       </AppBackground>
@@ -180,11 +180,11 @@ const styles = StyleSheet.create({
   },
   inputField: {
     backgroundColor: Colors.secondaryBackgroundColor,
-    height: 52,
+    height: 60,
     borderRadius: 14,
     color: Colors.text,
     paddingHorizontal: 20,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
 
   txt: {

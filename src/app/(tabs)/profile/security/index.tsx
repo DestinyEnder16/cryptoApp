@@ -4,11 +4,14 @@ import ScreenIntro from "@/src/components/ScreenIntro";
 import { Fonts } from "@/src/constants/fonts";
 import { Colors } from "@/src/constants/styles";
 import { showToast } from "@/src/helpers/showToast";
+import { platformTitle } from "@/src/helpers/devicePlatform";
+import { useCurrentDeviceToken } from "@/src/hooks/useCurrentDeviceToken";
 import {
   authenticateWithBiometrics,
   isBiometricAvailable,
 } from "@/src/services/biometricAuth";
 import { setSignedOut } from "@/src/services/sessionFlags";
+import { useGetDevicesQuery } from "@/src/store/api/devicesApi";
 import { useFetchMeQuery } from "@/src/store/api/profileApi";
 import {
   useEditSettingsMutation,
@@ -33,6 +36,16 @@ export default function Index() {
 
   const biometricEnabled = user?.settings.biometricEnabled ?? false;
   const twoFactorAuthEnabled = user?.twoFactorEnabled;
+
+  const { data: devicesData } = useGetDevicesQuery();
+  const { token: thisDeviceToken } = useCurrentDeviceToken();
+  const devices = devicesData?.data ?? [];
+  const currentDevice = devices.find(
+    (d) => d.expoPushToken === thisDeviceToken,
+  );
+  const devicesSubtitle = currentDevice
+    ? `${platformTitle(currentDevice.platform)} · push enabled`
+    : "Manage devices registered for push notifications";
 
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
@@ -146,8 +159,8 @@ export default function Index() {
           />
           <ProfileStripItem
             title="Registered devices"
-            subtitle="iPhone 15 Pro · push enabled"
-            badge={2}
+            subtitle={devicesSubtitle}
+            badge={devices.length}
             onPress={() => router.navigate("/(tabs)/profile/security/devices")}
           />
           <ProfileStripItem

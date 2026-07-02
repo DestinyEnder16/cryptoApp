@@ -4,16 +4,15 @@ import ScreenIntro from '@/src/components/ScreenIntro';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
 import { getApiErrorMessage } from '@/src/helpers/getApiErrorMessage';
-import {
-  getDevicePlatform,
-  getExpoPushToken,
-} from '@/src/services/expoPushToken';
+import { platformShort, platformTitle } from '@/src/helpers/devicePlatform';
+import { useCurrentDeviceToken } from '@/src/hooks/useCurrentDeviceToken';
+import { getDevicePlatform } from '@/src/services/expoPushToken';
 import {
   useGetDevicesQuery,
   useRegisterDeviceMutation,
   type RegisteredDevice,
 } from '@/src/store/api/devicesApi';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 export default function Devices() {
@@ -21,28 +20,11 @@ export default function Devices() {
   const [registerDevice, { isLoading: isRegistering, error: registerError }] =
     useRegisterDeviceMutation();
 
-  const [thisDeviceToken, setThisDeviceToken] = useState<string | null>(null);
-  const [tokenError, setTokenError] = useState<string | null>(null);
-
-  const loadToken = useCallback(async () => {
-    setTokenError(null);
-    try {
-      const token = await getExpoPushToken();
-      setThisDeviceToken(token);
-      return token;
-    } catch (err) {
-      const msg =
-        err instanceof Error
-          ? err.message
-          : 'Could not get this device’s push token.';
-      setTokenError(msg);
-      return null;
-    }
-  }, []);
-
-  useEffect(() => {
-    loadToken();
-  }, [loadToken]);
+  const {
+    token: thisDeviceToken,
+    error: tokenError,
+    reload: loadToken,
+  } = useCurrentDeviceToken();
 
   const devices = data?.data ?? [];
   const alreadyRegistered =
@@ -168,18 +150,6 @@ function EmptyState({ errorMessage, isBusy, onRetry }: EmptyStateProps) {
       </Pressable>
     </View>
   );
-}
-
-function platformTitle(platform: RegisteredDevice['platform']) {
-  if (platform === 'ios') return 'iOS device';
-  if (platform === 'android') return 'Android device';
-  return 'Web browser';
-}
-
-function platformShort(platform: RegisteredDevice['platform']) {
-  if (platform === 'ios') return 'iOS';
-  if (platform === 'android') return 'Android';
-  return 'Web';
 }
 
 function formatLastSeen(iso: string) {

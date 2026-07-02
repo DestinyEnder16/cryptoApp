@@ -7,6 +7,8 @@ import React, {
 } from "react";
 import * as Notifications from "expo-notifications";
 import { registerForPushNotificationsAsync } from "@/src/utils/registerForPushNotificationsAsync";
+import { store } from "@/src/store";
+import { baseApi } from "@/src/store/api/baseApi";
 
 interface NotificationContextType {
   expoPushToken: string | null;
@@ -65,6 +67,9 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
           notification,
         );
         setNotification(notification);
+        // A push arriving means the server has new notification data — refetch
+        // rather than waiting on the next poll so the list/badge update instantly.
+        store.dispatch(baseApi.util.invalidateTags(["Notification"]));
       },
     );
 
@@ -74,6 +79,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
           "🔔 Notification Response: user interacted with the app ",
           response,
         );
+        store.dispatch(baseApi.util.invalidateTags(["Notification"]));
       });
 
     return () => {

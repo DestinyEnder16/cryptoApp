@@ -2,6 +2,7 @@ import { useFonts } from "expo-font";
 import { router, SplashScreen, Stack } from "expo-router";
 import { ReactNode, useEffect, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import Toast from "react-native-toast-message";
 import { Provider } from "react-redux";
@@ -41,34 +42,39 @@ export default function RootLayout() {
   if (!fontsLoaded && !fontError) return null;
 
   return (
-    <NotificationProvider>
-      <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <NotificationProvider>
         <KeyboardProvider>
           <Provider store={store}>
             <PersistGate loading={null} persistor={persistor}>
-              <AuthBootstrap>
-                <Stack
-                  screenOptions={{
-                    headerShown: false,
-                    contentStyle: {
-                      backgroundColor: Colors.primaryBackgroundColor,
-                    },
-                    animation: "slide_from_bottom",
-                  }}
-                >
-                  <Stack.Screen name="(tabs)" options={{ animation: "none" }} />
-                  <Stack.Screen
-                    name="settings"
-                    options={{ animation: "fade_from_bottom" }}
-                  />
-                </Stack>
-              </AuthBootstrap>
-              <Toast />
+              <BottomSheetModalProvider>
+                <AuthBootstrap>
+                  <Stack
+                    screenOptions={{
+                      headerShown: false,
+                      contentStyle: {
+                        backgroundColor: Colors.primaryBackgroundColor,
+                      },
+                      animation: "slide_from_bottom",
+                    }}
+                  >
+                    <Stack.Screen
+                      name="(tabs)"
+                      options={{ animation: "none" }}
+                    />
+                    <Stack.Screen
+                      name="settings"
+                      options={{ animation: "fade_from_bottom" }}
+                    />
+                  </Stack>
+                </AuthBootstrap>
+                <Toast />
+              </BottomSheetModalProvider>
             </PersistGate>
           </Provider>
         </KeyboardProvider>
-      </GestureHandlerRootView>
-    </NotificationProvider>
+      </NotificationProvider>
+    </GestureHandlerRootView>
   );
 }
 

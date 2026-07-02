@@ -7,8 +7,9 @@ import { getApiErrorMessage } from '@/src/helpers/getApiErrorMessage';
 import { showToast } from '@/src/helpers/showToast';
 import { useCreatePriceAlertMutation } from '@/src/store/api/alertsApi';
 import type { PriceAlertDirection } from '@/src/types/alerts/types';
-import BottomSheet, {
+import {
   BottomSheetBackdrop,
+  BottomSheetModal,
   BottomSheetView,
 } from '@gorhom/bottom-sheet';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -48,7 +49,7 @@ export default function CreateAlertScreen() {
   const [direction, setDirection]         = useState<PriceAlertDirection>('above');
   const [targetPrice, setTargetPrice]     = useState('');
 
-  const sheetRef = useRef<BottomSheet>(null);
+  const sheetRef = useRef<BottomSheetModal>(null);
   const [createAlert, { isLoading }] = useCreatePriceAlertMutation();
 
   const parsedTarget = parseFloat(targetPrice.replace(/,/g, ''));
@@ -78,7 +79,7 @@ export default function CreateAlertScreen() {
   function selectAsset(asset: AssetOption) {
     setSelectedAsset(asset);
     setTargetPrice('');
-    sheetRef.current?.close();
+    sheetRef.current?.dismiss();
   }
 
   async function handleCreate() {
@@ -127,7 +128,7 @@ export default function CreateAlertScreen() {
             {/* Asset selector — tap to open coin picker */}
             <Pressable
               style={styles.assetCard}
-              onPress={() => sheetRef.current?.snapToIndex(0)}
+              onPress={() => sheetRef.current?.present()}
             >
               <View style={styles.assetLeft}>
                 <View style={[styles.assetCircle, { backgroundColor: selectedAsset.color }]} />
@@ -212,9 +213,8 @@ export default function CreateAlertScreen() {
       </AppBackground>
 
       {/* Coin picker bottom sheet */}
-      <BottomSheet
+      <BottomSheetModal
         ref={sheetRef}
-        index={-1}
         snapPoints={['48%']}
         enablePanDownToClose
         enableDynamicSizing={false}
@@ -256,7 +256,7 @@ export default function CreateAlertScreen() {
             })}
           </View>
         </BottomSheetView>
-      </BottomSheet>
+      </BottomSheetModal>
     </View>
   );
 }

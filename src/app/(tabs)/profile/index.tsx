@@ -11,6 +11,7 @@ import { useLogoutMutation } from "@/src/store/api/authApi";
 import { useFetchNotificationsQuery } from "@/src/store/api/notificationApi";
 import { useFetchWatchlistQuery } from "@/src/store/api/watchListApi";
 import { useAppDispatch } from "@/src/store/hooks";
+import { useIsFocused } from "@react-navigation/native";
 import { router } from "expo-router";
 import { ScrollView, View } from "react-native";
 
@@ -18,8 +19,12 @@ const SUBTITLE_PLACEHOLDER = "—";
 
 export default function ProfileIndex() {
   const dispatch = useAppDispatch();
+  const isFocused = useIsFocused();
   const { data: alertsData } = useFetchPriceAlertsQuery();
-  const { data: notificationsData } = useFetchNotificationsQuery();
+  const { data: notificationsData } = useFetchNotificationsQuery(undefined, {
+    pollingInterval: isFocused ? 15000 : 0,
+    skipPollingIfUnfocused: true,
+  });
   const { data: watchlistData } = useFetchWatchlistQuery();
   const [logoutMutation, { isLoading: isLoggingOut }] = useLogoutMutation();
 

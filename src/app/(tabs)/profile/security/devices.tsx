@@ -5,55 +5,20 @@ import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
 import { getApiErrorMessage } from '@/src/helpers/getApiErrorMessage';
 import { platformShort, platformTitle } from '@/src/helpers/devicePlatform';
-import { useCurrentDeviceToken } from '@/src/hooks/useCurrentDeviceToken';
-import { getDevicePlatform } from '@/src/services/expoPushToken';
-import {
-  useGetDevicesQuery,
-  useRegisterDeviceMutation,
-  type RegisteredDevice,
-} from '@/src/store/api/devicesApi';
-import { useEffect } from 'react';
+import { useEnsureDeviceRegistered } from '@/src/hooks/useEnsureDeviceRegistered';
+import type { RegisteredDevice } from '@/src/store/api/devicesApi';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 export default function Devices() {
-  const { data, isLoading, refetch } = useGetDevicesQuery();
-  const [registerDevice, { isLoading: isRegistering, error: registerError }] =
-    useRegisterDeviceMutation();
-
   const {
+    devices,
+    isLoadingDevices,
     token: thisDeviceToken,
-    error: tokenError,
-    reload: loadToken,
-  } = useCurrentDeviceToken();
-
-  const devices = data?.data ?? [];
-  const alreadyRegistered =
-    !!thisDeviceToken &&
-    devices.some((d) => d.expoPushToken === thisDeviceToken);
-
-  // Auto-register the current device once the token and the existing device
-  // list are both known. Tag invalidation refreshes the list in place.
-  useEffect(() => {
-    if (!thisDeviceToken || isLoading || isRegistering) return;
-    if (alreadyRegistered) return;
-    registerDevice({
-      expoPushToken: thisDeviceToken,
-      platform: getDevicePlatform(),
-    });
-  }, [
-    thisDeviceToken,
-    isLoading,
+    tokenError,
     isRegistering,
-    alreadyRegistered,
-    registerDevice,
-  ]);
-
-  async function handleRetry() {
-    const token = await loadToken();
-    if (!token) return;
-    await refetch();
-    registerDevice({ expoPushToken: token, platform: getDevicePlatform() });
-  }
+    registerError,
+    retry,
+  } = useEnsureDeviceRegistered(true);
 
   const errorMessage = tokenError
     ? tokenError
@@ -70,7 +35,7 @@ export default function Devices() {
           hasBackBtn
         />
 
-        {isLoading ? (
+        {isLoadingDevices ? (
           <View style={styles.loader}>
             <Loader />
           </View>
@@ -78,7 +43,7 @@ export default function Devices() {
           <EmptyState
             errorMessage={errorMessage}
             isBusy={isRegistering}
-            onRetry={handleRetry}
+            onRetry={retry}
           />
         ) : (
           <ScrollView

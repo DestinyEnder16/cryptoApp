@@ -1,67 +1,72 @@
 # How Device Registration Works
 
-The goal: when a user opens the **Devices** screen, the current phone/browser is automatically saved to the backend so it can receive push notifications and appear in their "active devices" list.
+The goal: get this device's Expo push token onto the backend (`POST /me/devices`) so it can receive push notifications — automatically on login, without registering the same token twice, and with a visible retry path if it fails.
+
+For what happens *after* a push arrives (keeping the in-app list live), see [notifications.md](notifications.md).
 
 ## The moving parts
 
 | Piece | File | What it does |
 |---|---|---|
 | Push token helper | `src/services/expoPushToken.ts` | Asks the OS for the device's Expo push token |
+| Token-loading hook | `src/hooks/useCurrentDeviceToken.ts` | Wraps the token helper in React state (load/error/reload) |
+| Registration hook | `src/hooks/useEnsureDeviceRegistered.ts` | The single place that decides whether to register, and does it |
 | API endpoints | `src/store/api/devicesApi.ts` | `GET /me/devices` and `POST /me/devices` via RTK Query |
-| UI screen | `src/app/(tabs)/profile/security/devices.tsx` | Orchestrates the flow and renders the list |
+| Auth bootstrap | `src/app/_layout.tsx` | Calls the hook silently on every login/cold-boot |
+| Devices screen | `src/app/(tabs)/profile/security/devices.tsx` | Calls the same hook, but renders its state (list, errors, retry button) |
 | Auth header | `src/store/api/baseApi.ts` | Attaches the user's bearer token to every request |
+
+## One hook, two call sites
+
+There used to be two separate implementations of "check if this device is registered, register it if not" — one inline in the Devices screen, one in a standalone `usePushNotifications` hook fired from auth bootstrap. They were consolidated into a single hook, `useEnsureDeviceRegistered(enabled: boolean)`, because both were doing the same thing against the same two RTK Query hooks.
+
+- **`_layout.tsx`** calls it silently: `useEnsureDeviceRegistered(isAuthenticated)`, ignoring the return value. This is what makes registration happen automatically on cold boot and fresh login, with no UI.
+- **`devices.tsx`** calls the same hook with `enabled: true` and actually renders what it returns — the device list, a loading state, and (via the hook's `retry()`) a "Try again" button if something failed.
 
 ## The flow — step by step
 
-### Step 1 — User opens the Devices screen
+### Step 1 — Something calls `useEnsureDeviceRegistered(enabled)`
 
-The `Devices` component in `devices.tsx` mounts. Two things start in parallel:
+Either `AuthBootstrap` (whenever `isAuthenticated` becomes true) or the Devices screen (on every mount, since it's always `enabled`).
 
-- `useGetDevicesQuery()` fires a `GET /me/devices` request to fetch any devices already registered for this user.
-- A `useEffect` calls `loadToken()` to fetch *this* device's push token.
+### Step 2 — Fetch this device's token and the existing device list, in parallel
 
-### Step 2 — Get the Expo push token
-
-`getExpoPushToken()` in `expoPushToken.ts`:
-
-1. Asks the OS for notification permission (`Notifications.requestPermissionsAsync()`).
-2. If granted, calls `Notifications.getExpoPushTokenAsync()` with the EAS project ID — this returns a string like `ExponentPushToken[xxxxxxx]`.
-3. If we're on a simulator or permission is denied **in dev**, it falls back to a synthetic token (`ExponentPushToken[dev-ios-<sessionId>]`) so the flow can still be tested without a real device.
-4. The token is stored in the screen's local state as `thisDeviceToken`.
+- `useCurrentDeviceToken()` calls `getExpoPushToken()`, which asks the OS for notification permission and returns a string like `ExponentPushToken[xxxxxxx]` (or a synthetic dev-only fallback token in `__DEV__` on a simulator/denied permission — see the caveat in [notifications.md](notifications.md)).
+- `useGetDevicesQuery()` fires `GET /me/devices`, skipped entirely if `enabled` is `false`.
 
 ### Step 3 — Decide whether to register
 
-The screen compares the freshly fetched token against the list returned by the API:
-
 ```ts
 const alreadyRegistered =
-  !!thisDeviceToken &&
-  devices.some((d) => d.expoPushToken === thisDeviceToken);
+  !!token && devices.some((d) => d.expoPushToken === token);
 ```
 
-If the token already appears in the list → do nothing. Otherwise, continue.
+If this exact token is already in the returned list, the effect does nothing — this is what stops a relogin on the same device from re-sending a token the backend already has.
 
-### Step 4 — Auto-register the device
-
-A `useEffect` waits until both the token AND the device list are ready, then calls:
+### Step 4 — Register if needed
 
 ```ts
-registerDevice({
-  expoPushToken: thisDeviceToken,
-  platform: getDevicePlatform(), // 'ios' | 'android' | 'web'
-});
+useEffect(() => {
+  if (!enabled || !token || isLoadingDevices || isRegistering) return;
+  if (alreadyRegistered) return;
+  registerDevice({ expoPushToken: token, platform: getDevicePlatform() });
+}, [...]);
 ```
 
-This triggers the RTK Query mutation defined in `devicesApi.ts`, which sends a `POST /me/devices` with the token + platform in the body. The user's bearer token is attached automatically by `prepareHeaders` in `baseApi.ts`.
+This fires the RTK Query mutation in `devicesApi.ts`, sending `POST /me/devices` with `{ expoPushToken, platform }`. The bearer token is attached automatically by `baseApi.ts`.
 
-### Step 5 — Refresh the list automatically
+### Step 5 — Cache refreshes automatically
 
-The mutation declares `invalidatesTags: ['Device']`. Because `getDevices` declares `providesTags: ['Device']`, RTK Query automatically re-runs `GET /me/devices` once the POST succeeds. The list re-renders with the new device included, and the one matching `thisDeviceToken` is labeled **"Current"**.
+`registerDevice` declares `invalidatesTags: ['Device']`; `getDevices` declares `providesTags: ['Device']`. RTK Query re-runs `GET /me/devices` once the POST succeeds, so any mounted consumer (the Devices screen's list, the "Registered devices" subtitle on the security index screen) picks up the new device without an explicit refetch call.
 
-### Step 6 — Error / retry path
+### Step 6 — Error / retry path (Devices screen only)
 
-If something fails (permission denied in production, network error, etc.), the screen shows the `EmptyState` with a **Try again** button. `handleRetry` re-runs the token fetch, refetches the list, and retries the registration mutation.
+If the token fetch or the registration mutation fails, `devices.tsx` surfaces `tokenError`/`registerError` and shows a **Try again** button wired to the hook's `retry()`, which reloads the token, refetches the device list, and retries the mutation.
+
+## Who identifies "this device" in the UI
+
+Both `devices.tsx` (the "Current" badge on a device row) and the security index screen's "Registered devices" subtitle identify the current device the same way: comparing `device.expoPushToken === token` from `useEnsureDeviceRegistered`/`useCurrentDeviceToken` against each entry in the fetched list. Platform labels (`"iOS device"`, `"Android"`, etc.) come from the shared `src/helpers/devicePlatform.ts`.
 
 ## Mental model in one sentence
 
-> Open screen → ask OS for push token → check if backend already knows it → if not, POST it → tag invalidation refreshes the list.
+> On login (silently) or on visiting the Devices screen (visibly), fetch this device's push token and the backend's device list, and POST the token only if the backend doesn't already have it.

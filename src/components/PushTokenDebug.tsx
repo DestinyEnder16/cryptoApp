@@ -1,10 +1,10 @@
-import { showToast } from '@/src/helpers/showToast';
-import { getExpoPushToken } from '@/src/services/expoPushToken';
-import * as Clipboard from 'expo-clipboard';
-import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text } from 'react-native';
-import { Colors } from '../constants/styles';
-import { Fonts } from '../constants/fonts';
+import { showToast } from "@/src/helpers/showToast";
+import { getExpoPushToken } from "@/src/services/expoPushToken";
+import * as Clipboard from "expo-clipboard";
+import { useEffect, useState } from "react";
+import { Pressable, StyleSheet, Text } from "react-native";
+import { Colors } from "../constants/styles";
+import { Fonts } from "../constants/fonts";
 
 // Temporary debug affordance — tap to copy this device's Expo push token for
 // pasting into Expo's push notification testing tool. Remove once push is
@@ -15,7 +15,9 @@ export default function PushTokenDebug() {
   useEffect(() => {
     getExpoPushToken()
       .then(setToken)
-      .catch((err) => setToken(`error: ${err instanceof Error ? err.message : err}`));
+      .catch((err) =>
+        setToken(`error: ${err instanceof Error ? err.message : err}`),
+      );
   }, []);
 
   if (!token) return null;
@@ -23,7 +25,11 @@ export default function PushTokenDebug() {
   async function handleCopy() {
     if (!token) return;
     await Clipboard.setStringAsync(token);
-    showToast({ type: 'success', title: 'Copied', message: 'Push token copied to clipboard.' });
+    showToast({
+      type: "success",
+      title: "Copied",
+      message: "Push token copied to clipboard.",
+    });
   }
 
   return (

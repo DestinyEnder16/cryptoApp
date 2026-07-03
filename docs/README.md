@@ -11,6 +11,7 @@ Plain-language explanations of the trickier areas of this app — the kind of th
 | [kyc-upload.md](kyc-upload.md) | How a KYC document photo is picked and uploaded to the server (Cloudinary) |
 | [kyc-status.md](kyc-status.md) | How the pending/approved/rejected screens are picked from the user's real KYC status |
 | [device-registration.md](device-registration.md) | How the current device auto-registers for push notifications |
+| [notifications.md](notifications.md) | How push arrival and polling keep the in-app notifications list/badge live |
 | [wallet-api.md](wallet-api.md) | How the Wallets tab reads from the wallet API (endpoints, caching, transaction display, what's still sandbox) |
 | [wallet-screens.md](wallet-screens.md) | How the Wallets tab screens (deposit/withdraw/transactions) are structured and wired |
 

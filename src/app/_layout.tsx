@@ -17,7 +17,7 @@ import { profileApi } from "../store/api/profileApi";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { setRefreshToken, setToken } from "../store/slices/authSlice";
 import { NotificationProvider } from "../context/NotificationContext";
-import { usePushNotifications } from "../hooks/usePushNotifications";
+import { useEnsureDeviceRegistered } from "../hooks/useEnsureDeviceRegistered";
 
 import * as Notifications from "expo-notifications";
 
@@ -92,7 +92,7 @@ function AuthBootstrap({ children }: { children: ReactNode }) {
   // login (token set by the sign-in flow). AuthBootstrap stays mounted for the
   // whole session, so this reacts to login without needing to re-bootstrap.
   const isAuthenticated = useAppSelector((state) => !!state.auth.token);
-  usePushNotifications(isAuthenticated);
+  useEnsureDeviceRegistered(isAuthenticated);
 
   useEffect(() => {
     let cancelled = false;

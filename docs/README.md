@@ -14,7 +14,3 @@ Plain-language explanations of the trickier areas of this app — the kind of th
 | [notifications.md](notifications.md) | How push arrival and polling keep the in-app notifications list/badge live |
 | [wallet-api.md](wallet-api.md) | How the Wallets tab reads from the wallet API (endpoints, caching, transaction display, what's still sandbox) |
 | [wallet-screens.md](wallet-screens.md) | How the Wallets tab screens (deposit/withdraw/transactions) are structured and wired |
-
-## Adding a new doc
-
-When a new complex area is built, add a file here and a row above. Keep it simple: explain it like you would to a teammate who's new to the code. Favor a short walkthrough and a clear mental model over exhaustive detail.

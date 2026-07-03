@@ -1,6 +1,7 @@
 import { useFonts } from "expo-font";
 import { router, SplashScreen, Stack } from "expo-router";
 import { ReactNode, useEffect, useState } from "react";
+import { Platform } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { KeyboardProvider } from "react-native-keyboard-controller";
@@ -29,6 +30,19 @@ Notifications.setNotificationHandler({
     shouldSetBadge: true,
   }),
 });
+
+// Android 8+ requires a notification channel or pushes fall back to a
+// default channel without heads-up/sound/vibration — most noticeable when
+// the app is backgrounded/closed, since the banner is the only signal the
+// user gets. Must be set up before any notification can use it.
+if (Platform.OS === "android") {
+  Notifications.setNotificationChannelAsync("default", {
+    name: "default",
+    importance: Notifications.AndroidImportance.MAX,
+    vibrationPattern: [0, 250, 250, 250],
+    lightColor: "#FF231F7C",
+  });
+}
 
 SplashScreen.preventAutoHideAsync();
 

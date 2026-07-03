@@ -9,6 +9,7 @@ This doc covers the **data/delivery side** (getting a notification to show up, a
 | Piece | File | What it does |
 |---|---|---|
 | Global notification handler | `src/app/_layout.tsx` | Tells the OS how to present a push while the app is open (banner, sound, badge) |
+| Android notification channel | `src/app/_layout.tsx` | Registers a `"default"` channel with `IMPORTANCE_MAX` — required on Android 8+ for heads-up/sound/vibration |
 | Live-sync listener | `src/context/NotificationContext.tsx` | Invalidates the notification cache when a push arrives or is tapped |
 | API layer | `src/store/api/notificationApi.ts` | `GET /me/notifications` and `PATCH /me/notifications/read-all` via RTK Query |
 | List screens | `src/app/(tabs)/home/notifications.tsx`, `src/app/(tabs)/profile/notifications.tsx` | Render the list, poll while focused |
@@ -76,6 +77,21 @@ Notifications.setNotificationHandler({
   }),
 });
 ```
+
+On Android, presentation also depends on the notification **channel** the push is delivered on. `_layout.tsx` registers a `"default"` channel at module load with `AndroidImportance.MAX`:
+
+```ts
+if (Platform.OS === "android") {
+  Notifications.setNotificationChannelAsync("default", {
+    name: "default",
+    importance: Notifications.AndroidImportance.MAX,
+    vibrationPattern: [0, 250, 250, 250],
+    lightColor: "#FF231F7C",
+  });
+}
+```
+
+Without this, Android falls back to a default channel that isn't high-importance — notifications still land in the shade, but without a heads-up popup, sound, or vibration. That matters most exactly when the app is backgrounded/closed, since the heads-up alert is the only signal the user gets.
 
 ### Step 3 — The app reacts, if it can
 

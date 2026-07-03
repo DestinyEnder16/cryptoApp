@@ -1,5 +1,6 @@
 import AppBackground from '@/src/components/AppBackground';
 import { LoadingIcon } from '@/src/components/LoadingSpinner';
+import PushTokenDebug from '@/src/components/PushTokenDebug';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
 import { useFetchTrendingAssetsQuery } from '@/src/store/api/marketApi';
@@ -30,6 +31,7 @@ export default function KycIncomplete() {
             Your portfolio is growing. Complete verification to unlock trading
             and withdrawals.
           </Text>
+          <PushTokenDebug />
         </View>
 
         <View style={styles.portfolioCard}>

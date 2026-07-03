@@ -1,5 +1,6 @@
 import AppBackground from '@/src/components/AppBackground';
 import Btn from '@/src/components/Btn';
+import PushTokenDebug from '@/src/components/PushTokenDebug';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
 import { describeTransaction } from '@/src/helpers/describeTransaction';
@@ -86,6 +87,7 @@ export default function KycDone() {
       <View style={styles.header}>
         <Text style={styles.title}>Home</Text>
         <Text style={styles.welcome}>Welcome back, {firstName}</Text>
+        <PushTokenDebug />
       </View>
 
       <ScrollView

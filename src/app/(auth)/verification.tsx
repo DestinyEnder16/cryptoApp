@@ -100,7 +100,7 @@ export default function Verification() {
       dispatch(setToken(result.accessToken));
       dispatch(setRefreshToken(result.refreshToken));
       setCredentials({
-        email,
+        identifier: result.user?.id ?? email,
         token: result.accessToken,
         refreshToken: result.refreshToken,
       });

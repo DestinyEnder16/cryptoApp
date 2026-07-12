@@ -21,6 +21,7 @@
     "@react-navigation/native": "^7.1.8",
     "@reduxjs/toolkit": "^2.11.2",
     "@shopify/flash-list": "2.0.2",
+    "big.js": "^7.0.1",
     "expo": "~54.0.33",
     "expo-camera": "~17.0.10",
     "expo-clipboard": "~8.0.8",
@@ -70,6 +71,7 @@
     "yup": "^1.7.1"
   },
   "devDependencies": {
+    "@types/big.js": "^7.0.0",
     "@types/react": "~19.1.0",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~10.0.0",

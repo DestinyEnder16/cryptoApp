@@ -149,7 +149,10 @@ function SignUpView() {
                   placeholder="Enter your password"
                   placeholderTextColor={Colors.ash}
                   style={AuthStyles.inputField}
-                  keyboardType="visible-password"
+                  secureTextEntry
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  textContentType="password"
                   onChangeText={onChange}
                   onBlur={onBlur}
                   value={value}

@@ -2,7 +2,12 @@ import * as Keychain from "react-native-keychain";
 
 type Credentials = {
   token: string;
-  email?: string;
+  /**
+   * A stable label for the access-token entry (account id, or the login
+   * identifier). Only used as the Keychain "username"; bootstrap reads the
+   * token (password) regardless of this value.
+   */
+  identifier?: string;
   refreshToken?: string;
 };
 
@@ -14,12 +19,15 @@ const DEVICE_SERVICE = "com.tminus.crypto.device";
 
 export const setCredentials = async ({
   token,
-  email,
+  identifier,
   refreshToken,
 }: Credentials) => {
-  // Store the credentials
-  email &&
-    (await Keychain.setGenericPassword(email, token, { service: SERVICE }));
+  // Store the access token unconditionally — phone logins have no email, and
+  // gating on one previously left those sessions unpersisted. The username is
+  // just a label; fall back to a constant when no identifier is available.
+  await Keychain.setGenericPassword(identifier || "account", token, {
+    service: SERVICE,
+  });
   if (refreshToken) await saveRefreshToken(refreshToken);
 };
 

@@ -60,7 +60,7 @@ export default function VerifyTwoFactor() {
       dispatch(setToken(payload.accessToken));
       dispatch(setRefreshToken(payload.refreshToken));
       await setCredentials({
-        email: payload.user.email,
+        identifier: payload.user?.id,
         token: payload.accessToken,
         refreshToken: payload.refreshToken,
       });

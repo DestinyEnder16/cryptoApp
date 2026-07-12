@@ -1,6 +1,6 @@
 import { API_URL } from '@/src/constants/config';
 import { getRefreshToken, saveRefreshToken } from '@/src/services/nativeKeychain';
-import type { RootState } from '@/src/store';
+import type { AppDispatch, RootState } from '@/src/store';
 import {
   createApi,
   fetchBaseQuery,
@@ -8,7 +8,7 @@ import {
   type FetchArgs,
   type FetchBaseQueryError,
 } from '@reduxjs/toolkit/query/react';
-import { logout, setRefreshToken, setToken } from '../slices/authSlice';
+import { setRefreshToken, setToken } from '../slices/authSlice';
 
 const rawBaseQuery = fetchBaseQuery({
   baseUrl: API_URL,
@@ -75,9 +75,12 @@ const baseQueryWithReauth: BaseQueryFn<
       // Retry the original request with the fresh access token.
       result = await rawBaseQuery(args, api, extraOptions);
     } else {
-      // Refresh failed / no refresh token — end the session.
-      api.dispatch(logout());
-      api.dispatch(baseApi.util.resetApiState());
+      // Refresh failed / no refresh token — tear the whole session down
+      // (Keychain, device record, persisted profile, and API cache), not just
+      // Redux. Lazy import avoids a static cycle with auth.ts, which imports
+      // baseApi. Route guards handle navigation off protected screens.
+      const { signOut } = await import('@/src/services/auth');
+      await signOut(api.dispatch as AppDispatch);
     }
   }
 

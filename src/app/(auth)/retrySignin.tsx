@@ -50,7 +50,7 @@ export default function RetrySignin() {
       dispatch(setToken(result.accessToken));
       dispatch(setRefreshToken(result.refreshToken));
       await setCredentials({
-        email: isEmail ? identifier : storedEmail,
+        identifier: result.user?.id,
         token: result.accessToken,
         refreshToken: result.refreshToken,
       });

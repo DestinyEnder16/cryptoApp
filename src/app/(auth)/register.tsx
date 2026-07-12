@@ -43,26 +43,35 @@ export default function RegisterScreen() {
       // IMPORTANT checking number validity
       const checkValid = phoneInput.current?.isValidNumber(value);
       if (!checkValid) throw new Error("Phone number is not valid");
-      const res = await validateSignup({ phone: formattedValue });
-      if (res.data?.canRegister === false)
+
+      // .unwrap() so a rejected mutation throws into the catch below instead of
+      // being read off res.data / res.error.
+      const validation = await validateSignup({
+        phone: formattedValue,
+      }).unwrap();
+      if (validation.canRegister === false)
         throw new Error("This number is already linked to an email");
 
-      dispatch(addUserMobile(formattedValue));
-
-      if (!user?.email || !user?.name || !user?.mobile) {
+      // The account details from the previous sign-up step live in the selector
+      // already. Guard on those; the phone number is validated locally above
+      // (a freshly-dispatched addUserMobile would not be visible in this closure
+      // yet, so don't guard on user.mobile here).
+      if (!user?.email || !user?.name || !user?.password) {
         throw new Error("Missing account details. Please restart sign up.");
       }
 
+      dispatch(addUserMobile(formattedValue));
+
       // IMPORTANT creating an account
       const register = await signup({
-        email: user?.email,
+        email: user.email,
         password: user.password,
-        fullName: user?.name,
+        fullName: user.name,
         phone: formattedValue,
-      });
+      }).unwrap();
 
       reset();
-      if (register.data?.emailVerificationRequired) {
+      if (register.emailVerificationRequired) {
         router.navigate("/verification");
       } else {
         router.navigate("/handleSignin");

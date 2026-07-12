@@ -6,6 +6,7 @@ import WalletField from '@/src/components/wallet/WalletField';
 import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
 import { formatAmount } from '@/src/helpers/formatAmount';
+import { gt, isPositive } from '@/src/helpers/money';
 import { useGetWalletQuery } from '@/src/store/api/walletApi';
 import { router } from 'expo-router';
 import { useState } from 'react';
@@ -36,8 +37,13 @@ export default function SendScreen() {
     ? `${formatAmount(selectedBalance.available)} ${selectedSymbol}`
     : '—';
 
+  // Decimal-safe: don't let a valid-looking amount over the balance through,
+  // and don't reject an exact-balance send to a float-rounding artifact.
+  const overBalance = selectedBalance
+    ? gt(amount, selectedBalance.available)
+    : true;
   const canContinue =
-    recipient.trim().length > 0 && parseFloat(amount) > 0;
+    recipient.trim().length > 0 && isPositive(amount) && !overBalance;
 
   return (
     <AppBackground>

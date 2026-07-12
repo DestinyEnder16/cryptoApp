@@ -104,7 +104,9 @@ function SignInView({ showFingerprintIcon = true }: AuthProps) {
       dispatch(setRefreshToken(result.refreshToken));
 
       setCredentials({
-        email: data.email,
+        // Stable account id works for both email and phone logins (data.email
+        // is empty during phone login, which previously skipped token storage).
+        identifier: result.user?.id,
         token: result.accessToken,
         refreshToken: result.refreshToken,
       });
@@ -205,6 +207,10 @@ function SignInView({ showFingerprintIcon = true }: AuthProps) {
                       AuthStyles.inputField,
                       isLoading && { color: Colors.ash },
                     ]}
+                    secureTextEntry
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    textContentType="password"
                     onChangeText={onChange}
                     onBlur={onBlur}
                     value={value}

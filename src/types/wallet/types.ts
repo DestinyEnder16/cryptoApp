@@ -1,5 +1,11 @@
 import type { UserVerification } from '../auth/types';
 
+// NOTE: Monetary values below arrive from the API as JS `number`s. Do NOT do
+// arithmetic or comparisons on them with the raw operators — float rounding can
+// corrupt balance checks and amounts. Route all money math through
+// src/helpers/money.ts. (Migrating the wire format to decimal strings / integer
+// minor units is a backend contract change tracked separately.)
+
 // GET /wallet ---------------------------------------------------------------
 
 export interface DepositAddress {

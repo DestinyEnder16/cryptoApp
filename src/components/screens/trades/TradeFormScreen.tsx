@@ -4,6 +4,7 @@ import { Fonts } from '@/src/constants/fonts';
 import { Colors } from '@/src/constants/styles';
 import { formatAmount } from '@/src/helpers/formatAmount';
 import { getApiErrorMessage } from '@/src/helpers/getApiErrorMessage';
+import { format, gt, isPositive, mul } from '@/src/helpers/money';
 import { showToast } from '@/src/helpers/showToast';
 import { useFetchAssetDetailsQuery } from '@/src/store/api/marketApi';
 import { useCreateQuoteMutation } from '@/src/store/api/tradeApi';
@@ -143,13 +144,17 @@ export default function TradeFormScreen({ initialTab = 'buy', symbol }: Props) {
 
   const previewToAmount = (() => {
     if (!inputAmount || !rate) return '';
-    const r = inputAmount * rate;
-    if (r < 0.001) return r.toFixed(6);
-    if (r < 1)     return r.toFixed(5);
-    return r.toFixed(2);
+    // Decimal-safe: avoid float error in inputAmount * rate before display.
+    const r = mul(inputAmount, rate);
+    if (r.lt(0.001)) return format(r, 6);
+    if (r.lt(1))     return format(r, 5);
+    return format(r, 2);
   })();
 
-  const hasInsufficientBalance = inputAmount > 0 && inputAmount > availableBalance;
+  // Compare the raw typed string against the balance with decimal precision so
+  // an exact-balance amount isn't wrongly flagged (or wrongly allowed).
+  const hasInsufficientBalance =
+    isPositive(fromAmount) && gt(fromAmount, availableBalance);
 
   // "1 BTC = 64,200.50 USDT" for buy; "1 ETH = 1,840.80 USDT" for sell/swap
   const rateDisplay = (() => {

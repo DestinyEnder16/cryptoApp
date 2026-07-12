@@ -1,4 +1,4 @@
-import * as Keychain from 'react-native-keychain';
+import * as Keychain from "react-native-keychain";
 
 type Credentials = {
   token: string;
@@ -6,11 +6,11 @@ type Credentials = {
   refreshToken?: string;
 };
 
-const SERVICE = 'com.tminus.crypto.auth';
+const SERVICE = "com.tminus.crypto.auth";
 // Refresh token lives in its own entry so existing readers of the access-token
 // entry (credentials.password) keep working unchanged.
-const REFRESH_SERVICE = 'com.tminus.crypto.refresh';
-const DEVICE_SERVICE = 'com.tminus.crypto.device';
+const REFRESH_SERVICE = "com.tminus.crypto.refresh";
+const DEVICE_SERVICE = "com.tminus.crypto.device";
 
 export const setCredentials = async ({
   token,
@@ -26,7 +26,7 @@ export const setCredentials = async ({
 // Persist a (rotated) refresh token on its own — no email needed, so the
 // reauth flow can call this after every refresh.
 export const saveRefreshToken = async (refreshToken: string) => {
-  await Keychain.setGenericPassword('refresh', refreshToken, {
+  await Keychain.setGenericPassword("refresh", refreshToken, {
     service: REFRESH_SERVICE,
   });
 };
@@ -38,7 +38,7 @@ export const getRefreshToken = async (): Promise<string | null> => {
     });
     return credentials ? credentials.password : null;
   } catch (error) {
-    console.error('Failed to read refresh token from Keychain', error);
+    console.error("Failed to read refresh token from Keychain", error);
     return null;
   }
 };
@@ -50,16 +50,11 @@ export const getCredentials = async () => {
       service: SERVICE,
     });
     if (credentials) {
-      console.log(
-        'Credentials successfully loaded for user ' + credentials.password
-      );
       return credentials;
     } else {
-      console.log('No credentials stored');
       return false;
     }
-  } catch (error) {
-    console.error('Failed to access Keychain', error);
+  } catch {
     return false;
   }
 };
@@ -70,7 +65,7 @@ export const resetCredentials = async () => {
 };
 
 export const saveDeviceId = async (deviceId: string) => {
-  await Keychain.setGenericPassword('device', deviceId, {
+  await Keychain.setGenericPassword("device", deviceId, {
     service: DEVICE_SERVICE,
   });
 };

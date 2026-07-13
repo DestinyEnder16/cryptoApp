@@ -1,12 +1,12 @@
-import AppBackground from '@/src/components/AppBackground';
-import Loader from '@/src/components/Loader';
-import ScreenIntro from '@/src/components/ScreenIntro';
-import { Fonts } from '@/src/constants/fonts';
-import { Colors } from '@/src/constants/styles';
-import { getApiErrorMessage } from '@/src/helpers/getApiErrorMessage';
-import { platformShort, platformTitle } from '@/src/helpers/devicePlatform';
-import { useEnsureDeviceRegistered } from '@/src/hooks/useEnsureDeviceRegistered';
-import type { RegisteredDevice } from '@/src/store/api/devicesApi';
+import AppBackground from '@/src/shared/components/AppBackground';
+import Loader from '@/src/shared/components/Loader';
+import ScreenIntro from '@/src/shared/components/ScreenIntro';
+import { Fonts } from '@/src/shared/constants/fonts';
+import { Colors } from '@/src/shared/constants/styles';
+import { getApiErrorMessage } from '@/src/shared/helpers/getApiErrorMessage';
+import { platformShort, platformTitle } from '@/src/features/profile/helpers/devicePlatform';
+import { useEnsureDeviceRegistered } from '@/src/features/profile/hooks/useEnsureDeviceRegistered';
+import type { RegisteredDevice } from '@/src/features/profile/store/devicesApi';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 export default function Devices() {

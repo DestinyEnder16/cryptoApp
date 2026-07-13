@@ -1,4 +1,4 @@
-import IdentityScreen from '@/src/components/screens/kyc/process/IdentityScreen';
+import IdentityScreen from '@/src/features/kyc/screens/process/IdentityScreen';
 
 export default function Identity() {
   return <IdentityScreen />;

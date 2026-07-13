@@ -1,14 +1,14 @@
-import AppBackground from '@/src/components/AppBackground';
-import Loader from '@/src/components/Loader';
-import ScreenIntro from '@/src/components/ScreenIntro';
-import { Fonts } from '@/src/constants/fonts';
-import { CheckMarkIcon } from '@/src/constants/images';
-import { Colors } from '@/src/constants/styles';
+import AppBackground from '@/src/shared/components/AppBackground';
+import Loader from '@/src/shared/components/Loader';
+import ScreenIntro from '@/src/shared/components/ScreenIntro';
+import { Fonts } from '@/src/shared/constants/fonts';
+import { CheckMarkIcon } from '@/src/shared/constants/images';
+import { Colors } from '@/src/shared/constants/styles';
 import {
   useFetchNotificationsQuery,
   useReadAllNotificationsMutation,
-} from '@/src/store/api/notificationApi';
-import type { NotificationDetails } from '@/src/types/notification/types';
+} from '@/src/features/notifications/store/notificationApi';
+import type { NotificationDetails } from '@/src/features/notifications/types/notification';
 import { useIsFocused } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { Pressable, StyleSheet, Text, View } from 'react-native';

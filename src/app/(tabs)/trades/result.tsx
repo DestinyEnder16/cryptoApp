@@ -1,4 +1,4 @@
-import TradeResultScreen from '@/src/components/screens/trades/TradeResultScreen';
+import TradeResultScreen from '@/src/features/trades/screens/TradeResultScreen';
 
 export default function ResultPage() {
   return <TradeResultScreen />;

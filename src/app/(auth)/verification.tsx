@@ -1,17 +1,17 @@
-import BackHeader from '@/src/components/BackHeader';
-import Btn from '@/src/components/Btn';
-import NumInputField from '@/src/components/NumInputField';
-import { AuthStyles } from '@/src/components/SignInView';
-import { Fonts } from '@/src/constants/fonts';
-import { Colors } from '@/src/constants/styles';
-import { getApiErrorMessage } from '@/src/helpers/getApiErrorMessage';
-import { setCredentials } from '@/src/services/nativeKeychain';
+import BackHeader from '@/src/shared/components/BackHeader';
+import Btn from '@/src/shared/components/Btn';
+import NumInputField from '@/src/features/auth/components/NumInputField';
+import { AuthStyles } from '@/src/features/auth/components/SignInView';
+import { Fonts } from '@/src/shared/constants/fonts';
+import { Colors } from '@/src/shared/constants/styles';
+import { getApiErrorMessage } from '@/src/shared/helpers/getApiErrorMessage';
+import { setCredentials } from '@/src/features/auth/services/nativeKeychain';
 import {
   useOtpMutation,
   useOtpVerificationMutation,
-} from '@/src/store/api/verificationApi';
+} from '@/src/features/auth/store/verificationApi';
 import { useAppDispatch, useAppSelector } from '@/src/store/hooks';
-import { setRefreshToken, setToken } from '@/src/store/slices/authSlice';
+import { setRefreshToken, setToken } from '@/src/features/auth/store/authSlice';
 import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';

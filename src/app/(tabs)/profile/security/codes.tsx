@@ -1,17 +1,17 @@
-import AppBackground from '@/src/components/AppBackground';
-import ScreenIntro from '@/src/components/ScreenIntro';
-import { Fonts } from '@/src/constants/fonts';
-import { EyeSlash } from '@/src/constants/images';
-import { Colors } from '@/src/constants/styles';
-import { showToast } from '@/src/helpers/showToast';
+import AppBackground from '@/src/shared/components/AppBackground';
+import ScreenIntro from '@/src/shared/components/ScreenIntro';
+import { Fonts } from '@/src/shared/constants/fonts';
+import { EyeSlash } from '@/src/shared/constants/images';
+import { Colors } from '@/src/shared/constants/styles';
+import { showToast } from '@/src/shared/helpers/showToast';
 import {
   disable2faSchema,
   type Disable2faFormValues,
-} from '@/src/schemas/disable2faSchema';
+} from '@/src/features/profile/schemas/disable2faSchema';
 import {
   useEnableTwoFactorMutation,
   useRegenerateCodesMutation,
-} from '@/src/store/api/authApi';
+} from '@/src/features/auth/store/authApi';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';

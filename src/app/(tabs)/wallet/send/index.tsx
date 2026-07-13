@@ -1,2 +1,2 @@
-import SendScreen from '@/src/components/screens/wallet/SendScreen';
+import SendScreen from '@/src/features/wallet/screens/SendScreen';
 export default SendScreen;

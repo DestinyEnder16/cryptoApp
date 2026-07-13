@@ -1,22 +1,22 @@
-import AppBackground from "@/src/components/AppBackground";
-import ProfileStripItem from "@/src/components/ProfileStripItem";
-import ScreenIntro from "@/src/components/ScreenIntro";
-import { Fonts } from "@/src/constants/fonts";
-import { Colors } from "@/src/constants/styles";
-import { showToast } from "@/src/helpers/showToast";
-import { platformTitle } from "@/src/helpers/devicePlatform";
-import { useCurrentDeviceToken } from "@/src/hooks/useCurrentDeviceToken";
+import AppBackground from "@/src/shared/components/AppBackground";
+import ProfileStripItem from "@/src/features/profile/components/ProfileStripItem";
+import ScreenIntro from "@/src/shared/components/ScreenIntro";
+import { Fonts } from "@/src/shared/constants/fonts";
+import { Colors } from "@/src/shared/constants/styles";
+import { showToast } from "@/src/shared/helpers/showToast";
+import { platformTitle } from "@/src/features/profile/helpers/devicePlatform";
+import { useCurrentDeviceToken } from "@/src/features/profile/hooks/useCurrentDeviceToken";
 import {
   authenticateWithBiometrics,
   isBiometricAvailable,
-} from "@/src/services/biometricAuth";
-import { setSignedOut } from "@/src/services/sessionFlags";
-import { useGetDevicesQuery } from "@/src/store/api/devicesApi";
-import { useFetchMeQuery } from "@/src/store/api/profileApi";
+} from "@/src/features/auth/services/biometricAuth";
+import { setSignedOut } from "@/src/features/auth/services/sessionFlags";
+import { useGetDevicesQuery } from "@/src/features/profile/store/devicesApi";
+import { useFetchMeQuery } from "@/src/features/profile/store/profileApi";
 import {
   useEditSettingsMutation,
   useFetchMySettingsQuery,
-} from "@/src/store/api/settingsApi";
+} from "@/src/features/profile/store/settingsApi";
 import { router } from "expo-router";
 import { useState } from "react";
 import {

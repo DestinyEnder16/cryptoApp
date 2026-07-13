@@ -1,6 +1,6 @@
-import MenuHeader from '@/src/components/MenuHeader';
-import MenuIconsView from '@/src/components/MenuIconsView';
-import { Colors } from '@/src/constants/styles';
+import MenuHeader from '@/src/features/home/components/MenuHeader';
+import MenuIconsView from '@/src/features/home/components/MenuIconsView';
+import { Colors } from '@/src/shared/constants/styles';
 import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 

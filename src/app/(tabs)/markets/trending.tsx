@@ -1,16 +1,16 @@
-import AppBackground from '@/src/components/AppBackground';
+import AppBackground from '@/src/shared/components/AppBackground';
 import { router } from 'expo-router';
-import { LoadingIcon } from '@/src/components/LoadingSpinner';
-import MarketAssetView from '@/src/components/MarketAssetView';
-import ScreenIntro from '@/src/components/ScreenIntro';
-import TopGainerCard from '@/src/components/TopGainerCard';
-import { Fonts } from '@/src/constants/fonts';
-import { Colors } from '@/src/constants/styles';
-import { getSymbolColor } from '@/src/helpers/getSymbolColor';
+import { LoadingIcon } from '@/src/shared/components/LoadingSpinner';
+import MarketAssetView from '@/src/features/markets/components/MarketAssetView';
+import ScreenIntro from '@/src/shared/components/ScreenIntro';
+import TopGainerCard from '@/src/features/markets/components/TopGainerCard';
+import { Fonts } from '@/src/shared/constants/fonts';
+import { Colors } from '@/src/shared/constants/styles';
+import { getSymbolColor } from '@/src/shared/helpers/getSymbolColor';
 import {
   useFetchAssetDetailsQuery,
   useFetchTrendingAssetsQuery,
-} from '@/src/store/api/marketApi';
+} from '@/src/features/markets/store/marketApi';
 import { useState } from 'react';
 import {
   Pressable,

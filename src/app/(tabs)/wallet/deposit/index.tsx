@@ -1,4 +1,4 @@
-import DepositAssetScreen from '@/src/components/screens/wallet/DepositAssetScreen';
+import DepositAssetScreen from '@/src/features/wallet/screens/DepositAssetScreen';
 
 export default function Deposit() {
   return <DepositAssetScreen />;

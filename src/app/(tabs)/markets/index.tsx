@@ -1,7 +1,7 @@
-import AppBackground from '@/src/components/AppBackground';
-import MarketsView from '@/src/components/MarketsView';
-import ScreenIntro from '@/src/components/ScreenIntro';
-import { Colors } from '@/src/constants/styles';
+import AppBackground from '@/src/shared/components/AppBackground';
+import MarketsView from '@/src/features/markets/components/MarketsView';
+import ScreenIntro from '@/src/shared/components/ScreenIntro';
+import { Colors } from '@/src/shared/constants/styles';
 import { StyleSheet, View } from 'react-native';
 
 export type MarketFilters = 'Convert' | 'Fiat' | 'Spot' | 'Margin';

@@ -1,17 +1,17 @@
-import AppBackground from '@/src/components/AppBackground';
-import AppKeyboardScrollView from '@/src/components/AppKeyboardScrollView';
-import Btn from '@/src/components/Btn';
-import Loader from '@/src/components/Loader';
-import ProfileAvatar from '@/src/components/ProfileAvatar';
-import ScreenIntro from '@/src/components/ScreenIntro';
-import { Fonts } from '@/src/constants/fonts';
-import { Colors } from '@/src/constants/styles';
-import { showToast } from '@/src/helpers/showToast';
-import { emailRule, nameRule } from '@/src/schemas/basicFormSchema';
+import AppBackground from '@/src/shared/components/AppBackground';
+import AppKeyboardScrollView from '@/src/shared/components/AppKeyboardScrollView';
+import Btn from '@/src/shared/components/Btn';
+import Loader from '@/src/shared/components/Loader';
+import ProfileAvatar from '@/src/features/profile/components/ProfileAvatar';
+import ScreenIntro from '@/src/shared/components/ScreenIntro';
+import { Fonts } from '@/src/shared/constants/fonts';
+import { Colors } from '@/src/shared/constants/styles';
+import { showToast } from '@/src/shared/helpers/showToast';
+import { emailRule, nameRule } from '@/src/shared/schemas/basicFormSchema';
 import {
   useEditProfileMutation,
   useFetchMeQuery,
-} from '@/src/store/api/profileApi';
+} from '@/src/features/profile/store/profileApi';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { router } from 'expo-router';
 import { useEffect } from 'react';

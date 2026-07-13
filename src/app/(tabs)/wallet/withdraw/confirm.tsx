@@ -1,4 +1,4 @@
-import ConfirmWithdrawalScreen from '@/src/components/screens/wallet/ConfirmWithdrawalScreen';
+import ConfirmWithdrawalScreen from '@/src/features/wallet/screens/ConfirmWithdrawalScreen';
 
 export default function ConfirmWithdrawal() {
   return <ConfirmWithdrawalScreen />;

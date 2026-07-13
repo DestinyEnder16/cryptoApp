@@ -1,4 +1,4 @@
-import ReviewScreen from '@/src/components/screens/kyc/process/ReviewScreen';
+import ReviewScreen from '@/src/features/kyc/screens/process/ReviewScreen';
 
 export default function Review() {
   return <ReviewScreen />;

@@ -1,9 +1,9 @@
-import AppBackground from '@/src/components/AppBackground';
-import { LoadingIcon } from '@/src/components/LoadingSpinner';
-import { Fonts } from '@/src/constants/fonts';
-import { Colors } from '@/src/constants/styles';
-import { useFetchTrendingAssetsQuery } from '@/src/store/api/marketApi';
-import { useFetchMeQuery } from '@/src/store/api/profileApi';
+import AppBackground from '@/src/shared/components/AppBackground';
+import { LoadingIcon } from '@/src/shared/components/LoadingSpinner';
+import { Fonts } from '@/src/shared/constants/fonts';
+import { Colors } from '@/src/shared/constants/styles';
+import { useFetchTrendingAssetsQuery } from '@/src/features/markets/store/marketApi';
+import { useFetchMeQuery } from '@/src/features/profile/store/profileApi';
 import { useIsFocused } from '@react-navigation/native';
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';

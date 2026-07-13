@@ -1,7 +1,7 @@
-import Btn from "@/src/components/Btn";
-import { Fonts } from "@/src/constants/fonts";
-import { Colors } from "@/src/constants/styles";
-import { showToast } from "@/src/helpers/showToast";
+import Btn from "@/src/shared/components/Btn";
+import { Fonts } from "@/src/shared/constants/fonts";
+import { Colors } from "@/src/shared/constants/styles";
+import { showToast } from "@/src/shared/helpers/showToast";
 import { router } from "expo-router";
 import { useEffect } from "react";
 import { Image, ImageBackground, StyleSheet, Text, View } from "react-native";

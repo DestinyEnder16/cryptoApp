@@ -1,8 +1,8 @@
-import AppBackground from '@/src/components/AppBackground';
-import Btn from '@/src/components/Btn';
-import LockedKycTrade from '@/src/components/LockedKycTrade';
-import ScreenIntro from '@/src/components/ScreenIntro';
-import { useVerification } from '@/src/hooks/useVerification';
+import AppBackground from '@/src/shared/components/AppBackground';
+import Btn from '@/src/shared/components/Btn';
+import LockedKycTrade from '@/src/features/trades/components/LockedKycTrade';
+import ScreenIntro from '@/src/shared/components/ScreenIntro';
+import { useVerification } from '@/src/features/kyc/hooks/useVerification';
 import { router } from 'expo-router';
 import { View } from 'react-native';
 

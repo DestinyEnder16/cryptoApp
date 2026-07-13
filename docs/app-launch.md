@@ -19,7 +19,7 @@ If we rendered the app immediately, the user would see an empty profile pop into
 | Persistor | `src/store/index.ts` | `persistStore(store)` reads the profile back and fires `REHYDRATE` |
 | `PersistGate` | `src/app/_layout.tsx` | Renders nothing until rehydration finishes |
 | `AuthBootstrap` | `src/app/_layout.tsx` | Resolves the session and picks the landing route |
-| Keychain | `src/services/nativeKeychain.ts` | Source of truth for "is there a token" (not the persisted profile) |
+| Keychain | `src/features/auth/services/nativeKeychain.ts` | Source of truth for "is there a token" (not the persisted profile) |
 | Splash screen | `expo-router` `SplashScreen` | Kept up over the whole sequence; hidden only at the end |
 
 ## One important fact: only `profile` is persisted

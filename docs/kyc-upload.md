@@ -19,9 +19,9 @@ We chose **Pattern 1** because the API docs recommend it and a few KYC photos do
 
 | Piece | File | What it does |
 |---|---|---|
-| Picker + screen | `src/components/screens/kyc/process/UploadScreen.tsx` | Lets the user pick a file and triggers the upload |
-| API endpoint | `src/store/api/kycApi.ts` | `POST /auth/kyc/uploads` as multipart, via RTK Query |
-| Types | `src/types/kyc/types.ts` | Request/response shapes + `DocumentKind` |
+| Picker + screen | `src/features/kyc/screens/process/UploadScreen.tsx` | Lets the user pick a file and triggers the upload |
+| API endpoint | `src/features/kyc/store/kycApi.ts` | `POST /auth/kyc/uploads` as multipart, via RTK Query |
+| Types | `src/features/kyc/types/kyc.ts` | Request/response shapes + `DocumentKind` |
 
 ## The flow — step by step
 
@@ -112,7 +112,7 @@ So by the time the user reaches **ReviewScreen**, the slice holds everything: te
 
 ### The document-type translation
 
-The slice stores the human label (`"National ID"`) because that's what the UI displays. The API wants the enum value (`national_id`). `documentTypeValueFromLabel()` in `src/constants/documentTypes.ts` converts it — and `documentTypes.ts` is the single source of truth shared by the bottom sheet and the review screen, so the label and value can never drift apart.
+The slice stores the human label (`"National ID"`) because that's what the UI displays. The API wants the enum value (`national_id`). `documentTypeValueFromLabel()` in `src/features/kyc/constants/documentTypes.ts` converts it — and `documentTypes.ts` is the single source of truth shared by the bottom sheet and the review screen, so the label and value can never drift apart.
 
 ### ⚠️ Gotcha: never send `documentBackImageUrl: null`
 

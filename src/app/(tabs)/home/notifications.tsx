@@ -1,9 +1,9 @@
-import Loader from '@/src/components/Loader';
-import NotificationBar from '@/src/components/NotificationBar';
-import { Fonts } from '@/src/constants/fonts';
-import { NotificationEmptyIcon } from '@/src/constants/images';
-import { Colors } from '@/src/constants/styles';
-import { useFetchNotificationsQuery } from '@/src/store/api/notificationApi';
+import Loader from '@/src/shared/components/Loader';
+import NotificationBar from '@/src/features/notifications/components/NotificationBar';
+import { Fonts } from '@/src/shared/constants/fonts';
+import { NotificationEmptyIcon } from '@/src/shared/constants/images';
+import { Colors } from '@/src/shared/constants/styles';
+import { useFetchNotificationsQuery } from '@/src/features/notifications/store/notificationApi';
 import { useIsFocused } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { StyleSheet, Text, View } from 'react-native';

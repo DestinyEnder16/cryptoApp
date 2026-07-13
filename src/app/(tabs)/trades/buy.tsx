@@ -1,4 +1,4 @@
-import TradeFormScreen from '@/src/components/screens/trades/TradeFormScreen';
+import TradeFormScreen from '@/src/features/trades/screens/TradeFormScreen';
 import { useLocalSearchParams } from 'expo-router';
 
 type TabKey = 'buy' | 'sell' | 'swap';

@@ -4,8 +4,8 @@ import {
   ProfileIcon,
   TradeIcon,
   WalletIcon,
-} from '@/src/constants/images';
-import { Colors } from '@/src/constants/styles';
+} from '@/src/shared/constants/images';
+import { Colors } from '@/src/shared/constants/styles';
 import { Tabs } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 

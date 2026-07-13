@@ -1,11 +1,11 @@
-import AppBackground from '@/src/components/AppBackground';
-import Btn from '@/src/components/Btn';
-import Loader from '@/src/components/Loader';
-import MarketAssetView from '@/src/components/MarketAssetView';
-import ScreenIntro from '@/src/components/ScreenIntro';
-import { Fonts } from '@/src/constants/fonts';
-import { Colors } from '@/src/constants/styles';
-import { useFetchWatchlistQuery } from '@/src/store/api/watchListApi';
+import AppBackground from '@/src/shared/components/AppBackground';
+import Btn from '@/src/shared/components/Btn';
+import Loader from '@/src/shared/components/Loader';
+import MarketAssetView from '@/src/features/markets/components/MarketAssetView';
+import ScreenIntro from '@/src/shared/components/ScreenIntro';
+import { Fonts } from '@/src/shared/constants/fonts';
+import { Colors } from '@/src/shared/constants/styles';
+import { useFetchWatchlistQuery } from '@/src/features/markets/store/watchListApi';
 import { router } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 

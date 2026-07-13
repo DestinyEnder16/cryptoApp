@@ -1,4 +1,4 @@
-import WithdrawScreen from '@/src/components/screens/wallet/WithdrawScreen';
+import WithdrawScreen from '@/src/features/wallet/screens/WithdrawScreen';
 
 export default function Withdraw() {
   return <WithdrawScreen />;

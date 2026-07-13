@@ -2,9 +2,9 @@ import { Redirect, router } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { SvgProps } from "react-native-svg";
-import ActionBtn from "../components/ActionBtn";
-import BackHeader from "../components/BackHeader";
-import { Fonts } from "../constants/fonts";
+import ActionBtn from "@/src/shared/components/ActionBtn";
+import BackHeader from "@/src/shared/components/BackHeader";
+import { Fonts } from "@/src/shared/constants/fonts";
 import {
   ForwardBtn,
   SettingsAbout,
@@ -12,13 +12,13 @@ import {
   SettingsCurrency,
   SettingsLanguage,
   SettingsPreference,
-} from "../constants/images";
-import { Colors } from "../constants/styles";
-import { completeLogout } from "../helpers/completeLogout";
-import { useFetchMeQuery } from "../store/api/profileApi";
+} from "@/src/shared/constants/images";
+import { Colors } from "@/src/shared/constants/styles";
+import { completeLogout } from "@/src/features/auth/helpers/completeLogout";
+import { useFetchMeQuery } from "@/src/features/profile/store/profileApi";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import Toast from "react-native-toast-message";
-import { showToast } from "../helpers/showToast";
+import { showToast } from "@/src/shared/helpers/showToast";
 
 type SettingsConfig = {
   icon: React.FC<SvgProps>;

@@ -1,15 +1,15 @@
-import LoginTemplate from '@/src/components/LoginTemplate';
+import LoginTemplate from '@/src/features/auth/components/LoginTemplate';
 
-import AppBackground from '@/src/components/AppBackground';
-import Btn from '@/src/components/Btn';
-import { LoadingIcon } from '@/src/components/LoadingSpinner';
-import NumInputField from '@/src/components/NumInputField';
-import { showToast } from '@/src/helpers/showToast';
-import { useFetchMeQuery } from '@/src/store/api/profileApi';
+import AppBackground from '@/src/shared/components/AppBackground';
+import Btn from '@/src/shared/components/Btn';
+import { LoadingIcon } from '@/src/shared/components/LoadingSpinner';
+import NumInputField from '@/src/features/auth/components/NumInputField';
+import { showToast } from '@/src/shared/helpers/showToast';
+import { useFetchMeQuery } from '@/src/features/profile/store/profileApi';
 import {
   useOtpMutation,
   useOtpVerificationMutation,
-} from '@/src/store/api/verificationApi';
+} from '@/src/features/auth/store/verificationApi';
 import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';

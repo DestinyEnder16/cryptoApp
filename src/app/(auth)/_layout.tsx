@@ -1,4 +1,4 @@
-import { Colors } from '@/src/constants/styles';
+import { Colors } from '@/src/shared/constants/styles';
 
 import { Stack } from 'expo-router';
 

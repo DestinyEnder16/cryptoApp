@@ -1,4 +1,4 @@
-import QuotePreviewScreen from '@/src/components/screens/trades/QuotePreviewScreen';
+import QuotePreviewScreen from '@/src/features/trades/screens/QuotePreviewScreen';
 
 export default function QuotePage() {
   return <QuotePreviewScreen />;

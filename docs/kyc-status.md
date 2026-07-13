@@ -18,8 +18,8 @@ The backend tracks `kycStatus` on the user (`/me`): `not_started`, `pending`, `a
 | Piece | File | What it does |
 |---|---|---|
 | Router | `src/app/kyc/index.tsx` | Reads `/me` and renders the screen for the current status |
-| Status data | `src/hooks/useVerification.ts` | Exposes `kycStatus`, `level`, `label`, `limits` from `/me` |
-| Screens | `src/components/screens/kyc/status/*` | The three status screens + shared `StatusRow` |
+| Status data | `src/features/kyc/hooks/useVerification.ts` | Exposes `kycStatus`, `level`, `label`, `limits` from `/me` |
+| Screens | `src/features/kyc/screens/status/*` | The three status screens + shared `StatusRow` |
 
 ## The flow — step by step
 

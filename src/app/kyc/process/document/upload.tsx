@@ -1,4 +1,4 @@
-import UploadScreen from '@/src/components/screens/kyc/process/UploadScreen';
+import UploadScreen from '@/src/features/kyc/screens/process/UploadScreen';
 
 export default function Upload() {
   return <UploadScreen />;

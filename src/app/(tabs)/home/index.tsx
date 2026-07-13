@@ -1,4 +1,4 @@
-import { useVerification } from "@/src/hooks/useVerification";
+import { useVerification } from "@/src/features/kyc/hooks/useVerification";
 import { Redirect } from "expo-router";
 
 export default function HomeIndex() {

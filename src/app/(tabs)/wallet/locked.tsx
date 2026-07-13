@@ -1,7 +1,7 @@
-import AppBackground from '@/src/components/AppBackground';
-import Btn from '@/src/components/Btn';
-import LockedKycWallet from '@/src/components/LockedKycWallet';
-import ScreenIntro from '@/src/components/ScreenIntro';
+import AppBackground from '@/src/shared/components/AppBackground';
+import Btn from '@/src/shared/components/Btn';
+import LockedKycWallet from '@/src/features/wallet/components/LockedKycWallet';
+import ScreenIntro from '@/src/shared/components/ScreenIntro';
 import { router } from 'expo-router';
 import { View } from 'react-native';
 

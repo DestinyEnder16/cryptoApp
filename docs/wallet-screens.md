@@ -8,16 +8,16 @@ The goal: give the **Wallets** tab a full experience — portfolio overview + hi
 
 | Piece | File | What it does |
 |---|---|---|
-| API hooks | `src/store/api/walletApi.ts` | The five `GET` wallet endpoints the screens read from |
-| Sandbox constants | `src/data/sandboxWallet.ts` | What the API doesn't model yet: settlement-delay picker + flat withdrawal fee |
-| Shared UI atoms | `src/components/wallet/` | `WalletField` (boxed label+value/input), `WalletAssetRow`, `TransactionRow`, `CoinBadge`, `WalletNote` |
-| Screen UIs | `src/components/screens/wallet/` | One component per screen (`WalletHomeScreen`, `DepositAddressScreen`, …) |
+| API hooks | `src/features/wallet/store/walletApi.ts` | The five `GET` wallet endpoints the screens read from |
+| Sandbox constants | `src/features/wallet/data/sandboxWallet.ts` | What the API doesn't model yet: settlement-delay picker + flat withdrawal fee |
+| Shared UI atoms | `src/features/wallet/components/` | `WalletField` (boxed label+value/input), `WalletAssetRow`, `TransactionRow`, `CoinBadge`, `WalletNote` |
+| Screen UIs | `src/features/wallet/screens/` | One component per screen (`WalletHomeScreen`, `DepositAddressScreen`, …) |
 | Route files | `src/app/(tabs)/wallet/**` | Thin wrappers that just render the matching screen component |
 | Real data reused | `useVerification()` (limits), `LineChartView` | KYC withdrawal limits, the portfolio chart |
 
 ## The mental model
 
-**Route files only route.** Following the KYC pattern, each file under `app/(tabs)/wallet/` is a 3-line wrapper (e.g. `main.tsx` → `<WalletHomeScreen />`). All UI lives in `src/components/screens/wallet/`. This keeps navigation and presentation separate and makes the route tree easy to scan.
+**Route files only route.** Following the KYC pattern, each file under `app/(tabs)/wallet/` is a 3-line wrapper (e.g. `main.tsx` → `<WalletHomeScreen />`). All UI lives in `src/features/wallet/screens/`. This keeps navigation and presentation separate and makes the route tree easy to scan.
 
 **Screens read from API hooks.** Each screen calls a `useGet…Query` hook and renders a loading state while it resolves. Cross-screen flow values (chosen asset, amount, address) are still passed as **expo-router route params** and read with `useLocalSearchParams` — no global state needed.
 

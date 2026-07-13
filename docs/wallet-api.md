@@ -6,13 +6,13 @@ The goal: feed the **Wallets** tab from the real wallet API — balances, portfo
 
 | Piece | File | What it does |
 |---|---|---|
-| Endpoints | `src/store/api/walletApi.ts` | All 9 wallet endpoints (5 queries + 4 mutations), injected into `baseApi` |
-| Types | `src/types/wallet/types.ts` | Response shapes (`WalletOverview`, `Transaction`, `Withdrawal`, `TransferPayload`, …) |
-| Transaction display | `src/helpers/describeTransaction.ts` | Turns a raw transaction into title/sign/color |
-| Amount + date format | `src/helpers/formatAmount.ts`, `src/helpers/formatTxDate.ts` | Unit/date formatting shared across screens |
-| Screen UIs | `src/components/screens/wallet/` | Consume the hooks; render loading/empty/error states |
-| Shared atoms | `src/components/wallet/WalletAssetRow`, `TransactionRow` | Presentational rows fed by the API data |
-| Sandbox-only | `src/data/sandboxWallet.ts` | Settlement-delay picker (UI only — sent as `settlementDelaySeconds` to the real API) |
+| Endpoints | `src/features/wallet/store/walletApi.ts` | All 9 wallet endpoints (5 queries + 4 mutations), injected into `baseApi` |
+| Types | `src/features/wallet/types/wallet.ts` | Response shapes (`WalletOverview`, `Transaction`, `Withdrawal`, `TransferPayload`, …) |
+| Transaction display | `src/features/wallet/helpers/describeTransaction.ts` | Turns a raw transaction into title/sign/color |
+| Amount + date format | `src/shared/helpers/formatAmount.ts`, `src/features/wallet/helpers/formatTxDate.ts` | Unit/date formatting shared across screens |
+| Screen UIs | `src/features/wallet/screens/` | Consume the hooks; render loading/empty/error states |
+| Shared atoms | `src/features/wallet/components/WalletAssetRow`, `TransactionRow` | Presentational rows fed by the API data |
+| Sandbox-only | `src/features/wallet/data/sandboxWallet.ts` | Settlement-delay picker (UI only — sent as `settlementDelaySeconds` to the real API) |
 
 ## All endpoints
 

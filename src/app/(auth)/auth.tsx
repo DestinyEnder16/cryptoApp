@@ -1,7 +1,7 @@
-import SignInView from "@/src/components/SignInView";
-import SignUpView from "@/src/components/SignUpView";
-import SwitchSignMode from "@/src/components/SwitchSignMode";
-import { Colors } from "@/src/constants/styles";
+import SignInView from "@/src/features/auth/components/SignInView";
+import SignUpView from "@/src/features/auth/components/SignUpView";
+import SwitchSignMode from "@/src/features/auth/components/SwitchSignMode";
+import { Colors } from "@/src/shared/constants/styles";
 import { useRef, useState } from "react";
 import {
   NativeScrollEvent,

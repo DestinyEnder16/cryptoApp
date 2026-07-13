@@ -1,4 +1,4 @@
-import TradeMainScreen from '@/src/components/screens/trades/TradeMainScreen';
+import TradeMainScreen from '@/src/features/trades/screens/TradeMainScreen';
 
 export default function TradesMain() {
   return <TradeMainScreen />;

@@ -1,14 +1,14 @@
-import AppBackground from '@/src/components/AppBackground';
-import { LoadingIcon } from '@/src/components/LoadingSpinner';
-import { useLoginMutation } from '@/src/store/api/authApi';
+import AppBackground from '@/src/shared/components/AppBackground';
+import { LoadingIcon } from '@/src/shared/components/LoadingSpinner';
+import { useLoginMutation } from '@/src/features/auth/store/authApi';
 import { useAppDispatch, useAppSelector } from '@/src/store/hooks';
-import { saveRefreshToken } from '@/src/services/nativeKeychain';
-import { setRefreshToken, setToken } from '@/src/store/slices/authSlice';
+import { saveRefreshToken } from '@/src/features/auth/services/nativeKeychain';
+import { setRefreshToken, setToken } from '@/src/features/auth/store/authSlice';
 import { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Fonts } from '@/src/constants/fonts';
-import { Colors } from '@/src/constants/styles';
+import { Fonts } from '@/src/shared/constants/fonts';
+import { Colors } from '@/src/shared/constants/styles';
 import { router } from 'expo-router';
 
 export default function HandleSignin() {

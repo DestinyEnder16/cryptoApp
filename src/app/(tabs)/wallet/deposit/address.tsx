@@ -1,4 +1,4 @@
-import DepositAddressScreen from '@/src/components/screens/wallet/DepositAddressScreen';
+import DepositAddressScreen from '@/src/features/wallet/screens/DepositAddressScreen';
 
 export default function DepositAddress() {
   return <DepositAddressScreen />;

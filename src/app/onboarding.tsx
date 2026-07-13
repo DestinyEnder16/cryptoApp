@@ -10,10 +10,10 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import OnboardingView from '../components/OnboardingView';
-import { carouselData } from '../constants/data';
-import { Fonts } from '../constants/fonts';
-import { Colors } from '../constants/styles';
+import OnboardingView from '@/src/features/onboarding/components/OnboardingView';
+import { carouselData } from '@/src/shared/constants/data';
+import { Fonts } from '@/src/shared/constants/fonts';
+import { Colors } from '@/src/shared/constants/styles';
 
 export default function Onboarding() {
   const { width } = useWindowDimensions();

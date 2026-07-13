@@ -10,11 +10,11 @@ This doc covers the **data/delivery side** (getting a notification to show up, a
 |---|---|---|
 | Global notification handler | `src/app/_layout.tsx` | Tells the OS how to present a push while the app is open (banner, sound, badge) |
 | Android notification channel | `src/app/_layout.tsx` | Registers a `"default"` channel with `IMPORTANCE_MAX` — required on Android 8+ for heads-up/sound/vibration |
-| Live-sync listener | `src/context/NotificationContext.tsx` | Invalidates the notification cache when a push arrives or is tapped |
-| API layer | `src/store/api/notificationApi.ts` | `GET /me/notifications` and `PATCH /me/notifications/read-all` via RTK Query |
+| Live-sync listener | `src/features/notifications/context/NotificationContext.tsx` | Invalidates the notification cache when a push arrives or is tapped |
+| API layer | `src/features/notifications/store/notificationApi.ts` | `GET /me/notifications` and `PATCH /me/notifications/read-all` via RTK Query |
 | List screens | `src/app/(tabs)/home/notifications.tsx`, `src/app/(tabs)/profile/notifications.tsx` | Render the list, poll while focused |
 | Badge | `src/app/(tabs)/profile/index.tsx` | Shows the unread count, also polls while focused |
-| Device registration | `src/hooks/useEnsureDeviceRegistered.ts` | Separate concern — see [device-registration.md](device-registration.md) |
+| Device registration | `src/features/profile/hooks/useEnsureDeviceRegistered.ts` | Separate concern — see [device-registration.md](device-registration.md) |
 
 ## Two independent mechanisms keep the list "live"
 

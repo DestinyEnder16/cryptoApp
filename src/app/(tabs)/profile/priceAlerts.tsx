@@ -1,15 +1,15 @@
-import AppBackground from '@/src/components/AppBackground';
-import Btn from '@/src/components/Btn';
-import Loader from '@/src/components/Loader';
-import ScreenIntro from '@/src/components/ScreenIntro';
-import { Fonts } from '@/src/constants/fonts';
-import { Colors } from '@/src/constants/styles';
+import AppBackground from '@/src/shared/components/AppBackground';
+import Btn from '@/src/shared/components/Btn';
+import Loader from '@/src/shared/components/Loader';
+import ScreenIntro from '@/src/shared/components/ScreenIntro';
+import { Fonts } from '@/src/shared/constants/fonts';
+import { Colors } from '@/src/shared/constants/styles';
 import {
   useDeletePriceAlertMutation,
   useFetchPriceAlertsQuery,
   useUpdatePriceAlertMutation,
-} from '@/src/store/api/alertsApi';
-import type { PriceAlert } from '@/src/types/alerts/types';
+} from '@/src/features/alerts/store/alertsApi';
+import type { PriceAlert } from '@/src/features/alerts/types/alerts';
 import { FlashList } from '@shopify/flash-list';
 import { router } from 'expo-router';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';

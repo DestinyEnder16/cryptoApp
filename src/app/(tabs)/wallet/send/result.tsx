@@ -1,2 +1,2 @@
-import TransferResultScreen from '@/src/components/screens/wallet/TransferResultScreen';
+import TransferResultScreen from '@/src/features/wallet/screens/TransferResultScreen';
 export default TransferResultScreen;

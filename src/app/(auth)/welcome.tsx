@@ -1,21 +1,21 @@
-import AppBackground from '@/src/components/AppBackground';
-import AppKeyboardScrollView from '@/src/components/AppKeyboardScrollView';
-import LoginTemplate from '@/src/components/LoginTemplate';
-import ProfileAvatar from '@/src/components/ProfileAvatar';
-import { Fonts } from '@/src/constants/fonts';
-import { Colors } from '@/src/constants/styles';
-import { showToast } from '@/src/helpers/showToast';
-import { signOut } from '@/src/services/auth';
+import AppBackground from '@/src/shared/components/AppBackground';
+import AppKeyboardScrollView from '@/src/shared/components/AppKeyboardScrollView';
+import LoginTemplate from '@/src/features/auth/components/LoginTemplate';
+import ProfileAvatar from '@/src/features/profile/components/ProfileAvatar';
+import { Fonts } from '@/src/shared/constants/fonts';
+import { Colors } from '@/src/shared/constants/styles';
+import { showToast } from '@/src/shared/helpers/showToast';
+import { signOut } from '@/src/features/auth/services/auth';
 import {
   authenticateWithBiometrics,
   isBiometricAvailable,
-} from '@/src/services/biometricAuth';
-import { saveRefreshToken } from '@/src/services/nativeKeychain';
-import { setSignedOut } from '@/src/services/sessionFlags';
-import { useLoginMutation } from '@/src/store/api/authApi';
-import { useFetchMeQuery } from '@/src/store/api/profileApi';
+} from '@/src/features/auth/services/biometricAuth';
+import { saveRefreshToken } from '@/src/features/auth/services/nativeKeychain';
+import { setSignedOut } from '@/src/features/auth/services/sessionFlags';
+import { useLoginMutation } from '@/src/features/auth/store/authApi';
+import { useFetchMeQuery } from '@/src/features/profile/store/profileApi';
 import { useAppDispatch } from '@/src/store/hooks';
-import { setRefreshToken, setToken } from '@/src/store/slices/authSlice';
+import { setRefreshToken, setToken } from '@/src/features/auth/store/authSlice';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {

@@ -8,17 +8,17 @@ import { KeyboardProvider } from "react-native-keyboard-controller";
 import Toast from "react-native-toast-message";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
-import { Colors } from "../constants/styles";
-import { isAuthError, signOut } from "../services/auth";
-import { authenticateWithBiometrics } from "../services/biometricAuth";
-import { getCredentials, getRefreshToken } from "../services/nativeKeychain";
-import { getSignedOut } from "../services/sessionFlags";
+import { Colors } from "@/src/shared/constants/styles";
+import { isAuthError, signOut } from "@/src/features/auth/services/auth";
+import { authenticateWithBiometrics } from "@/src/features/auth/services/biometricAuth";
+import { getCredentials, getRefreshToken } from "@/src/features/auth/services/nativeKeychain";
+import { getSignedOut } from "@/src/features/auth/services/sessionFlags";
 import { persistor, store } from "../store";
-import { profileApi } from "../store/api/profileApi";
+import { profileApi } from "@/src/features/profile/store/profileApi";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { setRefreshToken, setToken } from "../store/slices/authSlice";
-import { NotificationProvider } from "../context/NotificationContext";
-import { useEnsureDeviceRegistered } from "../hooks/useEnsureDeviceRegistered";
+import { setRefreshToken, setToken } from "@/src/features/auth/store/authSlice";
+import { NotificationProvider } from "@/src/features/notifications/context/NotificationContext";
+import { useEnsureDeviceRegistered } from "@/src/features/profile/hooks/useEnsureDeviceRegistered";
 
 import * as Notifications from "expo-notifications";
 

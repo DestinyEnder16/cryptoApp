@@ -1,19 +1,19 @@
-import AppBackground from '@/src/components/AppBackground';
-import { Fonts } from '@/src/constants/fonts';
-import { Colors } from '@/src/constants/styles';
-import { formatCompact } from '@/src/helpers/formatCompact';
-import { formatPrice } from '@/src/helpers/formatPrice';
-import { getSymbolColor } from '@/src/helpers/getSymbolColor';
+import AppBackground from '@/src/shared/components/AppBackground';
+import { Fonts } from '@/src/shared/constants/fonts';
+import { Colors } from '@/src/shared/constants/styles';
+import { formatCompact } from '@/src/features/markets/helpers/formatCompact';
+import { formatPrice } from '@/src/shared/helpers/formatPrice';
+import { getSymbolColor } from '@/src/shared/helpers/getSymbolColor';
 import {
   useFetchAssetDetailsQuery,
   useFetchCandlesQuery,
-} from '@/src/store/api/marketApi';
+} from '@/src/features/markets/store/marketApi';
 import {
   useAddToWatchlistMutation,
   useFetchWatchlistQuery,
   useRemoveFromWatchlistMutation,
-} from '@/src/store/api/watchListApi';
-import type { Candle, ChartDatum } from '@/src/types/coin/types';
+} from '@/src/features/markets/store/watchListApi';
+import type { Candle, ChartDatum } from '@/src/features/markets/types/coin';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Fragment, useMemo, useState } from 'react';

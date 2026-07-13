@@ -1,0 +1,174 @@
+import type {
+  LoginPayload,
+  LoginRequest,
+  LoginResponse,
+  LoginResult,
+  RegenerateCodesPayload,
+  RegenerateCodesRequest,
+  RegenerateCodesResponse,
+  RegisterPayload,
+  RegisterRequest,
+  RegisterResponse,
+  TwoFactorDisablePayload,
+  TwoFactorDisableRequest,
+  TwoFactorDisableResponse,
+  TwoFactorEnablePayload,
+  TwoFactorEnableRequest,
+  TwoFactorEnableResponse,
+  TwoFactorSetupPayload,
+  TwoFactorSetupResponse,
+  TwoFactorVerifyRequest,
+  TwoFactorVerifyResponse,
+  UpdatePinRequest,
+  UpdatePinResponse,
+} from '@/src/features/auth/types/auth';
+import { setUser } from '@/src/features/profile/store/profileSlice';
+import { baseApi } from '@/src/store/baseApi';
+import { profileApi } from '@/src/features/profile/store/profileApi';
+
+interface LogoutResponse {
+  data: { loggedOut: boolean };
+}
+
+export const authApi = baseApi.injectEndpoints({
+  endpoints: (build) => ({
+    login: build.mutation<LoginResult, LoginRequest>({
+      query: (credentials) => ({
+        url: 'auth/login',
+        method: 'POST',
+        body: credentials,
+      }),
+      transformResponse: (response: LoginResponse) => response.data,
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data: payload } = await queryFulfilled;
+          // Only seed the fetchMe cache when the backend issued a full session.
+          // 2FA challenges have no user yet — verifyTwoFactor will seed instead.
+          if ('user' in payload) {
+            dispatch(
+              profileApi.util.upsertQueryData(
+                'fetchMe',
+                undefined,
+                payload.user
+              )
+            );
+            dispatch(setUser(payload.user));
+          }
+        } catch {
+          // Login failed — nothing to seed.
+        }
+      },
+    }),
+
+    signup: build.mutation<RegisterPayload, RegisterRequest>({
+      query: (credentials) => ({
+        url: 'auth/register',
+        method: 'POST',
+        body: credentials,
+      }),
+      transformResponse: (response: RegisterResponse) => response.data,
+    }),
+
+    logout: build.mutation<LogoutResponse, void>({
+      query: (body) => ({
+        url: 'auth/logout',
+        method: 'POST',
+        body,
+      }),
+    }),
+
+    setupTwoFactor: build.mutation<TwoFactorSetupPayload, void>({
+      query: () => ({
+        url: 'auth/2fa/setup',
+        method: 'POST',
+      }),
+      transformResponse: (response: TwoFactorSetupResponse) => response.data,
+    }),
+
+    enableTwoFactor: build.mutation<
+      TwoFactorEnablePayload,
+      TwoFactorEnableRequest
+    >({
+      query: (body) => ({
+        url: 'auth/2fa/enable',
+        method: 'POST',
+        body,
+      }),
+      transformResponse: (response: TwoFactorEnableResponse) => response.data,
+      invalidatesTags: ['User'],
+    }),
+
+    disableTwoFactor: build.mutation<
+      TwoFactorDisablePayload,
+      TwoFactorDisableRequest
+    >({
+      query: (body) => ({
+        url: 'auth/2fa/disable',
+        method: 'POST',
+        body,
+      }),
+      transformResponse: (response: TwoFactorDisableResponse) => response.data,
+      invalidatesTags: ['User'],
+    }),
+
+    verifyTwoFactor: build.mutation<LoginPayload, TwoFactorVerifyRequest>({
+      query: (body) => ({
+        url: 'auth/2fa/verify',
+        method: 'POST',
+        body,
+      }),
+      transformResponse: (response: TwoFactorVerifyResponse) => response.data,
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data: payload } = await queryFulfilled;
+          if (payload?.user) {
+            dispatch(
+              profileApi.util.upsertQueryData(
+                'fetchMe',
+                undefined,
+                payload.user
+              )
+            );
+            dispatch(setUser(payload.user));
+          }
+        } catch {
+          // Verification failed — nothing to seed.
+        }
+      },
+    }),
+
+    updateTransactionPin: build.mutation<UpdatePinResponse, UpdatePinRequest>({
+      query: (body) => ({
+        url: '/me/pin',
+        method: 'PATCH',
+        body,
+      }),
+      invalidatesTags: ['User'],
+    }),
+
+    regenerateCodes: build.mutation<
+      RegenerateCodesPayload,
+      RegenerateCodesRequest
+    >({
+      query: (body) => ({
+        url: '/auth/2fa/recovery-codes/regenerate',
+        method: 'POST',
+        body,
+      }),
+      transformResponse: (response: RegenerateCodesResponse) => response.data,
+      invalidatesTags: ['User'],
+    }),
+  }),
+});
+
+export const {
+  useLoginMutation,
+  useSignupMutation,
+  useLogoutMutation,
+  useSetupTwoFactorMutation,
+  useEnableTwoFactorMutation,
+  useDisableTwoFactorMutation,
+  useVerifyTwoFactorMutation,
+  useUpdateTransactionPinMutation,
+  useRegenerateCodesMutation,
+} = authApi;

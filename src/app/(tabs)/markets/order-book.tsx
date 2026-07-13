@@ -1,11 +1,11 @@
-import AppBackground from '@/src/components/AppBackground';
-import { Fonts } from '@/src/constants/fonts';
-import { Colors } from '@/src/constants/styles';
+import AppBackground from '@/src/shared/components/AppBackground';
+import { Fonts } from '@/src/shared/constants/fonts';
+import { Colors } from '@/src/shared/constants/styles';
 import {
   useFetchMarketTradesQuery,
   useFetchOrderBookQuery,
-} from '@/src/store/api/marketApi';
-import type { MarketTrade, OrderBookLevel } from '@/src/types/market/types';
+} from '@/src/features/markets/store/marketApi';
+import type { MarketTrade, OrderBookLevel } from '@/src/features/markets/types/market';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import {

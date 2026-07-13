@@ -15,9 +15,9 @@ Before this existed, the app stored only the access token and threw the refresh 
 
 | Piece | File | What it does |
 |---|---|---|
-| Reauth wrapper | `src/store/api/baseApi.ts` | Catches `401`s, refreshes, retries the request |
-| Auth state | `src/store/slices/authSlice.ts` | Holds `token` + `refreshToken` in memory |
-| Keychain | `src/services/nativeKeychain.ts` | Persists both tokens across app launches |
+| Reauth wrapper | `src/store/baseApi.ts` | Catches `401`s, refreshes, retries the request |
+| Auth state | `src/features/auth/store/authSlice.ts` | Holds `token` + `refreshToken` in memory |
+| Keychain | `src/features/auth/services/nativeKeychain.ts` | Persists both tokens across app launches |
 | Login screens | `handleSignin`, `SignInView`, `verification`, `verify-2fa`, `retrySignin` | Save the refresh token at login |
 | Launch bootstrap | `src/app/_layout.tsx` | Restores both tokens when the app reopens |
 

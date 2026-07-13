@@ -1,7 +1,7 @@
-import ScanQrCode from '@/src/components/ScanQrCode';
-import ScreenHeader from '@/src/components/ScreenHeader';
-import ShowQrCode from '@/src/components/ShowQrCode';
-import { Colors } from '@/src/constants/styles';
+import ScanQrCode from '@/src/features/wallet/components/ScanQrCode';
+import ScreenHeader from '@/src/features/wallet/components/ScreenHeader';
+import ShowQrCode from '@/src/features/wallet/components/ShowQrCode';
+import { Colors } from '@/src/shared/constants/styles';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useState } from 'react';
 import { Alert, ScrollView, StyleSheet, View } from 'react-native';

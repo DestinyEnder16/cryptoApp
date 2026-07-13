@@ -1,9 +1,9 @@
-import { LoadingIcon } from '@/src/components/LoadingSpinner';
-import KycStart from '@/src/components/screens/kyc/kycStart';
-import ApprovedScreen from '@/src/components/screens/kyc/status/ApprovedScreen';
-import PendingScreen from '@/src/components/screens/kyc/status/PendingScreen';
-import RejectedScreen from '@/src/components/screens/kyc/status/RejectedScreen';
-import { useFetchMeQuery } from '@/src/store/api/profileApi';
+import { LoadingIcon } from '@/src/shared/components/LoadingSpinner';
+import KycStart from '@/src/features/kyc/screens/kycStart';
+import ApprovedScreen from '@/src/features/kyc/screens/status/ApprovedScreen';
+import PendingScreen from '@/src/features/kyc/screens/status/PendingScreen';
+import RejectedScreen from '@/src/features/kyc/screens/status/RejectedScreen';
+import { useFetchMeQuery } from '@/src/features/profile/store/profileApi';
 import { View } from 'react-native';
 
 export default function Index() {

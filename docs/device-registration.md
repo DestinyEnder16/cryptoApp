@@ -8,13 +8,13 @@ For what happens *after* a push arrives (keeping the in-app list live), see [not
 
 | Piece | File | What it does |
 |---|---|---|
-| Push token helper | `src/services/expoPushToken.ts` | Asks the OS for the device's Expo push token |
-| Token-loading hook | `src/hooks/useCurrentDeviceToken.ts` | Wraps the token helper in React state (load/error/reload) |
-| Registration hook | `src/hooks/useEnsureDeviceRegistered.ts` | The single place that decides whether to register, and does it |
-| API endpoints | `src/store/api/devicesApi.ts` | `GET /me/devices` and `POST /me/devices` via RTK Query |
+| Push token helper | `src/features/notifications/services/expoPushToken.ts` | Asks the OS for the device's Expo push token |
+| Token-loading hook | `src/features/profile/hooks/useCurrentDeviceToken.ts` | Wraps the token helper in React state (load/error/reload) |
+| Registration hook | `src/features/profile/hooks/useEnsureDeviceRegistered.ts` | The single place that decides whether to register, and does it |
+| API endpoints | `src/features/profile/store/devicesApi.ts` | `GET /me/devices` and `POST /me/devices` via RTK Query |
 | Auth bootstrap | `src/app/_layout.tsx` | Calls the hook silently on every login/cold-boot |
 | Devices screen | `src/app/(tabs)/profile/security/devices.tsx` | Calls the same hook, but renders its state (list, errors, retry button) |
-| Auth header | `src/store/api/baseApi.ts` | Attaches the user's bearer token to every request |
+| Auth header | `src/store/baseApi.ts` | Attaches the user's bearer token to every request |
 
 ## One hook, two call sites
 
@@ -65,7 +65,7 @@ If the token fetch or the registration mutation fails, `devices.tsx` surfaces `t
 
 ## Who identifies "this device" in the UI
 
-Both `devices.tsx` (the "Current" badge on a device row) and the security index screen's "Registered devices" subtitle identify the current device the same way: comparing `device.expoPushToken === token` from `useEnsureDeviceRegistered`/`useCurrentDeviceToken` against each entry in the fetched list. Platform labels (`"iOS device"`, `"Android"`, etc.) come from the shared `src/helpers/devicePlatform.ts`.
+Both `devices.tsx` (the "Current" badge on a device row) and the security index screen's "Registered devices" subtitle identify the current device the same way: comparing `device.expoPushToken === token` from `useEnsureDeviceRegistered`/`useCurrentDeviceToken` against each entry in the fetched list. Platform labels (`"iOS device"`, `"Android"`, etc.) come from the shared `src/features/profile/helpers/devicePlatform.ts`.
 
 ## Mental model in one sentence
 

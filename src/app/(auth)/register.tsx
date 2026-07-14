@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
 
   desc: {
     fontFamily: Fonts.regular,
-    color: "#A7AFB7",
+    color: Colors.grey,
     fontSize: 14,
     lineHeight: 24,
   },

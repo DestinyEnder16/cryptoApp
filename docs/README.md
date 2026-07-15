@@ -6,6 +6,7 @@ Plain-language explanations of the trickier areas of this app — the kind of th
 
 | Doc | What it covers |
 |---|---|
+| [navigation.md](navigation.md) | How `app/` routes to feature screens, how tab stacks anchor deep links (`unstable_settings.initialRouteName`), and how the trades tab is KYC-gated |
 | [app-launch.md](app-launch.md) | How cold start picks the landing route (onboarding/sign-in/home) while the splash hides rehydration and the session check |
 | [token-refresh.md](token-refresh.md) | How expired access tokens are refreshed automatically so requests don't fail mid-session |
 | [kyc-upload.md](kyc-upload.md) | How a KYC document photo is picked and uploaded to the server (Cloudinary) |

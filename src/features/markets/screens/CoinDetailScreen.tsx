@@ -14,6 +14,7 @@ import {
   useRemoveFromWatchlistMutation,
 } from '@/src/features/markets/store/watchListApi';
 import type { Candle, ChartDatum } from '@/src/features/markets/types/coin';
+import { useVerification } from '@/src/features/kyc/hooks/useVerification';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Fragment, useMemo, useState } from 'react';
@@ -46,6 +47,7 @@ export default function CoinDetailScreen() {
     useRemoveFromWatchlistMutation();
   // Period is local-only for now — backend has no range param yet.
   const [period, setPeriod] = useState<Period>('1W');
+  const { isKycApproved } = useVerification();
 
   if (!symbol) {
     return (
@@ -89,6 +91,16 @@ export default function CoinDetailScreen() {
     }
   }
 
+  // Trading requires an approved KYC. Send unverified users to the locked
+  // screen (with its Verify Identity CTA) rather than into the trade form.
+  function goToTrade(tab: 'buy' | 'sell' | 'swap') {
+    if (!isKycApproved) {
+      router.navigate('/trades/locked');
+      return;
+    }
+    router.navigate({ pathname: '/trades/buy', params: { tab, symbol } });
+  }
+
   return (
     <AppBackground>
       <ScrollView
@@ -125,28 +137,13 @@ export default function CoinDetailScreen() {
           onPeriodChange={setPeriod}
         />
 
-        <Pressable
-          style={styles.buyBtn}
-          onPress={() =>
-            router.navigate({ pathname: '/trades/buy', params: { tab: 'buy', symbol: data.symbol } })
-          }
-        >
+        <Pressable style={styles.buyBtn} onPress={() => goToTrade('buy')}>
           <Text style={styles.buyBtnText}>Buy</Text>
         </Pressable>
 
         <View style={styles.actionRow}>
-          <SecondaryAction
-            label="Sell"
-            onPress={() =>
-              router.navigate({ pathname: '/trades/buy', params: { tab: 'sell', symbol: data.symbol } })
-            }
-          />
-          <SecondaryAction
-            label="Swap"
-            onPress={() =>
-              router.navigate({ pathname: '/trades/buy', params: { tab: 'swap', symbol: data.symbol } })
-            }
-          />
+          <SecondaryAction label="Sell" onPress={() => goToTrade('sell')} />
+          <SecondaryAction label="Swap" onPress={() => goToTrade('swap')} />
           <SecondaryAction
             label="Alert"
             highlight

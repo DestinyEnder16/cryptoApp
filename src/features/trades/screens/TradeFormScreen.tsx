@@ -7,8 +7,10 @@ import { getApiErrorMessage } from '@/src/shared/helpers/getApiErrorMessage';
 import { format, gt, isPositive, mul } from '@/src/shared/helpers/money';
 import { showToast } from '@/src/shared/helpers/showToast';
 import { useFetchAssetDetailsQuery } from '@/src/features/markets/store/marketApi';
+import { useVerification } from '@/src/features/kyc/hooks/useVerification';
 import { useCreateQuoteMutation } from '@/src/features/trades/store/tradeApi';
 import { useGetWalletQuery } from '@/src/features/wallet/store/walletApi';
+import TradesLockedScreen from './TradesLockedScreen';
 import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import {
@@ -99,6 +101,7 @@ interface Props {
 }
 
 export default function TradeFormScreen({ initialTab = 'buy', symbol }: Props) {
+  const { isKycApproved, isLoading: kycLoading } = useVerification();
   const [activeTab, setActiveTab] = useState<TabKey>(initialTab);
   const [fromAmount, setFromAmount] = useState('');
   const inputRef = useRef<TextInput>(null);
@@ -191,6 +194,21 @@ export default function TradeFormScreen({ initialTab = 'buy', symbol }: Props) {
   }
 
   const canSubmit = inputAmount > 0 && !isLoading && !hasInsufficientBalance;
+
+  // Content-level KYC gate. Guards direct deep-links to /trades/buy and the case
+  // where the tab's `main` anchor mounts this screen beneath the stack for an
+  // unverified user. Renders the locked screen inline (no redirect) so it holds
+  // regardless of how this screen ended up in the stack.
+  if (kycLoading) {
+    return (
+      <AppBackground>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <ActivityIndicator color={Colors.green} />
+        </View>
+      </AppBackground>
+    );
+  }
+  if (!isKycApproved) return <TradesLockedScreen />;
 
   return (
     <AppBackground>

@@ -1,0 +1,151 @@
+import { Redirect, router } from "expo-router";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SvgProps } from "react-native-svg";
+import ActionBtn from "@/src/shared/components/ActionBtn";
+import BackHeader from "@/src/shared/components/BackHeader";
+import { Fonts } from "@/src/shared/constants/fonts";
+import {
+  ForwardBtn,
+  SettingsAbout,
+  SettingsAppearance,
+  SettingsCurrency,
+  SettingsLanguage,
+  SettingsPreference,
+} from "@/src/shared/constants/images";
+import { Colors } from "@/src/shared/constants/styles";
+import { completeLogout } from "@/src/features/auth/helpers/completeLogout";
+import { useFetchMeQuery } from "@/src/features/profile/store/profileApi";
+import { useAppDispatch, useAppSelector } from "@/src/store/hooks";
+import Toast from "react-native-toast-message";
+import { showToast } from "@/src/shared/helpers/showToast";
+
+type SettingsConfig = {
+  icon: React.FC<SvgProps>;
+  info: string;
+  type: string;
+};
+
+export default function SettingsScreen() {
+  const insets = useSafeAreaInsets();
+  const { data: user } = useFetchMeQuery();
+  const token = useAppSelector((state) => state.auth.token);
+  const dispatch = useAppDispatch();
+
+  if (!token) return <Redirect href="/(auth)/auth" />;
+  const settings: SettingsConfig[] = [
+    {
+      icon: SettingsLanguage,
+      info: "English",
+      type: "Language",
+    },
+    {
+      icon: SettingsCurrency,
+      info: user?.settings.fiatCurrency!,
+      type: "Currency",
+    },
+    {
+      icon: SettingsAppearance,
+      info: user?.settings.theme!,
+      type: "Appearance",
+    },
+    {
+      icon: SettingsPreference,
+      info: "Customize",
+      type: "Preference",
+    },
+    {
+      icon: SettingsAbout,
+      info: "v1.2.3",
+      type: "About Us",
+    },
+  ];
+
+  return (
+    <View style={[{ paddingTop: insets.top + 10, paddingHorizontal: 10 }]}>
+      <View style={{ paddingLeft: 20 }}>
+        <BackHeader txt="Settings" marginBottom={50} />
+      </View>
+
+      <View style={{ paddingHorizontal: 20, gap: 30 }}>
+        {settings.map((el, index) => {
+          const Icon = el.icon;
+          return (
+            <Pressable
+              key={index}
+              onPress={() =>
+                el.type === "Preference" &&
+                router.navigate("/UserPreferenceSetting")
+              }
+            >
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  borderBottomWidth: 0.2,
+                  paddingBottom: 30,
+                  borderBottomColor: Colors.textMuted,
+                }}
+              >
+                <View style={[styles.row, { gap: 30 }]}>
+                  <View
+                    style={{
+                      backgroundColor: Colors.secondaryBackgroundColor,
+                      padding: 15,
+                      height: 28,
+                      width: 31,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      borderRadius: 100,
+                    }}
+                  >
+                    <Icon />
+                  </View>
+                  <Text
+                    style={{
+                      fontFamily: Fonts.regular,
+                      color: Colors.textMuted,
+                    }}
+                  >
+                    {el.type}
+                  </Text>
+                </View>
+
+                <View style={[styles.row, { gap: 10 }]}>
+                  <Text style={styles.txt}>{el.info}</Text>
+                  <ForwardBtn />
+                </View>
+              </View>
+            </Pressable>
+          );
+        })}
+
+        <ActionBtn
+          text="Logout"
+          styles={{ backgroundColor: Colors.red, txtColor: Colors.text }}
+          action={() => {
+            completeLogout(dispatch);
+            showToast({
+              type: "error",
+              title: "Logout",
+              message: "You have been logged out.",
+            });
+          }}
+        />
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  txt: {
+    color: Colors.ash,
+    fontFamily: Fonts.regular,
+  },
+});

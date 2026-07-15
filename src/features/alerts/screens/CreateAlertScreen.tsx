@@ -40,11 +40,14 @@ export default function CreateAlertScreen() {
 
   // The coin to alert on is chosen upstream (coin detail screen) and passed in
   // via the route param — fetch its live details for display and polled price.
-  const { data: asset } = useFetchAssetDetailsQuery(symbol ?? "", {
-    skip: !symbol,
-    pollingInterval: isFocused ? 20000 : 0,
-    skipPollingIfUnfocused: true,
-  });
+  const { data: asset, isLoading: isAssetLoading } = useFetchAssetDetailsQuery(
+    symbol ?? "",
+    {
+      skip: !symbol,
+      pollingInterval: isFocused ? 20000 : 0,
+      skipPollingIfUnfocused: true,
+    }
+  );
 
   const [direction, setDirection] = useState<PriceAlertDirection>("above");
   const [targetPrice, setTargetPrice] = useState("");
@@ -132,8 +135,13 @@ export default function CreateAlertScreen() {
                     ${formatUsd(asset.priceUsd)}
                   </Text>
                 </>
-              ) : (
+              ) : isAssetLoading ? (
                 <ActivityIndicator color={Colors.green} />
+              ) : (
+                <Text style={styles.assetEmpty}>
+                  No coin selected. Open a coin and tap “Set alert” to choose
+                  one.
+                </Text>
               )}
             </View>
 
@@ -251,6 +259,13 @@ const styles = StyleSheet.create({
     color: Colors.text,
     fontFamily: Fonts.medium,
     fontSize: 15,
+  },
+  assetEmpty: {
+    flex: 1,
+    color: Colors.ash,
+    fontFamily: Fonts.regular,
+    fontSize: 13,
+    textAlign: "center",
   },
 
   // ── Direction toggle ──────────────────────────────────────────────────────

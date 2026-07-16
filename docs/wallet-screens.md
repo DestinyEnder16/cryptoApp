@@ -28,7 +28,7 @@ The goal: give the **Wallets** tab a full experience — portfolio overview + hi
 - **Withdraw**: `/wallet/withdraw` (form, limit from `useVerification`) → `/wallet/withdraw/confirm?…` (review + 4-digit PIN gates submit) → `/wallet/withdraw/submitted` → `View transaction`.
 - **Transactions**: `/wallet/transactions` (All/Deposits/Withdrawals filter applied server-side via the `type` param) → `/wallet/transactions/[id]` (detail picks the entry out of the cached list — see [wallet-api.md](wallet-api.md)).
 
-All navigation stays **inside the wallet stack** (`Stack` in `_layout.tsx`), which avoids the cross-navigator mount crash documented elsewhere. The KYC gate in `wallet/index.tsx` still decides `main` vs `locked`; these screens sit behind `main`.
+All navigation stays **inside the wallet stack** (`Stack` in `_layout.tsx`), which avoids the cross-navigator mount crash documented elsewhere. The KYC gate in `wallet/index.tsx` still decides `main` vs `locked`; these screens sit behind `main`. The wallet stack anchors at `main` (`unstable_settings.initialRouteName`) so deep links from other tabs stay navigable — see [navigation.md](navigation.md).
 
 ## Note on typed routes
 

@@ -1,0 +1,100 @@
+import AppBackground from '@/src/shared/components/AppBackground';
+import Btn from '@/src/shared/components/Btn';
+import Loader from '@/src/shared/components/Loader';
+import MarketAssetView from '@/src/features/markets/components/MarketAssetView';
+import ScreenIntro from '@/src/shared/components/ScreenIntro';
+import { Fonts } from '@/src/shared/constants/fonts';
+import { Colors } from '@/src/shared/constants/styles';
+import { useFetchWatchlistQuery } from '@/src/features/markets/store/watchListApi';
+import { router } from 'expo-router';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+
+const avatarColors = [Colors.orangeBrown, Colors.blue, Colors.green];
+
+export default function WatchlistScreen() {
+  const { data, isLoading } = useFetchWatchlistQuery();
+
+  const assets = data?.data ?? [];
+
+  const goToMarkets = () => router.navigate('/(tabs)/markets');
+
+  return (
+    <AppBackground>
+      <View style={styles.container}>
+        <ScreenIntro
+          title="Watchlist"
+          description="Assets you follow with row sparklines."
+          hasBackBtn
+          onBack={() => router.navigate('/(tabs)/markets')}
+        />
+
+        {isLoading ? (
+          <Loader />
+        ) : (
+          <ScrollView
+            style={styles.scroll}
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+          >
+            {assets.map((asset, index) => (
+              <MarketAssetView
+                key={asset.id}
+                coin={asset.symbol}
+                color={avatarColors[index % avatarColors.length]}
+              />
+            ))}
+
+            <View style={styles.addCard}>
+              <Text style={styles.addTitle}>Add more assets</Text>
+              <Text style={styles.addBody}>
+                Use the market list to add coins to your watchlist.
+              </Text>
+            </View>
+          </ScrollView>
+        )}
+
+        <View style={styles.footer}>
+          <Btn text="Explore markets" action={goToMarkets} />
+        </View>
+      </View>
+    </AppBackground>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    gap: 30,
+  },
+  scroll: {
+    flex: 1,
+    marginTop: 24,
+  },
+  scrollContent: {
+    gap: 10,
+    paddingBottom: 16,
+  },
+  addCard: {
+    backgroundColor: Colors.secondaryBackgroundColor,
+    borderRadius: 16,
+    paddingHorizontal: 20,
+    paddingVertical: 18,
+    marginTop: 14,
+    gap: 10,
+  },
+  addTitle: {
+    fontFamily: Fonts.bold,
+    color: Colors.text,
+    fontSize: 16,
+  },
+  addBody: {
+    fontFamily: Fonts.regular,
+    color: Colors.ash,
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  footer: {
+    paddingTop: 16,
+    paddingBottom: 16,
+  },
+});

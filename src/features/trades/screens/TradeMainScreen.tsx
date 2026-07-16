@@ -8,10 +8,19 @@ import {
   useFetchCandlesQuery,
 } from '@/src/features/markets/store/marketApi';
 import type { Candle } from '@/src/features/markets/types/coin';
+import { useVerification } from '@/src/features/kyc/hooks/useVerification';
 import { useIsFocused } from '@react-navigation/native';
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import TradesLockedScreen from './TradesLockedScreen';
 import Svg, { Rect } from 'react-native-svg';
 
 // One bar per real OHLC candle: colored by close-vs-open, height scaled to the
@@ -106,6 +115,7 @@ const ACTIONS = [
 ];
 
 export default function TradeMainScreen() {
+  const { isKycApproved, isLoading: kycLoading } = useVerification();
   const [period, setPeriod] = useState<TimeFilter>('5m');
 
   const isFocused = useIsFocused();
@@ -126,6 +136,21 @@ export default function TradeMainScreen() {
     () => (candles ?? []).slice(-FILTER_BARS[period]),
     [candles, period]
   );
+
+  // Content-level KYC gate. The tab's `main` anchor means this screen can be
+  // mounted beneath a deep route (or reached via back after the index gate
+  // redirects to `locked`), so guard it directly rather than relying on the
+  // route-level redirect. Renders the locked screen inline for unverified users.
+  if (kycLoading) {
+    return (
+      <AppBackground>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <ActivityIndicator color={Colors.green} />
+        </View>
+      </AppBackground>
+    );
+  }
+  if (!isKycApproved) return <TradesLockedScreen />;
 
   return (
     <AppBackground>
